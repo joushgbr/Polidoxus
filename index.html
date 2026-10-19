@@ -1,0 +1,1461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Polidoxus</title>
+<meta name="description" content="Polidoxus ship console">
+<meta name="theme-color" content="#151514">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Polidoxus">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Host+Grotesk:wght@400;500;700;800&family=Michroma&family=Silkscreen:wght@400;700&display=swap">
+<style>
+:root{
+  /* Layout: mission-control console. Meta bar, wordmark + LED clock, stat cards; nav rail on wide screens, segmented nav on narrow; one framed Now card beside a data-card sidebar. One dark look with three power modes (day, Low-Power LED, night). */
+  --void:#151514;
+  --panel:#1c1c1a;
+  --panel-2:#262623;
+  --line:#353531;
+  --line-2:#55534c;
+  --text:#ede5d3;
+  --muted:#9b968a;
+  --sage:#c4d9c7;
+  --on-sage:#151514;
+  --orange:#ff6a3d;
+  --on-orange:#160904;
+  --glow:rgba(255,106,61,.34);
+  --phosphor:#6dffa8;
+  --phosphor-glow:rgba(109,255,168,.45);
+  --crt:#040805;
+  --shade:rgba(6,6,5,.88);
+  --font-pixel:"Silkscreen","Courier New",monospace;
+  --font-grot:"Host Grotesk","Helvetica Neue",Arial,sans-serif;
+  --font-mono:"Geist Mono",ui-monospace,Menlo,monospace;
+  --font-time:"Michroma","Eurostile","Arial Black",sans-serif;
+  color-scheme:dark;
+}
+/* Low-Power Mode (18:00–19:15): the console becomes a red LED matrix. */
+html[data-mode="low"]{
+  --void:#0b0605; --panel:#120907; --panel-2:#1a0d0a; --line:#341710; --line-2:#5c2a1d;
+  --text:#ff9068; --muted:#b45d42; --sage:#ff6a3d; --on-sage:#0b0605;
+  --orange:#ff5a2a; --on-orange:#0b0605; --glow:rgba(255,90,42,.5);
+  --phosphor:#ff8a5a; --phosphor-glow:rgba(255,120,80,.4); --crt:#0b0403;
+}
+/* Night (19:15–03:30): barely lit, so the Bridge stays dark. */
+html[data-mode="night"]{
+  --void:#040202; --panel:#080404; --panel-2:#0d0605; --line:#1d0d0a; --line-2:#301610;
+  --text:#97432e; --muted:#5e2a1e; --sage:#7e3221; --on-sage:#040202;
+  --orange:#a8432b; --on-orange:#040202; --glow:rgba(168,67,43,.25);
+  --phosphor:#a8432b; --phosphor-glow:rgba(168,67,43,.2); --crt:#040202;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-text-size-adjust:100%}
+html{height:100%}
+body{
+  height:100%; margin:0; overflow:hidden;
+  background:var(--void); color:var(--text);
+  font-family:var(--font-grot); font-size:16px; line-height:1.45;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent;
+  transition:background-color .6s ease, color .6s ease;
+}
+html[data-mode="low"] body,html[data-mode="night"] body{
+  background-image:radial-gradient(circle, rgba(255,90,42,.09) 1.1px, transparent 1.7px);
+  background-size:7px 7px;
+}
+/* Film grain over everything, never catching taps */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opacity:.07;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+#app{height:100%;max-width:1280px;margin:0 auto;position:relative;display:grid;
+  grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-areas:"hud" "main" "nav"}
+.hud{grid-area:hud;min-width:0}
+main{grid-area:main;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-block:20px 28px;position:relative}
+.nav{grid-area:nav;min-width:0}
+
+/* ---------- HUD ---------- */
+.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:14px 9px;border-bottom:3px solid var(--sage);
+  font:500 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.meta > span{display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta > span:last-child{flex:none}
+.meta .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--glow);flex:none}
+.fs{background:none;border:1px solid var(--line-2);color:var(--muted);font:inherit;letter-spacing:inherit;text-transform:inherit;padding:6px 9px;margin-left:10px;cursor:pointer}
+.hud-main{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 20px;align-items:end;padding-block:14px 14px}
+.wordmark{font:800 clamp(38px,6.4vw,66px)/.88 var(--font-grot);letter-spacing:-.04em;color:var(--sage);overflow-wrap:anywhere}
+.act-line{font:700 clamp(15px,2vw,20px)/1.15 var(--font-grot);letter-spacing:-.01em;color:var(--orange);margin-top:7px}
+.motto{font:400 11px/1 var(--font-mono);letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-top:9px}
+.clockbox{display:flex;flex-direction:column;align-items:flex-end;gap:9px}
+.clock{font:400 clamp(32px,5.6vw,60px)/.9 var(--font-time);color:var(--orange);text-shadow:0 0 18px var(--glow);font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap}
+.strip{display:flex;align-items:center;gap:6px;height:11px;color:var(--text)}
+.strip i{display:block;width:46px;height:11px;background:var(--orange)}
+.barcode{display:block}
+.stats{display:grid;grid-template-columns:minmax(118px,160px) minmax(0,1fr) auto;gap:10px;padding-bottom:14px}
+.stat{border:1.5px solid var(--line-2);padding:10px 12px;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:7px}
+.k{font:500 10.5px/1.1 var(--font-mono);letter-spacing:.15em;text-transform:uppercase}
+.stat .k{color:var(--muted)}
+.stat-cred{background:var(--orange);border-color:var(--orange);color:var(--on-orange)}
+.stat-cred .k{color:var(--on-orange)}
+.stat-cred .v{font:800 38px/.85 var(--font-grot);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.lvl-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.lvl-row .v{font:800 28px/.85 var(--font-grot);letter-spacing:-.03em;color:var(--sage);font-variant-numeric:tabular-nums}
+.segbar{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;height:10px}
+.segbar i{background:var(--panel-2);border:1px solid var(--line)}
+.segbar i.on{background:var(--sage);border-color:var(--sage)}
+.stat-side{border:0;padding:0;align-items:flex-end;justify-content:space-between}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.chip{border:1px solid var(--line-2);border-radius:99px;padding:5px 10px;font:500 10px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.chip.warn{border-color:var(--orange);color:var(--orange)}
+.pill{border:1.5px solid var(--orange);border-radius:99px;background:transparent;color:var(--orange);font:500 12px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;padding:13px 18px;cursor:pointer;white-space:nowrap}
+.pill:active{transform:translateY(1px)}
+
+/* ---------- Nav ---------- */
+.nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1.5px solid var(--line-2);margin-top:6px;margin-bottom:10px}
+.tab{position:relative;background:transparent;border:0;border-left:1.5px solid var(--line-2);color:var(--muted);font:500 11px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;padding:17px 4px;cursor:pointer;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;justify-content:center;gap:6px}
+.tab:first-child{border-left:0}
+.tab .num{display:none}
+.tab.on{background:var(--orange);color:var(--on-orange)}
+.badge{width:7px;height:7px;background:var(--orange);flex:none}
+.tab.on .badge{background:var(--on-orange)}
+
+/* ---------- Shared ---------- */
+.sec{display:grid;gap:12px;margin-top:30px}
+.sec:first-child{margin-top:0}
+.sec-h{display:flex;align-items:center;gap:12px;font:500 11px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.sec-h .rule{flex:1;border-top:1.5px solid var(--line-2)}
+.ptitle{font:700 clamp(34px,6.6vw,70px)/.95 var(--font-pixel);letter-spacing:.01em;text-transform:uppercase;margin:0 0 16px;color:var(--text);overflow-wrap:anywhere;text-wrap:balance}
+.h2{font:800 clamp(28px,4.4vw,46px)/.95 var(--font-grot);letter-spacing:-.035em;margin:0;color:var(--sage);text-wrap:balance}
+.instr{font:400 clamp(17px,2.1vw,21px)/1.45 var(--font-grot);max-width:38ch;margin:0;text-wrap:pretty}
+.fine{font:500 12px/1.5 var(--font-mono);letter-spacing:.04em;color:var(--muted);margin:0;max-width:66ch}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-top:26px}
+.btn{font:500 14px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;min-height:58px;padding:0 24px;border:1.5px solid var(--text);background:transparent;color:var(--text);cursor:pointer}
+.btn.primary{background:var(--orange);border-color:var(--orange);color:var(--on-orange)}
+.btn.sage{background:var(--sage);border-color:var(--sage);color:var(--on-sage)}
+.btn.sm{min-height:44px;padding:0 16px;font-size:12px}
+.btn.ph{border-color:var(--on-sage);color:var(--on-sage);background:transparent}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn:not(:disabled):active{transform:translateY(1px)}
+.link{background:none;border:0;padding:12px 4px;color:var(--muted);font:500 12px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;text-decoration:underline;text-underline-offset:5px;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--sage);outline-offset:3px}
+.tag{font:400 11px/1 var(--font-pixel);color:var(--on-orange);background:var(--orange);padding:5px 7px 4px;white-space:nowrap}
+.done-tag{font:500 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;background:var(--sage);color:var(--on-sage);padding:9px 11px;white-space:nowrap}
+.later-tag{font:500 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;border:1.5px dashed var(--line-2);color:var(--muted);padding:8px 10px;white-space:nowrap}
+
+/* ---------- Now ---------- */
+.bigrow{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:22px;border-bottom:3px solid var(--line-2);overflow:hidden;user-select:none}
+.bign{font:800 clamp(110px,17vw,220px)/.76 var(--font-grot);letter-spacing:-.07em;color:var(--line-2);margin-bottom:-.04em}
+.bigl{font:500 11px/1.4 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-align:right;padding-bottom:12px}
+.now-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.frame{position:relative;border:1.5px solid var(--text);background:var(--panel);padding:clamp(20px,3.6vw,38px)}
+.frame::before,.frame::after{content:"+";position:absolute;font:400 24px/1 var(--font-mono);color:var(--orange)}
+.frame::before{top:-13px;left:-7px}
+.frame::after{bottom:-13px;right:-7px}
+.frame-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;font:500 11px/1.3 var(--font-mono);letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.led{font:400 clamp(54px,8.4vw,100px)/.9 var(--font-time);color:var(--orange);text-shadow:0 0 24px var(--glow), 0 0 5px var(--glow);margin:6px 0 20px;font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap}
+.checklist{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:0;border-top:1.5px solid var(--line-2);max-width:460px}
+.checklist li{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;padding:12px 0;border-bottom:1.5px solid var(--line-2);font:700 clamp(17px,2.2vw,21px)/1.2 var(--font-grot);letter-spacing:-.01em}
+.checklist li span{font:500 11px/1 var(--font-mono);color:var(--orange)}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.datacard{border:1.5px solid var(--text);background:var(--panel)}
+.dc-head{display:flex;align-items:baseline;gap:8px;padding:13px 14px 11px;border-bottom:1.5px solid var(--text)}
+.dc-head .p{font:700 22px/1 var(--font-pixel)}
+.dc-head .p.o{color:var(--orange)}
+.dc-head .m{margin-left:auto;font:500 10.5px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+table.dc{width:100%;border-collapse:collapse;font:500 12px/1.2 var(--font-mono);letter-spacing:.07em;text-transform:uppercase}
+table.dc td{padding:12px 14px;border-top:1px solid var(--line)}
+table.dc tr:first-child td{border-top:0}
+table.dc td.dim{color:var(--muted)}
+table.dc td:last-child{text-align:right;white-space:nowrap}
+.st-done{color:var(--sage)}
+.st-open{color:var(--orange)}
+.st-later{color:var(--muted)}
+.tl{border:1.5px solid var(--line-2);padding:14px}
+.tl-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.tl-head .phase{font:700 15px/1.2 var(--font-grot);color:var(--orange)}
+.tl-head .m{font:500 10.5px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.tl-bar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:12px}
+.tl-seg{height:42px;border:1.5px solid var(--line-2);display:flex;align-items:flex-end;padding:5px 6px;font:500 10px/1 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+.tl-seg.past{background:var(--sage);border-color:var(--sage);color:var(--on-sage)}
+.tl-seg.cur{background:var(--orange);border-color:var(--orange);color:var(--on-orange)}
+.tl-seg.rev{background-image:repeating-linear-gradient(-45deg,var(--line-2) 0 2px,transparent 2px 7px)}
+.tl-dates{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:6px;font:500 9.5px/1 var(--font-mono);letter-spacing:.06em;color:var(--muted)}
+.tx-chip{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:var(--sage);border:0;color:var(--on-sage);padding:15px 16px;cursor:pointer;font:500 12px/1.2 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;text-align:left}
+.boot{animation:boot .8s steps(6,end) both}
+@keyframes boot{0%{opacity:.15;filter:brightness(2)}40%{opacity:.7}60%{opacity:.4}100%{opacity:1;filter:none}}
+
+/* ---------- Log ---------- */
+.list{border:1.5px solid var(--line-2)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 16px;align-items:center;padding:14px 16px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row-name{font:700 19px/1.1 var(--font-grot);letter-spacing:-.015em}
+.row-meta{font:500 11px/1.35 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+.row-act{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.stations{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:8px}
+.station{padding:12px 14px 14px;min-width:0;background:var(--sage);color:var(--on-sage);border:1.5px solid var(--sage)}
+.station .st-name{font:800 19px/1.05 var(--font-grot);letter-spacing:-.02em}
+.station .st-room{font:500 10px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;margin-top:6px;opacity:.72}
+.station .st-holds{font:500 13.5px/1.3 var(--font-grot);margin-top:12px}
+.station.dark{background:transparent;color:var(--muted);border:1.5px dashed var(--line-2)}
+
+/* ---------- Firewall ---------- */
+.fw-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 24px;align-items:end}
+.fw-cond{font:700 clamp(19px,2.5vw,25px)/1.2 var(--font-grot);letter-spacing:-.015em;max-width:32ch;margin:10px 0 0}
+.fw-prog{text-align:right}
+.fw-prog .n{font:800 clamp(52px,8vw,84px)/.82 var(--font-grot);letter-spacing:-.05em;color:var(--orange);font-variant-numeric:tabular-nums}
+.fw-prog .n small{font-size:.42em;color:var(--muted);letter-spacing:-.02em}
+.nodes{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.node{display:grid;grid-template-columns:64px minmax(0,1fr);border:1.5px solid var(--line-2);min-height:66px}
+.node .nid{display:flex;align-items:center;justify-content:center;font:700 16px/1 var(--font-pixel);border-right:1.5px solid var(--line-2)}
+.node .nb{padding:13px 16px;display:flex;flex-direction:column;gap:7px;justify-content:center;min-width:0}
+.node-k{font:500 10.5px/1 var(--font-mono);letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.node p{margin:0;font:500 clamp(16px,1.9vw,18px)/1.35 var(--font-grot);max-width:56ch}
+.node .btn{margin-top:6px;align-self:flex-start}
+.node.done{background:var(--sage);border-color:var(--sage);color:var(--on-sage)}
+.node.done .nid{border-right-color:rgba(0,0,0,.22)}
+.node.done .node-k{color:var(--on-sage);opacity:.7}
+.node.current{border-color:var(--orange)}
+.node.current .nid{background:var(--orange);color:var(--on-orange);border-right-color:var(--orange)}
+.node.current .node-k{color:var(--orange)}
+.node.locked{background-image:repeating-linear-gradient(-45deg,var(--panel-2) 0 3px,transparent 3px 9px);color:var(--muted)}
+.breached{background:var(--orange);color:var(--on-orange);padding:15px 16px;font:700 16px/1 var(--font-pixel)}
+.node-tools{display:flex;gap:12px;align-items:center}
+.node-tools .link{padding:6px 0;font-size:11px}
+.node.done .node-tools .link{color:var(--on-sage)}
+.addnode{display:grid;gap:10px;margin-top:14px;border:1.5px dashed var(--line-2);padding:14px 16px}
+.addnode label{font:500 11px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.addrow{display:flex;gap:8px}
+.addrow input{flex:1;min-width:0;background:var(--panel);border:1.5px solid var(--text);border-radius:0;color:var(--text);font:500 17px/1.2 var(--font-grot);padding:12px 14px;min-height:48px;-webkit-appearance:none;appearance:none}
+.addrow input::placeholder{color:var(--muted)}
+.addrow input:focus{outline:none;border-color:var(--orange)}
+.addrow input:disabled{opacity:.45}
+
+/* ---------- Market ---------- */
+.wallet{display:flex;align-items:flex-end;flex-wrap:wrap;gap:8px 18px}
+.wallet .n{font:800 clamp(80px,12vw,132px)/.8 var(--font-grot);letter-spacing:-.06em;color:var(--sage);font-variant-numeric:tabular-nums}
+.wallet .u{display:flex;flex-direction:column;gap:6px;padding-bottom:6px}
+.wallet .u b{font:700 22px/1 var(--font-grot);color:var(--orange)}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.item{border:1.5px solid var(--line-2);background:var(--panel);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.item-name{font:800 22px/1.02 var(--font-grot);letter-spacing:-.025em;margin-top:6px}
+.item-desc{font:400 15px/1.4 var(--font-grot);margin:0;opacity:.88}
+.price{font:700 26px/1 var(--font-pixel);color:var(--orange);white-space:nowrap;text-align:right}
+.price small{display:block;font:500 10px/1 var(--font-mono);letter-spacing:.14em;color:var(--muted);margin-top:6px}
+.meter-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.meter{height:9px;background:var(--panel-2);border:1px solid var(--line)}
+.meter i{display:block;height:100%;background:var(--orange)}
+.meter-row .k{color:var(--muted)}
+.item-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:auto}
+.history{list-style:none;margin:0;padding:0;border:1.5px solid var(--line-2)}
+.history li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;padding:12px 14px;border-top:1px solid var(--line);align-items:baseline;font:500 12px/1.3 var(--font-mono);letter-spacing:.06em;text-transform:uppercase}
+.history li:first-child{border-top:0}
+.history .h-day{color:var(--muted);white-space:nowrap}
+.history .h-amt{color:var(--orange)}
+
+/* ---------- Debrief ---------- */
+.phosphor{position:relative;background:var(--sage);color:var(--on-sage);padding:clamp(18px,3.2vw,30px)}
+.ph-k{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:12px;border-bottom:2px solid var(--on-sage);font:500 11px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase}
+.ph-k .barcode{color:var(--on-sage)}
+.ph-title{font:800 clamp(24px,3.4vw,36px)/1.02 var(--font-grot);letter-spacing:-.03em;margin:18px 0 12px;text-wrap:balance}
+.ph-body{white-space:pre-line;font:400 16px/1.6 var(--font-grot);max-width:62ch;margin:0}
+.phosphor .ptitle{color:var(--on-sage)}
+.bars{display:grid;gap:12px;border:1.5px solid var(--line-2);padding:14px 16px}
+.bar-row{display:grid;grid-template-columns:104px minmax(0,1fr) 52px;gap:14px;align-items:center}
+.bar-label{font:500 11.5px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.day{display:grid;gap:5px;text-align:center;font:500 9.5px/1 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+.day i{display:block;height:14px;background:var(--panel-2);border:1px solid var(--line)}
+.day.on i{background:var(--sage);border-color:var(--sage)}
+.bar-val{font:800 22px/1 var(--font-grot);text-align:right;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px 16px;border-top:1.5px solid var(--line-2);padding-top:14px;margin:0}
+.nums div{min-width:0}
+.nums dt{font:500 10.5px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.nums dd{margin:8px 0 0;font:800 40px/.9 var(--font-grot);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.posters{list-style:none;margin:0;padding:0;display:grid;gap:0;border:1.5px solid var(--line-2)}
+.posters li{padding:12px 14px;border-top:1px solid var(--line);font:400 15px/1.4 var(--font-grot)}
+.posters li:first-child{border-top:0}
+.posters b{font:500 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--orange);margin-right:8px}
+.steps{margin:0;padding-left:26px;display:grid;gap:7px;font:400 15.5px/1.45 var(--font-grot);max-width:62ch}
+.steps li::marker{font:500 12px var(--font-mono);color:var(--orange)}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.field{display:grid;gap:8px}
+.field label{font:500 11px/1.3 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.money{display:flex;align-items:center;border:1.5px solid var(--text);background:var(--panel)}
+.money span{font:800 28px/1 var(--font-grot);color:var(--orange);padding:0 2px 0 14px}
+.money input{flex:1;min-width:0;background:transparent;border:0;color:var(--text);font:800 32px/1 var(--font-grot);letter-spacing:-.03em;padding:12px 12px 10px 6px;font-variant-numeric:tabular-nums}
+.money input:focus{outline:none}
+.money:focus-within{border-color:var(--orange)}
+.money input:disabled{opacity:.6}
+.settings{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+
+/* ---------- Toast & modal ---------- */
+.toast{position:absolute;left:0;right:0;bottom:84px;margin:0 auto;width:max-content;max-width:100%;z-index:80;display:flex;align-items:center;gap:14px;padding:11px 11px 11px 16px;background:var(--orange);color:var(--on-orange);font:500 12px/1.3 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.toast button{font:500 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--on-orange);background:transparent;border:1.5px solid var(--on-orange);padding:10px 12px;cursor:pointer}
+.modal{position:fixed;inset:0;z-index:95;display:grid;place-items:center;background:var(--shade);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal > section{width:100%;max-width:640px;max-height:100%;overflow:auto}
+.cache-code{font:500 clamp(24px,4.6vw,38px)/1.1 var(--font-mono);letter-spacing:.14em;margin:18px 0 6px;overflow-wrap:anywhere}
+.cache-code.done{font-size:16px;opacity:.6;text-shadow:none}
+.reveal{animation:reveal .5s steps(5,end) both}
+@keyframes reveal{from{opacity:0}to{opacity:1}}
+.copybox{width:100%;min-height:190px;background:var(--panel-2);color:var(--text);border:1.5px solid var(--line-2);font:400 14px/1.5 var(--font-mono);padding:12px;margin-top:14px}
+
+/* iPad mini portrait (744 wide): Now card full width, data card + timeline side by side below it */
+@media (min-width:600px) and (max-width:999px){
+  .side{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}
+  .side .tx-chip{grid-column:1/-1}
+  .tab{padding-block:20px;font-size:12px}
+}
+/* iPad mini landscape (1133 x 744): one-row header so the Now card gets the height */
+@media (min-width:1000px){
+  .now-grid{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+  .hud{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr) auto;grid-template-areas:"meta meta meta" "brand stats clock";column-gap:22px;align-items:end;padding-bottom:14px}
+  .meta{grid-area:meta}
+  .hud-main{display:contents}
+  .brand{grid-area:brand;padding-top:14px;min-width:0}
+  .clockbox{grid-area:clock}
+  .stats{grid-area:stats;padding-bottom:0;grid-template-columns:minmax(110px,140px) minmax(150px,1fr) auto}
+  .wordmark{font-size:54px}
+  .ptitle{font-size:clamp(40px,5vw,64px)}
+}
+@media (min-width:1000px){
+  #app{grid-template-columns:196px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"hud hud" "nav main";column-gap:30px}
+  .nav{display:flex;flex-direction:column;align-self:start;gap:4px;border:0;margin:0;padding-top:22px}
+  .tab{justify-content:flex-start;gap:12px;border:0;padding:7px 0;font:700 27px/1.1 var(--font-grot);letter-spacing:-.025em;text-transform:none;color:var(--text);white-space:nowrap;overflow:visible}
+  .tab .num{display:inline;font:500 10px/1 var(--font-mono);letter-spacing:.1em;color:var(--muted);width:20px;flex:none}
+  .tab.on{background:transparent;color:var(--orange)}
+  .tab.on::after{content:"";flex:1;max-width:54px;height:15px;background:repeating-linear-gradient(90deg,var(--orange) 0 3px,transparent 3px 6px)}
+  .tab:hover{color:var(--sage)}
+  .tab.on:hover{color:var(--orange)}
+  .toast{bottom:24px}
+}
+@media (max-width:560px){
+  .stats{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr)}
+  .stat-side{grid-column:1/-1;flex-direction:row;align-items:center}
+  .tab{font-size:10px;letter-spacing:.06em}
+  .mc{display:none}
+  .row{grid-template-columns:minmax(0,1fr)}
+  .row-act{justify-content:flex-start}
+  .bar-row{grid-template-columns:minmax(0,1fr) 46px}
+  .bar-row .days{grid-column:1/-1;order:3}
+  .fw-top{grid-template-columns:minmax(0,1fr)}
+  .fw-prog{text-align:left}
+  .btn{padding:0 18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="hud" id="hud"></header>
+  <nav class="nav" id="tabs" aria-label="Deck screens"></nav>
+  <main id="main"></main>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</div>
+<div id="modal" class="modal" role="dialog" aria-modal="true" hidden></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================= Rules (from the rulebook) ================= */
+const DEFAULT_SHIP = {
+  name: 'Polidoxus',
+  motto: 'Nec festinans nec cessans',
+  act: 1,
+  actName: 'Cold Start',
+  actStart: '2026-10-19',
+  cachesFrom: '2026-10-26',
+  stations: [
+    {name:'Bridge',   room:'Office',      on:true,  holds:'The Deck, the Firewall, debrief'},
+    {name:'Quarters', room:'Bedroom',     on:true,  holds:'Shutdown'},
+    {name:'Airlock',  room:'Entrance',    on:true,  holds:'Loadout, EVA'},
+    {name:'Galley',   room:'Kitchen',     on:true,  holds:'Supply Run (weekly), the supply list'},
+    {name:'Med Bay',  room:'Bathroom',    on:false, holds:'Dark until the reactor can carry it'},
+    {name:'Lounge',   room:'Living room', on:false, holds:'Dark until the reactor can carry it'}
+  ]
+};
+const DEFAULT_MARKET = {
+  note: 'Life Support is red, so everything here costs ₡0 in real money.',
+  items: [
+    {id:'downtime',    tier:'small',  price:5,  name:'Downtime',    desc:'One hour of guilt-free gaming or series.'},
+    {id:'deep-dive',   tier:'medium', price:15, name:'Deep Dive',   desc:'One timed hour on the Side Quest. Use it before 18:00.'},
+    {id:'shore-leave', tier:'medium', price:15, name:'Shore Leave', desc:'A free outing on an off day.'},
+    {id:'implant',     tier:'large',  price:50, name:'Implant',     desc:'An upgrade to this Deck, your pick. The Operator installs it at debrief.'}
+  ]
+};
+/* Placeholder until the ship's log loads. Real nodes live in your Google Sheet, never in this public file. */
+const FALLBACK_FIREWALL = {boss: 1, title: 'The Firewall', breached: false, condition: '', nodes: []};
+const PROTOCOLS = {
+  shutdown: {name:'Shutdown', station:'Quarters', floor:'Lights out by 19:15'},
+  eva:      {name:'EVA',      station:'Airlock',  floor:'Gym, or a 10-minute walk'},
+  loadout:  {name:'Loadout',  station:'Airlock',  floor:'5 minutes: bag, clothes, tomorrow’s food'}
+};
+const SAFE_ACTIONS = [
+  'Drink one full glass of water.',
+  'Put your shoes by the Airlock door.',
+  'Open a window and stand there for two minutes.',
+  'Wash one cup.',
+  'Set a 5-minute timer and lie down until it rings.',
+  'Step outside the front door, then come back in.'
+];
+const SHIFT_DAYS = [0,3,4,5,6]; // Wed–Sun, 05:00–14:00
+const XP_PER_LEVEL = 30;
+const MAX_QUEUE = 6; // open Firewall nodes allowed at once; overflow goes to Cold Storage
+const TABS = [['now','Now'],['log','Log'],['firewall','Firewall'],['market','Market'],['debrief','Debrief']];
+
+/* ================= Helpers ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const ls = {
+  get(k){ try { return localStorage.getItem('errans:' + k); } catch(e){ return null; } },
+  set(k, v){ try { localStorage.setItem('errans:' + k, v); } catch(e){} }
+};
+const pad = n => String(n).padStart(2, '0');
+const dayKey = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const parseDay = k => { const p = k.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+const addDays = (k, n) => { const d = parseDay(k); d.setDate(d.getDate() + n); return dayKey(d); };
+const diffDays = (a, b) => Math.round((parseDay(a) - parseDay(b)) / 864e5);
+const mondayOf = k => { const d = parseDay(k); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return dayKey(d); };
+const hoursOf = d => d.getHours() + d.getMinutes() / 60;
+const hhmm = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
+const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fmtDay = k => { const d = parseDay(k); return DOW[d.getDay()] + ' ' + d.getDate() + ' ' + MON[d.getMonth()]; };
+const fmtShort = k => { const d = parseDay(k); return pad(d.getDate()) + ' ' + MON[d.getMonth()].toUpperCase(); };
+const fmtLong = k => { const d = parseDay(k); return DOW[d.getDay()] + ' ' + pad(d.getDate()) + ' ' + MON[d.getMonth()] + ' ' + d.getFullYear(); };
+const crc = n => '₡' + Math.round(n).toLocaleString('en-US');
+const reduceMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
+function phaseOf(now){
+  const h = hoursOf(now);
+  if (h < 3.5) return 'night';
+  if (h < 18) return 'day';
+  if (h < 19.25) return 'low';
+  return 'night';
+}
+const BAR_W = [3,1,2,1,1,3,2,1,4,1,1,2,3,1,2,1,1,4,2,1,3,1,2,2,1,3,1,1,2,4,1,2];
+function barcode(seed, width, h){
+  let x = 0, i = 0, out = '';
+  while (x < width){
+    const w = BAR_W[(i + seed) % BAR_W.length];
+    out += '<rect x="' + x + '" y="0" width="' + w + '" height="' + h + '"></rect>';
+    x += w + ((i + seed) % 3 ? 1 : 2); i++;
+  }
+  return '<svg class="barcode" aria-hidden="true" width="' + x + '" height="' + h + '" viewBox="0 0 ' + x + ' ' + h + '"><g fill="currentColor">' + out + '</g></svg>';
+}
+
+/* ================= State ================= */
+const S = {
+  mode: 'unlinked',         // unlinked | remote
+  entries: new Map(),       // ledger from the store
+  opt: new Map(),           // optimistic writes not yet confirmed
+  tomb: new Set(),          // optimistic deletes
+  ledgerReady: false,
+  ship: Object.assign({}, DEFAULT_SHIP),
+  market: DEFAULT_MARKET,
+  firewall: null,
+  firewallReady: false,
+  comms: null,
+  tab: 'now',
+  skipped: new Set(),
+  confirmBuy: null,
+  moneyDraft: '',
+  foodDraft: '',
+  nodeDraft: '',
+  confirmRm: null,
+  undo: null,
+  syncError: false,
+  syncing: false,
+  linkDraft: '',
+  linkMsg: '',
+  confirmUnlink: false,
+  lastTouch: Date.now(),
+  booted: false
+};
+const ready = () => S.mode === 'remote' && S.ledgerReady;
+
+function allEntries(){
+  const m = new Map(S.entries);
+  for (const [k, v] of S.opt) m.set(k, v);
+  for (const k of S.tomb) m.delete(k);
+  return m;
+}
+
+/* Everything shown is computed from the ledger, so nothing is ever subtracted except by your own spending. */
+function derive(map){
+  const list = [];
+  for (const [id, e] of map) list.push(Object.assign({id: id}, e));
+  let cred = 0, xp = 0, vouchers = 0, usedV = 0, firstDay = null;
+  const byDay = {}, opened = new Set(), ent = [];
+  for (const e of list){
+    const amt = Number(e.amount) || 0;
+    cred += amt; if (amt > 0) xp += amt;
+    if ((e.kind === 'protocol' || e.kind === 'safe') && e.day){
+      const b = byDay[e.day] || (byDay[e.day] = {});
+      b[e.kind === 'safe' ? 'safe' : e.ref] = e;
+      if (!firstDay || e.day < firstDay) firstDay = e.day;
+    }
+    if (e.kind === 'cache'){ opened.add(e.ref); if (e.voucher) vouchers++; }
+    if (e.kind === 'spend' && e.voucher) usedV++;
+    if (e.kind === 'breach') ent.push('breach-' + e.ref);
+  }
+  const cf = S.ship.cachesFrom || DEFAULT_SHIP.cachesFrom;
+  for (const day in byDay){
+    const b = byDay[day];
+    if (b.shutdown && b.eva && b.loadout && day >= cf) ent.push('day-' + day);
+  }
+  const pos = list.filter(e => (Number(e.amount) || 0) > 0)
+    .sort((a, b) => String(a.at || '').localeCompare(String(b.at || '')));
+  let acc = 0;
+  for (const e of pos){
+    const before = acc; acc += Number(e.amount);
+    for (let L = Math.floor(before / XP_PER_LEVEL) + 2; L <= Math.floor(acc / XP_PER_LEVEL) + 1; L++){
+      const d = e.at ? dayKey(new Date(e.at)) : e.day;
+      if (d && d >= cf) ent.push('lvl-' + L);
+    }
+  }
+  return {
+    map, list, cred, xp, byDay, firstDay,
+    level: Math.floor(xp / XP_PER_LEVEL) + 1,
+    vouchers: vouchers - usedV,
+    unopened: ent.filter(x => !opened.has(x))
+  };
+}
+const isDone = (D, day, ref) => !!(D.byDay[day] && D.byDay[day][ref]);
+const anyOn = (D, day) => !!(D.byDay[day] && Object.keys(D.byDay[day]).length);
+function rebootFor(D, day){
+  if (anyOn(D, day) || !D.firstDay) return false;
+  const prev = addDays(day, -1);
+  if (prev < D.firstDay) return false;
+  return !anyOn(D, prev);
+}
+const nodeId = (fw, n) => 'node-' + (fw.boss || 1) + '-' + n.id;
+function currentNode(D){
+  const fw = S.firewall;
+  if (!fw || fw.breached || !Array.isArray(fw.nodes)) return null;
+  const real = fw.nodes.filter(n => !n.locked);
+  const idx = real.findIndex(n => !D.map.has(nodeId(fw, n)));
+  if (idx < 0) return null;
+  return {node: real[idx], index: idx + 1, total: real.length};
+}
+const dismissed = k => ls.get('dismiss:' + k) === '1';
+const unreadComms = () => !!(S.comms && S.comms.id && ls.get('read') !== S.comms.id);
+
+/* ================= Storage: the ship's log (your Google Sheet, via your Apps Script web app) =================
+   Every tap is queued on this device first, then sent. If the network drops, taps wait here and sync later. */
+const Remote = {
+  url: null,
+  load(){ this.url = ls.get('link') || null; return this.url; },
+  save(u){ this.url = u; ls.set('link', u); },
+  clear(){ this.url = null; try { localStorage.removeItem('errans:link'); } catch(e){} },
+  async call(payload){
+    const res = await fetch(this.url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload), redirect:'follow', cache:'no-store'});
+    if (!res.ok) throw {code:'http_' + res.status};
+    const j = await res.json();
+    if (!j || !j.ok) throw {code: (j && j.error) || 'server'};
+    return j;
+  }
+};
+let pending = [];
+function loadPending(){ try { pending = JSON.parse(ls.get('pending') || '[]'); if (!Array.isArray(pending)) pending = []; } catch(e){ pending = []; } }
+function savePending(){ ls.set('pending', JSON.stringify(pending)); }
+function rebuildOptimistic(){
+  S.opt = new Map(); S.tomb = new Set();
+  for (const op of pending){
+    if (op.op === 'put'){ S.opt.set(op.id, op.data); S.tomb.delete(op.id); }
+    else if (op.op === 'del'){ S.tomb.add(op.id); S.opt.delete(op.id); }
+    else if (op.op === 'cfg' && op.key === 'firewall'){ S.firewall = op.value; }
+  }
+}
+function applyState(j){
+  S.entries = new Map(Object.entries(j.ledger || {}));
+  const c = j.config || {};
+  S.ship = Object.assign({}, DEFAULT_SHIP, c.ship || {});
+  S.market = c.market && Array.isArray(c.market.items) ? c.market : DEFAULT_MARKET;
+  S.firewall = c.firewall && Array.isArray(c.firewall.nodes) ? c.firewall : null;
+  S.firewallReady = true;
+  S.comms = c.comms || null;
+  rebuildOptimistic();
+  S.ledgerReady = true;
+}
+function cacheState(j){ try { ls.set('cache', JSON.stringify({ledger: j.ledger, config: j.config, at: j.at})); } catch(e){} }
+let syncBusy = false, syncAgain = false;
+async function syncNow(){
+  if (!Remote.url) return;
+  if (syncBusy){ syncAgain = true; return; }
+  syncBusy = true; S.syncing = true;
+  try {
+    const ops = pending.slice();
+    const j = await Remote.call(ops.length ? {a:'batch', ops: ops} : {a:'state'});
+    pending.splice(0, ops.length); savePending();
+    applyState(j); cacheState(j);
+    S.syncError = false;
+  } catch(e){
+    S.syncError = true;
+  } finally {
+    syncBusy = false; S.syncing = false; render();
+    if (syncAgain){ syncAgain = false; syncNow(); }
+  }
+}
+function queue(op){ pending.push(JSON.parse(JSON.stringify(op))); savePending(); rebuildOptimistic(); render(); syncNow(); }
+const Store = {
+  async put(id, data){ queue({op:'put', id: id, data: data}); },
+  async del(id){ queue({op:'del', id: id}); }
+};
+async function linkShip(){
+  const u = (S.linkDraft || '').trim();
+  if (!/^https:\/\/script\.google(usercontent)?\.com\/\S+$/.test(u)){
+    S.linkMsg = 'That doesn’t look like an Apps Script link. It starts with https://script.google.com/ and ends in /exec.'; render(); return;
+  }
+  S.linkMsg = 'Linking…'; render();
+  Remote.save(u);
+  try {
+    const j = await Remote.call({a:'state'});
+    applyState(j); cacheState(j);
+    S.mode = 'remote'; S.linkDraft = ''; S.linkMsg = ''; S.syncError = false;
+    sfx('level'); toast('Ship linked');
+  } catch(e){
+    Remote.clear();
+    S.linkMsg = 'Couldn’t reach the ship’s log (' + ((e && e.code) || 'error') + '). Check the link, and that the web app’s access is set to Anyone.';
+  }
+  render();
+}
+function renderLink(){
+  return '<section class="frame" aria-labelledby="link-title"><div class="frame-head"><span>Bridge · first boot</span><span class="tag">Link &gt;&gt;&gt;</span></div>' +
+    '<h1 class="ptitle" id="link-title">Link the ship</h1>' +
+    '<p class="instr">Paste the web app link from your Google Apps Script deployment. It ends in /exec. You do this once on each device.</p>' +
+    '<form class="addnode" id="link-form" style="margin-top:22px"><label for="linkurl">Ship’s log link</label>' +
+    '<div class="addrow"><input id="linkurl" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec" value="' + esc(S.linkDraft) + '">' +
+    '<button class="btn primary sm" type="submit">Link</button></div>' +
+    (S.linkMsg ? '<p class="fine">' + esc(S.linkMsg) + '</p>' : '') + '</form></section>';
+}
+
+/* ================= Sound ================= */
+let actx = null;
+function sfx(kind){
+  if (ls.get('sound') === 'off') return;
+  try {
+    if (!actx){ const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; actx = new AC(); }
+    if (actx.state === 'suspended') actx.resume();
+    const t0 = actx.currentTime + 0.01;
+    const seqs = {
+      tap:    [[660,0,.07],[990,.07,.1]],
+      cache:  [[523,0,.08],[659,.08,.08],[784,.16,.08],[1046,.24,.2]],
+      empty:  [[392,0,.1],[330,.1,.16]],
+      jackpot:[[523,0,.07],[784,.07,.07],[1046,.14,.07],[1318,.21,.07],[1568,.28,.34]],
+      level:  [[392,0,.12],[523,.1,.12],[659,.2,.12],[784,.3,.32]],
+      undo:   [[330,0,.1],[220,.1,.14]],
+      buy:    [[880,0,.06],[660,.06,.06],[1320,.12,.14]],
+      soft:   [[440,0,.14]]
+    };
+    for (const [f, dt, dur] of (seqs[kind] || seqs.tap)){
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = kind === 'soft' ? 'sine' : 'square';
+      o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t0 + dt);
+      g.gain.exponentialRampToValueAtTime(0.045, t0 + dt + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dt + dur);
+      o.connect(g); g.connect(actx.destination);
+      o.start(t0 + dt); o.stop(t0 + dt + dur + 0.03);
+    }
+  } catch(e){}
+}
+
+/* ================= Actions ================= */
+function rollCache(ent){
+  const r = Math.random();
+  let result = 'empty', amount = 0, voucher = null;
+  if (r >= 0.95){ result = 'jackpot'; voucher = 'medium'; }
+  else if (r >= 0.8){ result = 'plus3'; amount = 3; }
+  else if (r >= 0.5){ result = 'plus1'; amount = 1; }
+  const e = {kind:'cache', ref:ent, day:dayKey(new Date()), at:new Date().toISOString(), amount, result};
+  if (voucher) e.voucher = voucher;
+  return ['cache-' + ent, e];
+}
+
+let busy = false;
+async function commit(writes, label){
+  if (!ready() || busy) return;
+  busy = true;
+  const D0 = derive(allEntries());
+  const created = [];
+  const temp = new Map(allEntries());
+  try {
+    for (const [id, e] of writes){ await Store.put(id, e); created.push(id); temp.set(id, e); }
+  } catch(err){
+    busy = false; failToast(err); render(); return;
+  }
+  const D1a = derive(temp);
+  const fresh = D1a.unopened.filter(x => D0.unopened.indexOf(x) < 0);
+  const reveals = [];
+  for (const ent of fresh){
+    const pair = rollCache(ent);
+    try { await Store.put(pair[0], pair[1]); created.push(pair[0]); temp.set(pair[0], pair[1]); reveals.push(pair[1]); } catch(e){}
+  }
+  const D1 = derive(temp);
+  busy = false;
+  const leveled = D1.level > D0.level ? D1.level : null;
+  if (reveals.length) showCache(reveals[0], leveled);
+  else if (leveled) showLevel(leveled);
+  else sfx('tap');
+  toast(label, created);
+  render();
+}
+
+function logProtocol(ref, day, variant){
+  const id = 'p-' + day + '-' + ref;
+  const D = derive(allEntries());
+  if (D.map.has(id)) return;
+  const reboot = rebootFor(D, day);
+  const e = {kind:'protocol', ref, day, at:new Date().toISOString(), amount: reboot ? 2 : 1};
+  if (reboot) e.reboot = true;
+  if (variant) e.variant = variant;
+  commit([[id, e]], (reboot ? '+2 cred · Reboot bonus' : '+1 cred') + ' · ' + PROTOCOLS[ref].name);
+}
+function logSafe(){
+  const day = dayKey(new Date());
+  const id = 'safe-' + day;
+  const D = derive(allEntries());
+  if (D.map.has(id)) return;
+  const reboot = rebootFor(D, day);
+  const e = {kind:'safe', ref:'safe', day, at:new Date().toISOString(), amount: reboot ? 2 : 1};
+  if (reboot) e.reboot = true;
+  commit([[id, e]], reboot ? '+2 cred · Reboot bonus' : '+1 cred · Safe Mode');
+}
+function clearNode(){
+  const D = derive(allEntries());
+  const cur = currentNode(D);
+  if (!cur) return;
+  const id = nodeId(S.firewall, cur.node);
+  const e = {kind:'node', ref:cur.node.id, boss:S.firewall.boss || 1, day:dayKey(new Date()), at:new Date().toISOString(), amount:1};
+  commit([[id, e]], '+1 cred · Node ' + cur.index + ' cleared');
+}
+function openCacheManual(ent){
+  if (!ready() || busy) return;
+  const D0 = derive(allEntries());
+  if (D0.unopened.indexOf(ent) < 0) return;
+  busy = true;
+  const pair = rollCache(ent);
+  Store.put(pair[0], pair[1]).then(() => {
+    const temp = new Map(allEntries()); temp.set(pair[0], pair[1]);
+    const D1 = derive(temp);
+    busy = false;
+    showCache(pair[1], D1.level > D0.level ? D1.level : null);
+    render();
+  }).catch(err => { busy = false; failToast(err); });
+}
+function completeDebrief(){
+  const today = dayKey(new Date());
+  const id = 'debrief-' + mondayOf(today);
+  if (allEntries().has(id)) return;
+  const money = S.moneyDraft ? Number(S.moneyDraft) : null;
+  const food = S.foodDraft ? Number(S.foodDraft) : null;
+  const e = {kind:'debrief', ref:mondayOf(today), day:today, at:new Date().toISOString(), amount:3};
+  if (money != null && isFinite(money)) e.money = money;
+  if (food != null && isFinite(food)) e.food = food;
+  commit([[id, e]], '+3 cred · Debrief logged');
+}
+function logSupply(){
+  const today = dayKey(new Date());
+  const id = 'supply-' + mondayOf(today);
+  if (allEntries().has(id)) return;
+  commit([[id, {kind:'supply', ref:mondayOf(today), day:today, at:new Date().toISOString(), amount:3}]], '+3 cred · Supply Run');
+}
+async function saveFirewall(nodes){
+  const fw = Object.assign({}, S.firewall || FALLBACK_FIREWALL, {nodes: nodes});
+  queue({op:'cfg', key:'firewall', value: fw});
+}
+function openNodes(fw, D){
+  return (fw.nodes || []).filter(n => !n.locked && !D.map.has(nodeId(fw, n))).length;
+}
+function addNode(){
+  const text = (S.nodeDraft || '').trim().slice(0, 140);
+  if (!text || !ready()) return;
+  const fw = S.firewall || FALLBACK_FIREWALL;
+  const D = derive(allEntries());
+  if (openNodes(fw, D) >= MAX_QUEUE) return;
+  const nodes = (fw.nodes || []).slice();
+  const node = {id: 'u' + Date.now().toString(36), text: text, added: dayKey(new Date())};
+  const li = nodes.findIndex(n => n.locked);
+  if (li >= 0) nodes.splice(li, 0, node); else nodes.push(node);
+  saveFirewall(nodes).then(() => { S.nodeDraft = ''; sfx('tap'); toast('Node added'); render(); }).catch(failToast);
+}
+function removeNode(id){
+  const fw = S.firewall; if (!fw || !ready()) return;
+  const D = derive(allEntries());
+  const nodes = (fw.nodes || []).filter(n => n.id !== id || D.map.has(nodeId(fw, n)));
+  S.confirmRm = null;
+  saveFirewall(nodes).then(() => { sfx('soft'); toast('Node removed'); render(); }).catch(failToast);
+}
+function buy(itemId, useVoucher){
+  const item = (S.market.items || []).find(i => i.id === itemId);
+  if (!item) return;
+  const D = derive(allEntries());
+  if (useVoucher ? D.vouchers < 1 : D.cred < item.price) return;
+  const id = 'spend-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const e = {kind:'spend', ref:item.id, day:dayKey(new Date()), at:new Date().toISOString(),
+    amount: useVoucher ? 0 : -item.price, item:{name:item.name, tier:item.tier, price:item.price}};
+  if (useVoucher) e.voucher = true;
+  S.confirmBuy = null;
+  if (!ready()) return;
+  Store.put(id, e).then(() => {
+    sfx('buy'); toast('Bought · ' + item.name + (useVoucher ? ' · voucher' : ''), [id]); render();
+  }).catch(failToast);
+}
+async function undo(){
+  const ids = S.undo; if (!ids) return;
+  S.undo = null; hideToast(); closeModal();
+  try {
+    for (const id of ids.slice().reverse()) await Store.del(id);
+    sfx('undo'); toast('Undone');
+  } catch(e){ toast('Couldn’t undo. Check the connection and try again.'); }
+  render();
+}
+
+/* ================= Toast & modal ================= */
+let toastTimer = null;
+function toast(msg, undoIds){
+  const t = $('#toast');
+  S.undo = undoIds && undoIds.length ? undoIds : null;
+  t.innerHTML = '<span>' + esc(msg) + '</span>' + (S.undo ? '<button type="button" data-action="undo">Undo</button>' : '');
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, 7000);
+}
+function hideToast(){ $('#toast').hidden = true; S.undo = null; }
+function failToast(err){
+  const code = err && err.code;
+  toast(code === 'invalid_argument' ? 'This view is read-only.' : 'Couldn’t save. Check the connection and tap again.');
+}
+let scrambleTimer = null;
+function openModal(html){
+  const m = $('#modal'); m.innerHTML = html; m.hidden = false;
+  const f = m.querySelector('[data-focus]') || m.querySelector('button');
+  if (f) f.focus({preventScroll:true});
+}
+function closeModal(){
+  clearInterval(scrambleTimer);
+  const m = $('#modal'); m.hidden = true; m.innerHTML = '';
+}
+const hex = () => Array.from({length:4}, () => Math.floor(Math.random() * 256).toString(16).toUpperCase().padStart(2, '0')).join(' ');
+function showCache(ce, newLevel){
+  const R = {
+    empty:  ['Empty', 'Nothing inside this time. The next one might be different.', 'empty'],
+    plus1:  ['+1 cred', 'Small cache. Still yours.', 'cache'],
+    plus3:  ['+3 cred', 'A good haul.', 'cache'],
+    jackpot:['Jackpot', 'One free Medium from the Black Market, saved as a voucher.', 'jackpot']
+  }[ce.result] || ['Cache', '', 'cache'];
+  const lvl = newLevel ? '<p class="ph-body" style="margin-top:12px">Level ' + newLevel + ' reached.</p>' : '';
+  openModal(
+    '<section class="phosphor"><div class="ph-k">Cargo hold · cache</div>' +
+    '<div class="cache-code" id="cache-code">' + hex() + '</div>' +
+    '<div id="cache-res" hidden><h2 class="ptitle reveal">' + esc(R[0]) + '</h2><p class="ph-body">' + esc(R[1]) + '</p>' + lvl + '</div>' +
+    '<div class="actions"><button class="btn ph" type="button" data-action="close-modal">Continue</button></div></section>'
+  );
+  const code = $('#cache-code');
+  const finish = () => {
+    clearInterval(scrambleTimer);
+    if (!code || !document.body.contains(code)) return;
+    code.textContent = 'Decrypted'; code.classList.add('done');
+    const r = $('#cache-res'); if (r) r.hidden = false;
+    sfx(R[2]);
+  };
+  if (reduceMotion()) { finish(); return; }
+  sfx('soft');
+  scrambleTimer = setInterval(() => { if (code) code.textContent = hex(); }, 70);
+  setTimeout(finish, 1200);
+}
+function showLevel(L){
+  sfx('level');
+  const cf = S.ship.cachesFrom || DEFAULT_SHIP.cachesFrom;
+  const note = dayKey(new Date()) < cf ? 'Caches come online ' + fmtDay(cf) + '.' : 'A cache came with it.';
+  openModal('<section class="frame"><div class="frame-head"><span>Clearance up</span><span class="tag">LVL &gt;&gt;&gt;</span></div><h2 class="ptitle reveal">Level ' + pad(L) + '</h2><p class="instr">' + esc(note) + '</p><div class="actions"><button class="btn primary" type="button" data-action="close-modal">Continue</button></div></section>');
+}
+function openSafe(){
+  const today = dayKey(new Date());
+  const used = allEntries().has('safe-' + today);
+  const n = SAFE_ACTIONS.length;
+  const idx = ((diffDays(today, '2026-01-01') % n) + n) % n;
+  openModal(
+    '<section class="frame"><div class="frame-head"><span>Safe Mode</span><span class="tag">One thing</span></div>' +
+    '<h2 class="ptitle">Safe Mode</h2>' +
+    '<p class="instr">' + esc(SAFE_ACTIONS[idx]) + '</p>' +
+    '<div class="actions"><button class="btn primary" type="button" data-action="safe-done" data-focus' + (ready() ? '' : ' disabled') + '>Done</button>' +
+    '<button class="link" type="button" data-action="close-modal">Close</button></div>' +
+    '<p class="fine" style="margin-top:14px">' + (used ? 'Already logged today. Doing it again still counts for you.' : 'Pays 1 cred and makes today a floor day.') + '</p></section>'
+  );
+}
+function copyReport(){
+  const text = reportText(derive(allEntries()));
+  const show = () => openModal('<section class="frame"><div class="frame-head"><span>Report for the Operator</span><span class="tag">Copy</span></div><p class="fine">Select all and copy, then paste it in the chat.</p><textarea class="copybox" id="copybox" readonly>' + esc(text) + '</textarea><div class="actions"><button class="btn primary" type="button" data-action="close-modal">Close</button></div></section>');
+  try {
+    navigator.clipboard.writeText(text).then(() => { sfx('tap'); toast('Copied. Paste it in the chat.'); }).catch(() => { show(); const b = $('#copybox'); if (b) b.select(); });
+  } catch(e){ show(); const b = $('#copybox'); if (b) b.select(); }
+}
+
+/* ================= Full screen (only where the view allows it) ================= */
+function fsOK(){ try { return !!(document.fullscreenEnabled || document.webkitFullscreenEnabled); } catch(e){ return false; } }
+function fsOn(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+function toggleFs(){
+  const el = document.documentElement;
+  try {
+    if (fsOn()){ (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+    const req = el.requestFullscreen || el.webkitRequestFullscreen;
+    const p = req && req.call(el);
+    if (p && p.catch) p.catch(() => toast('Full screen isn’t available in this view.'));
+  } catch(e){ toast('Full screen isn’t available in this view.'); }
+}
+document.addEventListener('fullscreenchange', () => render());
+document.addEventListener('webkitfullscreenchange', () => render());
+
+/* ================= Now queue ================= */
+function nowQueue(D, now){
+  const today = dayKey(now), yest = addDays(today, -1), h = hoursOf(now), ph = phaseOf(now);
+  const shiftDay = SHIFT_DAYS.indexOf(now.getDay()) >= 0;
+  const q = [];
+  if (D.unopened.length && ph !== 'night') q.push({t:'cache', ent:D.unopened[0]});
+  if (ph === 'day'){
+    if (!isDone(D, yest, 'shutdown') && !dismissed('night-' + yest)) q.push({t:'confirm', day:yest});
+    if (shiftDay && h < 5) q.push({t:'preshift'});
+    else if (shiftDay && h < 14) q.push({t:'shift'});
+    else {
+      const wk = mondayOf(today), dow = now.getDay();
+      if (dow === 1 && !D.map.has('debrief-' + wk) && !S.skipped.has('debrief-' + wk)) q.push({t:'debrief', wk:wk});
+      const n = currentNode(D);
+      if (n && !S.skipped.has('node-' + n.node.id)) q.push(Object.assign({t:'node'}, n));
+      if ((dow === 1 || dow === 2) && !D.map.has('supply-' + wk) && !S.skipped.has('supply-' + wk)) q.push({t:'supply', wk:wk});
+      if (!isDone(D, today, 'eva') && !S.skipped.has('eva-' + today)) q.push({t:'eva', day:today});
+      q.push({t:'clear', evaOpen: !isDone(D, today, 'eva')});
+    }
+  } else if (ph === 'low'){
+    if (!isDone(D, today, 'loadout')) q.push({t:'loadout', day:today});
+    q.push({t:'target'});
+  } else {
+    if (h >= 12 && !isDone(D, today, 'loadout')) q.push({t:'loadout', day:today, late:true});
+    q.push({t:'lights', early: h < 12});
+  }
+  return q;
+}
+
+/* ================= Renderers ================= */
+function renderHud(D, now){
+  const today = dayKey(now);
+  const pre = today < S.ship.actStart;
+  const actLine = pre ? 'Shakedown · Act ' + pad(S.ship.act) + ' launches ' + fmtDay(S.ship.actStart)
+                      : 'Act ' + pad(S.ship.act) + ' · ' + S.ship.actName;
+  const into = D.xp % XP_PER_LEVEL;
+  const on = Math.floor(into / (XP_PER_LEVEL / 10));
+  let segs = '';
+  for (let i = 0; i < 10; i++) segs += '<i' + (i < on ? ' class="on"' : '') + '></i>';
+  const chips = [];
+  const ph = phaseOf(now);
+  if (ph === 'low') chips.push('<span class="chip warn">Low-Power</span>');
+  if (S.mode === 'unlinked') chips.push('<span class="chip warn">Not linked</span>');
+  else if (S.syncError) chips.push('<span class="chip warn">Offline' + (pending.length ? ' · ' + pending.length + ' to sync' : '') + '</span>');
+  else if (pending.length) chips.push('<span class="chip">Saving…</span>');
+  else if (!S.ledgerReady) chips.push('<span class="chip">Syncing…</span>');
+  return '' +
+    '<div class="meta"><span><i class="dot" aria-hidden="true"></i><span class="mc">Mission control · </span>' + esc(S.ship.name) + '</span><span>' + esc(fmtLong(today)) + (fsOK() ? '<button class="fs" type="button" data-action="fullscreen">' + (fsOn() ? 'Exit full screen' : 'Full screen') + '</button>' : '') + '</span></div>' +
+    '<div class="hud-main">' +
+      '<div class="brand"><div class="wordmark">' + esc(S.ship.name) + '</div>' +
+        '<div class="act-line">' + esc(actLine) + '</div>' +
+        (S.ship.motto ? '<div class="motto">' + esc(S.ship.motto) + '</div>' : '') + '</div>' +
+      '<div class="clockbox"><div class="clock" id="clock">' + hhmm(now) + '</div>' +
+        '<div class="strip">' + barcode(0, 60, 11) + '<i></i>' + barcode(9, 34, 11) + '</div></div>' +
+    '</div>' +
+    '<div class="stats">' +
+      '<div class="stat stat-cred"><span class="k">◆ Cred</span><span class="v">' + D.cred + '</span>' +
+        (D.vouchers > 0 ? '<span class="k">+' + D.vouchers + ' voucher</span>' : '') + '</div>' +
+      '<div class="stat"><div class="lvl-row"><span class="k">Level</span><span class="v">' + pad(D.level) + '</span></div>' +
+        '<div class="segbar" role="img" aria-label="XP ' + into + ' of ' + XP_PER_LEVEL + '">' + segs + '</div>' +
+        '<span class="k">XP ' + D.xp + ' · ' + (XP_PER_LEVEL - into) + ' to lvl ' + (D.level + 1) + '</span></div>' +
+      '<div class="stat stat-side">' + (chips.length ? '<div class="chips">' + chips.join('') + '</div>' : '<span></span>') +
+        '<button class="pill" type="button" data-action="safe">Safe Mode</button></div>' +
+    '</div>';
+}
+
+function renderTabs(D){
+  return TABS.map(([k, l], i) => {
+    const badge = (k === 'debrief' && unreadComms()) || (k === 'now' && S.tab !== 'now' && D.unopened.length) ? '<i class="badge" aria-hidden="true"></i>' : '';
+    const on = S.tab === k;
+    return '<button class="tab' + (on ? ' on' : '') + '" type="button" data-action="tab" data-tab="' + k + '"' + (on ? ' aria-current="page"' : '') + '><span class="num">' + pad(i + 1) + '</span><span>' + l + '</span>' + badge + '</button>';
+  }).join('');
+}
+
+function dataCard(D, now){
+  const today = dayKey(now), b = D.byDay[today] || {};
+  const st = (cls, txt) => '<span class="' + cls + '">' + txt + '</span>';
+  const sup = D.map.has('supply-' + mondayOf(today));
+  const rows = [
+    ['EVA', 'Airlock', b.eva ? st('st-done', b.eva.variant === 'walk' ? 'Walk ✓' : 'Gym ✓') : st('st-open', 'Open')],
+    ['Loadout', 'Airlock', b.loadout ? st('st-done', 'Done ✓') : st('st-later', '18:00')],
+    ['Shutdown', 'Quarters', st('st-later', 'Tonight')],
+    ['Supply run', 'Galley', sup ? st('st-done', 'Done ✓') : st('st-later', 'This week')]
+  ];
+  if (b.safe) rows.push(['Safe Mode', 'Anywhere', st('st-done', 'Used ✓')]);
+  return '<section class="datacard" aria-label="Today"><div class="dc-head"><span class="p">Data</span><span class="p o">Card</span><span class="m">' + esc(fmtDay(today)) + '</span></div>' +
+    '<table class="dc"><tbody>' + rows.map(r => '<tr><td>' + r[0] + '</td><td class="dim">' + r[1] + '</td><td>' + r[2] + '</td></tr>').join('') + '</tbody></table></section>';
+}
+
+function timeline(now){
+  const start = S.ship.actStart || DEFAULT_SHIP.actStart;
+  const di = diffDays(dayKey(now), start);
+  let segs = '', dates = '';
+  for (let w = 0; w < 4; w++){
+    const cls = di >= (w + 1) * 7 ? ' past' : (di >= w * 7 ? ' cur' : '');
+    segs += '<div class="tl-seg' + cls + '">W' + (w + 1) + '</div>';
+    dates += '<span>' + fmtShort(addDays(start, w * 7)) + '</span>';
+  }
+  segs += '<div class="tl-seg rev' + (di >= 28 ? ' cur' : '') + '">RVW</div>';
+  dates += '<span>' + fmtShort(addDays(start, 28)) + '</span>';
+  const m = di < 0 ? 'Launch in ' + (-di) + ' day' + (di === -1 ? '' : 's') : 'Day ' + Math.min(di + 1, 28) + ' of 28';
+  return '<section class="tl" aria-label="Act timeline"><div class="tl-head"><span class="phase">Act ' + pad(S.ship.act) + ' · ' + esc(S.ship.actName) + '</span><span class="m">' + m + '</span></div>' +
+    '<div class="tl-bar">' + segs + '</div><div class="tl-dates">' + dates + '</div></section>';
+}
+
+function renderNow(D, now){
+  const q = nowQueue(D, now);
+  const it = q[0];
+  const dis = ready() ? '' : ' disabled';
+  const today = dayKey(now);
+  let eyebrow = '', title = '', body = '', extra = '', actions = '';
+  switch (it.t){
+    case 'cache':
+      eyebrow = 'Cargo hold'; title = 'Cache';
+      body = 'A sealed cache is waiting for you.';
+      actions = '<button class="btn primary" type="button" data-action="cache" data-ent="' + esc(it.ent) + '"' + dis + '>Crack it open</button>';
+      break;
+    case 'confirm':
+      eyebrow = 'Quarters · last night'; title = 'Shutdown';
+      body = 'Were the lights out by 19:15 last night?';
+      actions = '<button class="btn primary" type="button" data-action="shutdown" data-day="' + it.day + '"' + dis + '>Yes, log it</button>' +
+                '<button class="link" type="button" data-action="not-last" data-day="' + it.day + '">Not last night</button>';
+      break;
+    case 'preshift':
+      eyebrow = 'Bridge'; title = 'Standby';
+      body = 'Shift at 05:00. Nothing else is needed before you go.';
+      break;
+    case 'shift':
+      eyebrow = 'Off-ship'; title = 'On shift';
+      body = 'The ship keeps itself. Next up on the Deck at 14:00.';
+      break;
+    case 'debrief':
+      eyebrow = 'Bridge · Monday'; title = 'Debrief';
+      body = 'Fifteen minutes. Read the week, color the posters, log it, then send the report to the Operator.';
+      actions = '<button class="btn primary" type="button" data-action="tab" data-tab="debrief">Open debrief</button>' +
+                '<button class="link" type="button" data-action="skip" data-key="debrief-' + it.wk + '">Later today</button>';
+      break;
+    case 'node':
+      eyebrow = 'Bridge · Firewall node ' + it.index + ' of ' + it.total; title = 'Node ' + pad(it.index);
+      body = esc(it.node.text);
+      actions = '<button class="btn primary" type="button" data-action="node"' + dis + '>Node cleared</button>' +
+                '<button class="link" type="button" data-action="skip" data-key="node-' + esc(it.node.id) + '">Not now</button>';
+      break;
+    case 'supply':
+      eyebrow = 'Galley · weekly'; title = 'Supply Run';
+      body = 'Buy everything on the supply list on the fridge. Same list every week, nothing to decide.';
+      actions = '<button class="btn primary" type="button" data-action="supply"' + dis + '>Supply run done · +3</button>' +
+                '<button class="link" type="button" data-action="skip" data-key="supply-' + it.wk + '">Not now</button>';
+      break;
+    case 'eva':
+      eyebrow = 'Airlock'; title = 'EVA';
+      body = 'Gym, or a 10-minute walk. Both pay the same.';
+      actions = '<button class="btn primary" type="button" data-action="eva" data-variant="gym"' + dis + '>Gym</button>' +
+                '<button class="btn" type="button" data-action="eva" data-variant="walk"' + dis + '>10-min walk</button>' +
+                '<button class="link" type="button" data-action="skip" data-key="eva-' + today + '">Not now</button>';
+      break;
+    case 'clear':
+      eyebrow = 'All systems'; title = 'All clear';
+      body = it.evaOpen ? 'EVA is still open in the Log if you get to it. Low-Power Mode starts at 18:00.'
+                        : 'Nothing else until 18:00. Then Low-Power Mode: Loadout, and lights out by 19:15.';
+      break;
+    case 'loadout':
+      eyebrow = 'Airlock · ' + (it.late ? 'before bed' : 'Low-Power Mode'); title = 'Loadout';
+      body = 'Five minutes. Stage tomorrow, then you’re done.';
+      extra = '<ul class="checklist"><li><span>01</span>Bag at the door</li><li><span>02</span>Clothes out for tomorrow</li><li><span>03</span>Tomorrow’s food packed</li></ul>' +
+              '<p class="fine" style="margin-bottom:18px">Bad day: anything from the kitchen counts.</p>';
+      actions = '<button class="btn primary" type="button" data-action="loadout" data-day="' + it.day + '"' + dis + '>Loadout done</button>';
+      break;
+    case 'target': {
+      const mins = Math.max(0, Math.round((19.25 - hoursOf(now)) * 60));
+      eyebrow = 'Quarters · Low-Power Mode'; title = 'Shutdown';
+      extra = '<div class="led" aria-label="Lights out in ' + mins + ' minutes">' + pad(Math.floor(mins / 60)) + ':' + pad(mins % 60) + '</div>';
+      body = 'Until lights out at 19:15. Confirm it here tomorrow morning.';
+      break;
+    }
+    case 'lights':
+      eyebrow = 'Quarters'; title = 'Lights out';
+      body = it.early ? 'Sleep. Confirm Shutdown here when you wake.' : 'Confirm Shutdown here tomorrow morning.';
+      break;
+  }
+  const di = diffDays(today, S.ship.actStart || DEFAULT_SHIP.actStart);
+  const big = di < 0 ? pad(-di) : pad(Math.min(di + 1, 99));
+  const bigLabel = di < 0 ? 'Day' + (di === -1 ? '' : 's') + ' to launch<br>Act ' + pad(S.ship.act) : 'Day of Act ' + pad(S.ship.act) + '<br>of 28';
+  const boot = S.booted ? '' : ' boot';
+  const card = '<section class="frame' + boot + '" aria-labelledby="now-title">' +
+      '<div class="frame-head"><span>' + eyebrow + '</span><span class="tag">Now &gt;&gt;&gt;</span></div>' +
+      '<h1 class="ptitle" id="now-title">' + title + '</h1>' +
+      extra + '<p class="instr">' + body + '</p>' +
+      (actions ? '<div class="actions">' + actions + '</div>' : '') +
+    '</section>';
+  const tx = unreadComms() ? '<button class="tx-chip" type="button" data-action="tab" data-tab="debrief"><span>Incoming transmission</span><span>&gt;&gt;&gt;</span></button>' : '';
+  return '<div class="now-grid">' + card + '<aside class="side">' + dataCard(D, now) + timeline(now) + tx + '</aside></div>' +
+    '<div class="bigrow" aria-hidden="true"><span class="bign">' + big + '</span><span class="bigl">' + bigLabel + '</span></div>';
+}
+
+function renderLog(D, now){
+  const today = dayKey(now), yest = addDays(today, -1);
+  const dis = ready() ? '' : ' disabled';
+  const done = (e, label) => '<span class="done-tag">' + label + (e && e.reboot ? ' · ×2' : '') + '</span>';
+  const row = (name, meta, act) => '<div class="row"><div><div class="row-name">' + name + '</div><div class="row-meta">' + meta + '</div></div><div class="row-act">' + act + '</div></div>';
+  const b = D.byDay[today] || {}, by = D.byDay[yest] || {};
+  const eva = b.eva ? done(b.eva, b.eva.variant === 'walk' ? 'Walk logged' : 'Gym logged')
+    : '<button class="btn sm primary" type="button" data-action="eva" data-variant="gym"' + dis + '>Gym</button><button class="btn sm" type="button" data-action="eva" data-variant="walk"' + dis + '>Walk</button>';
+  const lo = b.loadout ? done(b.loadout, 'Logged') : '<button class="btn sm" type="button" data-action="loadout" data-day="' + today + '"' + dis + '>Log it</button>';
+  const sd = by.shutdown ? done(by.shutdown, 'Logged') : '<button class="btn sm" type="button" data-action="shutdown" data-day="' + yest + '"' + dis + '>Lights were out</button>';
+  const safe = b.safe ? done(b.safe, 'Used today') : '<button class="btn sm" type="button" data-action="safe">Open</button>';
+  const supE = D.map.get('supply-' + mondayOf(today));
+  const sup = supE ? done(supE, 'Done ' + fmtDay(supE.day)) : '<button class="btn sm" type="button" data-action="supply"' + dis + '>Done · +3</button>';
+  const st = (S.ship.stations || DEFAULT_SHIP.stations);
+  const onCount = st.filter(s => s.on).length;
+  const cf = S.ship.cachesFrom || DEFAULT_SHIP.cachesFrom;
+  return '' +
+    '<div class="sec"><div class="sec-h"><span>Today</span><i class="rule"></i><span>' + fmtDay(today) + '</span></div><div class="list">' +
+      row('EVA', 'Airlock · ' + PROTOCOLS.eva.floor, eva) +
+      row('Loadout', 'Airlock · ' + PROTOCOLS.loadout.floor, lo) +
+      row('Shutdown', 'Quarters · ' + PROTOCOLS.shutdown.floor + ' tonight', '<span class="later-tag">Confirm tomorrow</span>') +
+      row('Safe Mode', 'Anywhere · one action under 5 minutes', safe) +
+    '</div></div>' +
+    '<div class="sec"><div class="sec-h"><span>Last night</span><i class="rule"></i><span>' + fmtDay(yest) + '</span></div><div class="list">' +
+      row('Shutdown', 'Quarters · ' + PROTOCOLS.shutdown.floor, sd) +
+    '</div></div>' +
+    '<div class="sec"><div class="sec-h"><span>This week</span><i class="rule"></i><span>Week of ' + fmtDay(mondayOf(today)) + '</span></div><div class="list">' +
+      row('Supply Run', 'Galley · the supply list, once a week (Mon or Tue)', sup) +
+    '</div></div>' +
+    '<div class="sec"><div class="sec-h"><span>Stations</span><i class="rule"></i><span>Reactor · 3 daily + 1 weekly</span></div>' + timeline(now) + '<div class="stations">' +
+      st.map(s => '<div class="station' + (s.on ? '' : ' dark') + '"><div class="st-name">' + esc(s.name) + '</div><div class="st-room">' + esc(s.room) + (s.on ? ' · online' : ' · dark') + '</div><div class="st-holds">' + esc(s.holds || '') + '</div></div>').join('') +
+    '</div><p class="fine">' + onCount + ' of ' + st.length + ' stations online. Dark stations come online at an Act review. ' +
+      (today < cf ? 'Caches come online ' + fmtDay(cf) + '.' : 'Caches are online.') + '</p></div>';
+}
+
+function renderFirewall(D){
+  const fw = S.firewall;
+  if (!fw){
+    const linking = !S.firewallReady;
+    return '<div class="sec"><div class="sec-h"><span>Bridge</span><i class="rule"></i><span>Boss 01</span></div><h1 class="h2">The Firewall</h1><p class="instr">' +
+      (linking ? 'Linking to ship systems…' : 'No nodes loaded yet. The Operator uploads them at debrief.') + '</p></div>';
+  }
+  const nodes = Array.isArray(fw.nodes) ? fw.nodes : [];
+  const real = nodes.filter(n => !n.locked);
+  const cleared = real.filter(n => D.map.has(nodeId(fw, n))).length;
+  const cur = currentNode(D);
+  const dis = ready() ? '' : ' disabled';
+  let i = 0;
+  const tools = n => S.confirmRm === n.id
+    ? '<div class="node-tools"><button class="link" type="button" data-action="node-rm-yes" data-id="' + esc(n.id) + '"' + dis + '>Confirm remove</button><button class="link" type="button" data-action="node-rm-no">Keep it</button></div>'
+    : '<div class="node-tools"><button class="link" type="button" data-action="node-rm" data-id="' + esc(n.id) + '">Remove</button></div>';
+  const queued = openNodes(fw, D);
+  const canAdd = queued < MAX_QUEUE && ready();
+  const addForm = '<form class="addnode" id="addnode-form">' +
+    '<label for="newnode">Add a node</label>' +
+    '<div class="addrow"><input id="newnode" maxlength="140" autocomplete="off" enterkeyhint="done" placeholder="One step that ends where you’d ask “what now?”" value="' + esc(S.nodeDraft) + '"' + (canAdd ? '' : ' disabled') + '>' +
+    '<button class="btn primary sm" type="submit"' + (canAdd ? '' : ' disabled') + '>Add</button></div>' +
+    '<p class="fine">' + (queued < MAX_QUEUE ? queued + ' of ' + MAX_QUEUE + ' open slots used. Each node pays 1 cred when cleared.' : 'All ' + MAX_QUEUE + ' slots are full. Clear a node first, or put the idea in Cold Storage.') + '</p></form>';
+  const lis = nodes.map(n => {
+    if (n.locked){
+      return '<li class="node locked"><span class="nid">??</span><div class="nb"><div class="node-k">Locked</div><p>' + esc(n.text) + '</p>' + tools(n) + '</div></li>';
+    }
+    i++;
+    const e = D.map.get(nodeId(fw, n));
+    const isCur = !!(cur && cur.node.id === n.id);
+    const cls = e ? 'done' : isCur ? 'current' : 'next';
+    const k = e ? 'Cleared · ' + fmtDay(e.day) : isCur ? 'Current node' : 'Queued';
+    return '<li class="node ' + cls + '"><span class="nid">' + pad(i) + '</span><div class="nb"><div class="node-k">' + k + '</div><p>' + esc(n.text) + '</p>' +
+      (isCur ? '<button class="btn primary sm" type="button" data-action="node"' + dis + '>Node cleared · +1</button>' : '') + (e ? '' : tools(n)) + '</div></li>';
+  }).join('');
+  return '<div class="sec"><div class="sec-h"><span>Bridge · Boss ' + pad(fw.boss || 1) + '</span><i class="rule"></i><span>Breach = +5 cred · 1 cache</span></div>' +
+      '<div class="fw-top"><div><h1 class="h2">' + esc(fw.title || 'The Firewall') + '</h1>' +
+      '<p class="fw-cond">Breach condition: ' + esc(fw.condition || '') + '</p></div>' +
+      '<div class="fw-prog"><div class="n">' + cleared + '<small>/' + real.length + '</small></div><div class="k" style="color:var(--muted);margin-top:8px">Nodes cleared</div></div></div>' +
+      (fw.breached ? '<div class="breached">Breached · +5 cred and a cache</div>' : '') +
+    '</div>' +
+    '<ol class="nodes" style="margin-top:18px">' + lis + '</ol>' + addForm +
+    '<p class="fine" style="margin-top:14px">A node ends where you would have to stop and ask “what now?”. One boss at a time. Add nodes here, or the Operator adds them at debrief.</p>';
+}
+
+function renderMarket(D){
+  const items = S.market.items || [];
+  const dis = ready() ? '' : ' disabled';
+  const tierName = {small:'Small', medium:'Medium', large:'Large'};
+  const itemHtml = it => {
+    let act;
+    if (S.confirmBuy === it.id){
+      act = '<button class="btn primary sm" type="button" data-action="buy-yes" data-id="' + esc(it.id) + '"' + dis + '>Confirm · ' + it.price + ' cred</button>' +
+        (it.tier === 'medium' && D.vouchers > 0 ? '<button class="btn sm" type="button" data-action="buy-voucher" data-id="' + esc(it.id) + '"' + dis + '>Use voucher</button>' : '') +
+        '<button class="link" type="button" data-action="buy-no">Cancel</button>';
+    } else if (D.cred >= it.price || (it.tier === 'medium' && D.vouchers > 0)){
+      act = '<button class="btn sm sage" type="button" data-action="buy" data-id="' + esc(it.id) + '"' + dis + '>Buy</button>';
+    } else {
+      act = '<span class="later-tag">' + (it.price - D.cred) + ' cred to go</span>';
+    }
+    const pct = Math.max(0, Math.min(100, Math.round(D.cred / it.price * 100)));
+    return '<div class="item"><div class="item-top"><div><div class="k" style="color:var(--muted)">' + esc(tierName[it.tier] || it.tier) + '</div><div class="item-name">' + esc(it.name) + '</div></div>' +
+      '<div class="price">' + it.price + '<small>cred</small></div></div>' +
+      '<p class="item-desc">' + esc(it.desc) + '</p>' +
+      '<div class="meter-row"><div class="meter" role="img" aria-label="' + pct + '% of the price"><i style="width:' + pct + '%"></i></div><span class="k">' + pct + '%</span></div>' +
+      '<div class="item-act">' + act + '</div></div>';
+  };
+  const spends = D.list.filter(e => e.kind === 'spend').sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 8);
+  const hist = spends.length ? '<ul class="history">' + spends.map(s =>
+      '<li><span class="h-day">' + fmtDay(s.day) + '</span><span>' + esc(s.item && s.item.name) + (s.ref === 'implant' ? ' · installs at debrief' : '') + '</span><span class="h-amt">' + (s.voucher ? 'voucher' : (s.amount || 0)) + '</span></li>'
+    ).join('') + '</ul>' : '<p class="fine">Nothing bought yet.</p>';
+  return '<div class="sec"><div class="sec-h"><span>Black Market</span><i class="rule"></i><span>₡0 while Life Support is red</span></div>' +
+      '<div class="wallet"><div class="n">' + D.cred + '</div><div class="u"><b>◆ cred</b><span class="k" style="color:var(--muted)">available' + (D.vouchers > 0 ? ' · ' + D.vouchers + ' Medium voucher' : '') + '</span></div></div>' +
+      '<p class="fine">' + esc(S.market.note || DEFAULT_MARKET.note) + ' Cred buys the guilt-free version of things you’d do anyway.</p></div>' +
+    '<div class="sec"><div class="items">' + items.map(itemHtml).join('') + '</div></div>' +
+    '<div class="sec"><div class="sec-h"><span>Bought</span><i class="rule"></i><span>Last 8</span></div>' + hist +
+    '<p class="fine">Not for sale: sleeping in, skipping EVA, late nights, food delivery, and anything that costs real money while Life Support is red.</p></div>';
+}
+
+function weekStats(D, now){
+  const end = addDays(dayKey(now), -1), start = addDays(end, -6);
+  const days = []; for (let i = 0; i < 7; i++) days.push(addDays(start, i));
+  const c = {shutdown:0, eva:0, loadout:0, safe:0, gym:0, walk:0};
+  days.forEach(d => {
+    const b = D.byDay[d] || {};
+    ['shutdown','eva','loadout','safe'].forEach(k => { if (b[k]) c[k]++; });
+    if (b.eva){ if (b.eva.variant === 'walk') c.walk++; else c.gym++; }
+  });
+  const inWeek = e => e.day >= start && e.day <= end;
+  const nodes = D.list.filter(e => e.kind === 'node' && inWeek(e));
+  const supply = D.list.filter(e => e.kind === 'supply' && inWeek(e)).length;
+  let earned = 0, spent = 0; const bought = [];
+  D.list.filter(inWeek).forEach(e => {
+    const a = Number(e.amount) || 0;
+    if (a > 0) earned += a; if (a < 0) spent += -a;
+    if (e.kind === 'spend') bought.push(e);
+  });
+  return {start, end, days, c, nodes, supply, earned, spent, bought};
+}
+
+function reportText(D){
+  const now = new Date(), W = weekStats(D, now);
+  const fw = S.firewall;
+  const nodeName = e => { const n = fw && Array.isArray(fw.nodes) ? fw.nodes.find(x => x.id === e.ref) : null; return n ? n.text : e.ref; };
+  const today = dayKey(now);
+  const db = D.map.get('debrief-' + mondayOf(today));
+  const money = db && db.money != null ? db.money : (S.moneyDraft ? Number(S.moneyDraft) : null);
+  const food = db && db.food != null ? db.food : (S.foodDraft ? Number(S.foodDraft) : null);
+  const lines = [
+    S.ship.name.toUpperCase() + ' · DEBRIEF',
+    'Week: ' + fmtDay(W.start) + ' – ' + fmtDay(W.end),
+    'Shutdown ' + W.c.shutdown + '/7 · EVA ' + W.c.eva + '/7 (gym ' + W.c.gym + ', walk ' + W.c.walk + ') · Loadout ' + W.c.loadout + '/7 · Safe Mode ' + W.c.safe,
+    'Firewall nodes cleared: ' + W.nodes.length + (W.nodes.length ? ' (' + W.nodes.map(nodeName).join('; ') + ')' : ''),
+    'Cred: +' + W.earned + ' earned, −' + W.spent + ' spent · balance ' + D.cred + ' · XP ' + D.xp + ' · Lvl ' + D.level,
+    'Bought: ' + (W.bought.length ? W.bought.map(b => (b.item && b.item.name) + (b.voucher ? ' (voucher)' : ' (' + (-b.amount) + ')')).join(', ') : 'nothing'),
+    'Supply Run: ' + (W.supply ? 'done' : 'not done'),
+    'Money number: ' + (money != null && isFinite(money) ? crc(money) : 'not entered'),
+    'Food out (delivery + eating out): ' + (food != null && isFinite(food) ? crc(food) : 'not entered')
+  ];
+  return lines.join('\n');
+}
+
+function renderDebrief(D, now){
+  const today = dayKey(now);
+  const W = weekStats(D, now);
+  const logged = D.map.get('debrief-' + mondayOf(today));
+  const dis = ready() ? '' : ' disabled';
+  const barRow = (name, key) => '<div class="bar-row"><span class="bar-label">' + name + '</span><div class="days">' +
+      W.days.map(d => '<span class="day' + ((D.byDay[d] || {})[key] ? ' on' : '') + '"><i></i>' + DOW[parseDay(d).getDay()].slice(0, 2) + '</span>').join('') +
+    '</div><span class="bar-val">' + W.c[key] + '<span style="color:var(--muted);font-size:.6em">/7</span></span></div>';
+  const comms = S.comms ? '<section class="phosphor"><div class="ph-k"><span>Incoming transmission' + (S.comms.date ? ' · ' + esc(fmtDay(S.comms.date)) : '') + '</span>' + barcode(3, 56, 12) + '</div><div class="ph-title">' + esc(S.comms.title || '') + '</div><p class="ph-body">' + esc(S.comms.body || '') + '</p></section>' : '';
+  const gateWeek = W.c.shutdown >= 5;
+  return (comms ? '<div class="sec">' + comms + '</div>' : '') +
+    '<div class="sec"><div class="sec-h"><span>This week</span><i class="rule"></i><span>' + fmtDay(W.start) + ' – ' + fmtDay(W.end) + '</span></div>' +
+      '<div class="bars">' + barRow('Shutdown', 'shutdown') + barRow('EVA', 'eva') + barRow('Loadout', 'loadout') + barRow('Safe Mode', 'safe') + '</div>' +
+      '<dl class="nums"><div><dt>Nodes cleared</dt><dd>' + W.nodes.length + '</dd></div><div><dt>Supply run</dt><dd>' + (W.supply ? 'Done' : '—') + '</dd></div><div><dt>Cred earned</dt><dd>+' + W.earned + '</dd></div><div><dt>Cred spent</dt><dd>' + W.spent + '</dd></div><div><dt>Balance</dt><dd>' + D.cred + '</dd></div></dl></div>' +
+    '<div class="sec"><div class="sec-h"><span>Copy to the posters</span><i class="rule"></i><span>Highlighters</span></div><ul class="posters">' +
+      '<li><b>Quarters</b>Shutdown ' + W.c.shutdown + ' of 7 nights. Color that many cells. ' + (gateWeek ? 'That’s a gate week for the Crew meter.' : 'Gate weeks need 5.') + '</li>' +
+      '<li><b>Airlock</b>EVA ' + W.c.eva + ' of 7 days. Color that many cells in the EVA log.</li>' +
+      '<li><b>Bridge</b>Color ' + W.nodes.length + ' Firewall node' + (W.nodes.length === 1 ? '' : 's') + ', then move the Act marker.</li>' +
+      '<li><b>Galley</b>' + (W.supply ? 'Supply Run done. Color this week’s box.' : 'No Supply Run this week. A blank, no cost.') + '</li>' +
+    '</ul></div>' +
+    '<div class="sec"><div class="sec-h"><span>Debrief · Mondays · 15 min</span><i class="rule"></i><span>06 steps</span></div><ol class="steps">' +
+      '<li>Read the week above.</li><li>Color the posters.</li><li>Move the Act marker on the Bridge poster.</li>' +
+      '<li>Spend cred in the Black Market, if you want.</li><li>Enter the money number and the food-out number, then log the debrief.</li>' +
+      '<li>Copy the report and paste it to the Operator in chat. Patch notes and a transmission come back.</li>' +
+    '</ol></div>' +
+    '<div class="sec"><div class="fields">' +
+      '<div class="field"><label for="money">Money number · personal cash left until payday</label>' +
+      '<div class="money"><span>₡</span><input id="money" inputmode="numeric" autocomplete="off" placeholder="0" value="' + esc(logged && logged.money != null ? Number(logged.money).toLocaleString('en-US') : S.moneyDraft) + '"' + (logged ? ' disabled' : '') + '></div></div>' +
+      '<div class="field"><label for="food">Food out · delivery and eating out this week</label>' +
+      '<div class="money"><span>₡</span><input id="food" inputmode="numeric" autocomplete="off" placeholder="0" value="' + esc(logged && logged.food != null ? Number(logged.food).toLocaleString('en-US') : S.foodDraft) + '"' + (logged ? ' disabled' : '') + '></div></div>' +
+      '</div>' +
+      '<div class="actions" style="margin-top:6px">' +
+        (logged ? '<span class="done-tag">Debrief logged · ' + fmtDay(logged.day) + '</span>'
+                : '<button class="btn primary" type="button" data-action="debrief"' + dis + '>Log debrief · +3</button>') +
+        '<button class="btn" type="button" data-action="copy">Copy for the Operator</button>' +
+      '</div></div>' +
+    '<div class="sec"><div class="sec-h"><span>Deck</span><i class="rule"></i><span>Settings</span></div><div class="settings">' +
+      '<button class="btn sm" type="button" data-action="sound">Sound: ' + (ls.get('sound') === 'off' ? 'off' : 'on') + '</button>' +
+      '<button class="btn sm" type="button" data-action="sync">Sync now</button>' +
+      (S.confirmUnlink
+        ? '<button class="btn sm primary" type="button" data-action="unlink-yes">Confirm unlink</button><button class="link" type="button" data-action="unlink-no">Keep linked</button>'
+        : '<button class="btn sm" type="button" data-action="unlink">Unlink this device</button>') +
+      '<span class="fine">' + (S.syncError ? 'Can’t reach the ship’s log right now. Taps stay on this device and sync when it’s back.' : 'Saved to your ship’s log in Google Sheets. Syncs across your devices.') + '</span>' +
+    '</div></div>';
+}
+
+let lastMode = '';
+function render(){
+  const now = new Date();
+  const D = derive(allEntries());
+  const ph = phaseOf(now);
+  const mode = ph === 'day' ? 'day' : ph;
+  if (mode !== lastMode){ document.documentElement.setAttribute('data-mode', mode); lastMode = mode; }
+
+  const ae = document.activeElement; const fid = ae && ae.id;
+  let ss = null, se = null;
+  if (fid && ae.tagName === 'INPUT'){ try { ss = ae.selectionStart; se = ae.selectionEnd; } catch(e){} }
+
+  $('#hud').innerHTML = renderHud(D, now);
+  $('#tabs').innerHTML = renderTabs(D);
+  let html = '';
+  if (S.mode === 'unlinked') html = renderLink();
+  else if (S.tab === 'now') html = renderNow(D, now);
+  else if (S.tab === 'log') html = renderLog(D, now);
+  else if (S.tab === 'firewall') html = renderFirewall(D);
+  else if (S.tab === 'market') html = renderMarket(D);
+  else html = renderDebrief(D, now);
+  $('#main').innerHTML = html;
+
+  if (fid){
+    const el = document.getElementById(fid);
+    if (el && el !== document.activeElement){
+      el.focus({preventScroll:true});
+      if (ss != null) try { el.setSelectionRange(ss, se); } catch(e){}
+    }
+  }
+}
+
+/* ================= Events ================= */
+const handlers = {
+  tab(b){
+    S.tab = b.dataset.tab; S.confirmBuy = null;
+    if (S.tab === 'debrief' && S.comms && S.comms.id) ls.set('read', S.comms.id);
+    $('#main').scrollTop = 0; render();
+  },
+  shutdown(b){ logProtocol('shutdown', b.dataset.day); },
+  'not-last'(b){ ls.set('dismiss:night-' + b.dataset.day, '1'); sfx('soft'); toast('Blank night. No cost.'); render(); },
+  eva(b){ logProtocol('eva', dayKey(new Date()), b.dataset.variant); },
+  loadout(b){ logProtocol('loadout', b.dataset.day || dayKey(new Date())); },
+  skip(b){ S.skipped.add(b.dataset.key); sfx('soft'); render(); },
+  node(){ clearNode(); },
+  'node-rm'(b){ S.confirmRm = b.dataset.id; render(); },
+  'node-rm-yes'(b){ removeNode(b.dataset.id); },
+  'node-rm-no'(){ S.confirmRm = null; render(); },
+  cache(b){ openCacheManual(b.dataset.ent); },
+  safe(){ openSafe(); },
+  'safe-done'(){ const used = allEntries().has('safe-' + dayKey(new Date())); closeModal(); if (!used) logSafe(); else { sfx('soft'); toast('Logged. Good restart.'); } },
+  'close-modal'(){ closeModal(); },
+  buy(b){ S.confirmBuy = b.dataset.id; render(); },
+  'buy-yes'(b){ buy(b.dataset.id, false); },
+  'buy-voucher'(b){ buy(b.dataset.id, true); },
+  'buy-no'(){ S.confirmBuy = null; render(); },
+  debrief(){ completeDebrief(); },
+  supply(){ logSupply(); },
+  copy(){ copyReport(); },
+  sound(){ ls.set('sound', ls.get('sound') === 'off' ? 'on' : 'off'); render(); sfx('tap'); },
+  undo(){ undo(); },
+  fullscreen(){ toggleFs(); },
+  sync(){ syncNow().then(() => toast(S.syncError ? 'Still offline. Taps are safe on this device.' : 'Synced')); },
+  unlink(){ S.confirmUnlink = true; render(); },
+  'unlink-no'(){ S.confirmUnlink = false; render(); },
+  'unlink-yes'(){
+    Remote.clear(); pending = []; savePending();
+    try { localStorage.removeItem('errans:cache'); } catch(e){}
+    S.mode = 'unlinked'; S.ledgerReady = false; S.entries = new Map(); S.opt = new Map(); S.tomb = new Set();
+    S.confirmUnlink = false; S.tab = 'now'; render();
+  }
+};
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-action]');
+  if (!b || b.disabled) return;
+  const h = handlers[b.dataset.action];
+  if (h) h(b, e);
+});
+document.addEventListener('input', e => {
+  if (e.target && e.target.id === 'money'){
+    S.moneyDraft = e.target.value.replace(/[^\d]/g, '').slice(0, 9);
+  }
+  if (e.target && e.target.id === 'food'){
+    S.foodDraft = e.target.value.replace(/[^\d]/g, '').slice(0, 9);
+  }
+  if (e.target && e.target.id === 'newnode'){
+    S.nodeDraft = e.target.value.slice(0, 140);
+  }
+  if (e.target && e.target.id === 'linkurl'){
+    S.linkDraft = e.target.value.slice(0, 400);
+  }
+});
+document.addEventListener('submit', e => {
+  if (e.target && e.target.id === 'addnode-form'){ e.preventDefault(); addNode(); }
+  if (e.target && e.target.id === 'link-form'){ e.preventDefault(); linkShip(); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal').hidden) closeModal(); });
+
+/* Keep the iPad screen awake while the Deck is visible (best effort). */
+let wake = null;
+async function keepAwake(){
+  try {
+    if ('wakeLock' in navigator && !wake && document.visibilityState === 'visible'){
+      wake = await navigator.wakeLock.request('screen');
+      wake.addEventListener('release', () => { wake = null; });
+    }
+  } catch(e){}
+}
+document.addEventListener('pointerdown', () => { S.lastTouch = Date.now(); keepAwake(); }, {passive:true});
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible'){ keepAwake(); render(); syncNow(); } });
+window.addEventListener('online', () => syncNow());
+/* Pull changes from other devices (and patches from the Operator) every minute while open. */
+setInterval(() => { if (Remote.url && document.visibilityState === 'visible') syncNow(); }, 60000);
+
+/* Clock: refresh every 20 s; drift back to Now after 3 idle minutes. */
+setInterval(() => {
+  const typing = document.activeElement && document.activeElement.tagName === 'INPUT';
+  if (S.tab !== 'now' && !typing && $('#modal').hidden && Date.now() - S.lastTouch > 180000){ S.tab = 'now'; S.confirmBuy = null; }
+  if (typing){ const c = $('#clock'); if (c) c.textContent = hhmm(new Date()); }
+  else render();
+}, 20000);
+
+/* ================= Boot ================= */
+async function init(){
+  loadPending();
+  if (Remote.load()){
+    S.mode = 'remote';
+    try { const c = JSON.parse(ls.get('cache') || 'null'); if (c) applyState(c); } catch(e){}
+    render(); S.booted = true;
+    syncNow();
+  } else {
+    S.mode = 'unlinked';
+    render(); S.booted = true;
+  }
+}
+init();
+})();
+</script>
+</body>
+</html>
