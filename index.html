@@ -120,7 +120,7 @@ main{grid-area:main;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;-
 .pill:active{transform:translateY(1px)}
 
 /* ---------- Nav ---------- */
-.nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1.5px solid var(--line-2);margin-top:6px;margin-bottom:10px}
+.nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:1.5px solid var(--line-2);margin-top:6px;margin-bottom:10px}
 .tab{position:relative;background:transparent;border:0;border-left:1.5px solid var(--line-2);color:var(--muted);font:500 11px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;padding:17px 4px;cursor:pointer;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;justify-content:center;gap:6px}
 .tab:first-child{border-left:0}
 .tab .num{display:none}
@@ -375,6 +375,59 @@ button.ck-box[data-action="tab"]{color:var(--text);font-size:24px}
 .cell.rest{border-color:transparent;color:var(--line-2);font:500 13px/1 var(--font-mono)}
 .cell.pre{border-style:dotted;opacity:.3}
 .tab .tab-s{display:none}
+/* ---------- Slice 2: character sheet, mini sheet, phone cockpit ---------- */
+.mini{display:grid;gap:10px;width:100%;text-align:left;border:1.5px solid var(--text);background:var(--panel);color:var(--text);padding:12px 14px;cursor:pointer;font:inherit}
+.mini-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.mini-head .k{color:var(--muted)}
+.mini-lv{font:500 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mini-lv b{font:700 22px/1 var(--font-pixel);color:var(--sage);letter-spacing:0;margin-left:6px}
+.mini-rows{display:grid;gap:7px}
+.mini-r{display:grid;grid-template-columns:40px 28px minmax(0,1fr);gap:8px;align-items:center}
+.mini-s{font:500 11px/1 var(--font-mono);letter-spacing:.12em}
+.mini-l{font:700 13px/1 var(--font-pixel);color:var(--sage)}
+.mini-bar{height:8px;background:var(--panel-2);border:1px solid var(--line)}
+.mini-bar i{display:block;height:100%;background:var(--sage)}
+.mini-main{display:none}
+.char-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.char-lv{font:700 clamp(46px,9vw,84px)/.9 var(--font-pixel);color:var(--sage);text-transform:uppercase;margin-top:8px}
+.char-nums{display:flex;gap:22px;margin:0}
+.char-nums dt{font:500 10.5px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.char-nums dd{margin:8px 0 0;font:800 34px/.9 var(--font-grot);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.statc{border:1.5px solid var(--line-2);background:var(--panel);padding:14px 16px;display:grid;gap:10px;min-width:0}
+.statc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.statc-name{font:800 22px/1.05 var(--font-grot);letter-spacing:-.02em;color:var(--sage)}
+.statc-feed{font:500 10.5px/1.45 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+.statc-lv{text-align:right}
+.statc-lv .k{display:block;color:var(--muted)}
+.statc-lv b{font:700 40px/1 var(--font-pixel);color:var(--orange)}
+.statc-bar{height:12px;background:var(--panel-2);border:1px solid var(--line)}
+.statc-bar i{display:block;height:100%;background:var(--sage)}
+.statc-xp{display:flex;justify-content:space-between;gap:10px;font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.perks{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:0;border-top:1px solid var(--line)}
+.perk{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;padding:9px 0;border-bottom:1px solid var(--line);opacity:.45}
+.perk.on,.perk.next{opacity:1}
+.perk-lv{font:700 13px/1.3 var(--font-pixel);color:var(--muted)}
+.perk.on .perk-lv{color:var(--sage)}
+.perk.next .perk-lv{color:var(--orange)}
+.perk b{font:700 15px/1.25 var(--font-grot);display:block}
+.perk-fx{display:block;font:400 13.5px/1.4 var(--font-grot);color:var(--muted);margin-top:2px}
+.perk-tag{display:inline-block;margin-top:6px;font:500 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--orange)}
+.perk.on .perk-tag{color:var(--sage)}
+.cockpit{display:none}
+.cp-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.cp-name{display:flex;align-items:center;gap:8px;font:500 12px/1 var(--font-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--sage)}
+.cp-name .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--glow)}
+.cp-clock{font:400 30px/1 var(--font-time);color:var(--orange);text-shadow:0 0 14px var(--glow);font-variant-numeric:tabular-nums}
+.cp-stats{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:0;border:1.5px solid var(--line-2);align-items:stretch}
+.cp-stats > *{padding:9px 10px;border-left:1.5px solid var(--line-2);font:500 11px/1.1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap;min-width:0}
+.cp-stats > :first-child{border-left:0}
+.cp-stats b{font:800 17px/1 var(--font-grot);color:var(--text);letter-spacing:-.02em}
+.cp-cred{background:var(--orange);color:var(--on-orange)!important}
+.cp-cred b{color:var(--on-orange)}
+.cp-safe{background:transparent;border:0;border-left:1.5px solid var(--line-2);color:var(--orange)!important;cursor:pointer;font:inherit}
+.cp-chip{font:500 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--orange)}
+.pill.safe{padding:11px 16px}
 /* ---------- Toast & modal ---------- */
 .toast{position:absolute;left:0;right:0;bottom:84px;margin:0 auto;width:max-content;max-width:100%;z-index:80;display:flex;align-items:center;gap:14px;padding:11px 11px 11px 16px;background:var(--orange);color:var(--on-orange);font:500 12px/1.3 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .toast button{font:500 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--on-orange);background:transparent;border:1.5px solid var(--on-orange);padding:10px 12px;cursor:pointer}
@@ -416,7 +469,24 @@ button.ck-box[data-action="tab"]{color:var(--text);font-size:24px}
   .tab.on:hover{color:var(--orange)}
   .toast{bottom:24px}
 }
+@media (max-width:999px){
+  .mini-main{display:grid}
+  .side .mini{display:none}
+  .mini-main .mini-rows{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px 14px}
+  .mini-main .mini-r{grid-template-columns:1fr;gap:5px;text-align:center}
+  .mini-main .mini-s{font-size:10px;letter-spacing:.08em}
+}
 @media (max-width:560px){
+  /* iPhone: compact cockpit header, mini sheet as a strip under the meter, 6 text tabs */
+  .meta,.hud-main,.stats{display:none}
+  .cockpit{display:grid;gap:10px;padding-block:12px 12px;border-bottom:3px solid var(--sage)}
+  .bigrow{display:none}
+  main{padding-block:14px 22px}
+  .tab{padding:16px 2px}
+  .statgrid{grid-template-columns:minmax(0,1fr)}
+  .ck-row{gap:10px;padding:10px 12px}
+  .ck-name{font-size:18px}
+  .char-lv{font-size:52px}
   .stats{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr)}
   .stat-side{grid-column:1/-1;flex-direction:row;align-items:center}
   .tab{font-size:10px;letter-spacing:.06em}
@@ -513,6 +583,67 @@ const DEFAULT_TASKS = {
     {id:'trash',   name:'Trash',   stat:'Ship', start:'Tie the bag.'}
   ]
 };
+/* ================= Character: 5 stats, same-pace leveling, perks (Slice 2) ================= */
+const STATS = ['Body', 'Intelligence', 'Technical Ability', 'Ship', 'Money'];
+const STAT_SHORT = {'Body':'BOD', 'Intelligence':'INT', 'Technical Ability':'TEC', 'Ship':'SHP', 'Money':'MON'};
+const DEFAULT_PERKS = {
+  'Body': [
+    {lv:2, name:'Adrenal Kick',     fx:'On Workout days, your Good Day cache gets better odds.'},
+    {lv:3, name:'Second Wind',      fx:'Log Body tasks up to 2 days back.'},
+    {lv:4, name:'Field Medic',      fx:'Shore Leave costs 20% less.'},
+    {lv:5, name:'Reinforced Frame', fx:'Gear costs 15% less.'}],
+  'Intelligence': [
+    {lv:2, name:'Quick Study',         fx:'Log Growth on Sundays for Intelligence XP.'},
+    {lv:3, name:'Focus Protocol',      fx:'The timer gets a 25:00 option. It still logs at 2:00.'},
+    {lv:4, name:'Pattern Recognition', fx:'Debrief shows 4-week trends for every daily.'},
+    {lv:5, name:'Neural Discount',     fx:'Gaming and series cost 20% less.'}],
+  'Technical Ability': [
+    {lv:2, name:'Overtime', fx:'Log Business up to 2 days back.'},
+    {lv:3, name:'Uplink',   fx:'Clearing a gig gives double stat XP.'},
+    {lv:4, name:'Daemon',   fx:'Every 5th Business start drops a cache.'},
+    {lv:5, name:'Backdoor', fx:'One Booster per Act at half price.'}],
+  'Ship': [
+    {lv:2, name:'Clean Room',        fx:'Implants cost 20% less.'},
+    {lv:3, name:'Maintenance Drone', fx:'Log Ship tasks up to 2 days back.'},
+    {lv:4, name:'Hull Plating',      fx:'Cleaning a station on its suggested day rolls a cache.'},
+    {lv:5, name:'Shore Pass',        fx:'One free Shore Leave per Act.'}],
+  'Money': [
+    {lv:2, name:'Tax Break',   fx:'Your first Small item each week is free.'},
+    {lv:3, name:'Debt Relief', fx:'While you’re Owed, earnings pay it back 1.5× faster.'},
+    {lv:4, name:'Interest',    fx:'Every Monday, +1 cred per 20 you hold (max +5).'},
+    {lv:5, name:'Compound',    fx:'Interest improves to +1 per 15 held (max +8).'}]
+};
+const perksOf = s => ((S.tasks.perks && S.tasks.perks[s]) || DEFAULT_PERKS[s] || []);
+const sundayIds = () => Array.isArray(S.tasks.sunday) ? S.tasks.sunday : DEFAULT_TASKS.sunday;
+/* Same pace for every stat: a level is half the stat's weekly maximum (about 1 level a week at Good-Day pace), never less than 2.
+   Gigs and as-needed tasks feed stats but don't set the pace. */
+function statThresholds(){
+  const over = (S.tasks.rules && S.tasks.rules.statThreshold) || {};
+  const w = {}; STATS.forEach(s => { w[s] = 0; });
+  const sun = sundayIds();
+  roster('daily').forEach(t => { if (w[t.stat] != null) w[t.stat] += 6 + (sun.indexOf(t.id) >= 0 ? 1 : 0); });
+  roster('weekly').forEach(t => { if (w[t.stat] != null) w[t.stat] += 1; });
+  roster('monthly').forEach(t => { if (w[t.stat] != null) w[t.stat] += 12 / 52; });
+  const out = {};
+  STATS.forEach(s => { out[s] = over[s] || Math.max(2, Math.round(w[s] * 0.5)); });
+  return out;
+}
+function statOf(e, c){
+  if (e.stat) return e.stat;
+  if (c){ const t = task(c.cat, c.ref); if (t && t.stat) return t.stat; }
+  if (e.kind === 'node' && S.firewall && Array.isArray(S.firewall.nodes)){ const n = S.firewall.nodes.find(x => x.id === e.ref); if (n && n.stat) return n.stat; }
+  return null;
+}
+function statsFrom(xp){
+  const th = statThresholds(), stats = {};
+  let level = 1;
+  STATS.forEach(s => {
+    const L = 1 + Math.floor(xp[s] / th[s]);
+    stats[s] = {xp: xp[s], th: th[s], level: L, into: xp[s] % th[s]};
+    level += L - 1;
+  });
+  return {stats, level};
+}
 const CAT_NAME = {daily:'Daily', weekly:'Weekly', monthly:'Monthly', asneeded:'As needed'};
 const SLOT_GROUP = {morning:'Morning', midday:'Midday', afternoon:'Afternoon', evening:'Evening', night:'Evening'};
 const SAFE_ACTIONS = [
@@ -525,7 +656,7 @@ const SAFE_ACTIONS = [
 ];
 const SHIFT_DAYS = [2,3,4,5,6]; // Tue–Sat, 05:00–14:00 · off Sun (rest) and Mon
 const TIMER_MS = 120000;        // the two-minute start
-const TABS = [['now','HUD'],['log','Datalog'],['firewall','Gigs'],['market','Black Market','Market'],['debrief','Debrief']]; // [id, label, short label for phones]
+const TABS = [['now','HUD'],['log','Datalog','Log'],['char','Character','Char'],['firewall','Gigs'],['market','Black Market','Shop'],['debrief','Debrief','Dbrf']]; // [id, label, short label for phones]
 
 /* ================= Helpers ================= */
 const $ = s => document.querySelector(s);
@@ -638,10 +769,10 @@ function dayList(d){
   const sun = Array.isArray(S.tasks.sunday) ? S.tasks.sunday : DEFAULT_TASKS.sunday;
   return sun.filter(id => all.indexOf(id) >= 0);
 }
-function verdictOf(idx, d){
+function verdictOf(idx, d, safe){
   const ids = dayList(d), b = idx.daily[d] || {};
   const n = ids.filter(id => b[id]).length, need = Math.max(1, Math.ceil(ids.length / 2));
-  return {n: n, need: need, total: ids.length, state: n >= need ? 'good' : n > 0 ? 'floor' : 'blank'};
+  return {n: n, need: need, total: ids.length, state: n >= need ? 'good' : (n > 0 || (safe && safe[d])) ? 'floor' : 'blank', safe: !!(safe && safe[d])};
 }
 /* Everything shown is computed from the ledger. The trial run (before the Act started, or marked archived) is kept but never counted.
    Cred = what your days paid (Good 5 · Floor 1) + caches − spending. Task taps themselves carry no cred. */
@@ -650,6 +781,7 @@ function derive(map){
   const list = [];
   for (const [id, e] of map) list.push(Object.assign({id: id}, e));
   let cred = 0, vouchers = 0, usedV = 0;
+  const xp = {}; STATS.forEach(st => { xp[st] = 0; });
   const idx = {daily:{}, weekly:{}, monthly:{}, asneeded:{}}, safe = {}, opened = new Set(), ent = [];
   for (const e of list){
     const trial = !!e.archived || !!(e.day && e.day < act0);
@@ -660,6 +792,7 @@ function derive(map){
       const b = idx[c.cat][c.key] || (idx[c.cat][c.key] = {});
       if (!b[c.ref]) b[c.ref] = e;
     }
+    if (c || e.kind === 'node'){ const st = statOf(e, c); if (st && xp[st] != null) xp[st] += e.double ? 2 : 1; }
     if (e.kind === 'safe' && e.day) safe[e.day] = e;
     if (e.kind === 'cache'){ opened.add(e.ref); if (e.voucher) vouchers++; }
     if (e.kind === 'spend' && e.voucher) usedV++;
@@ -667,19 +800,21 @@ function derive(map){
   const verdict = {}; let good = 0, floor = 0;
   const cf = S.ship.cachesFrom || act0;
   for (let d = act0; d <= today; d = addDays(d, 1)){
-    const v = verdictOf(idx, d); verdict[d] = v;
+    const v = verdictOf(idx, d, safe); verdict[d] = v;
     if (v.state === 'good'){ cred += DP.good; good++; if (d >= cf) ent.push('day-' + d); }
     else if (v.state === 'floor'){ cred += DP.floor; floor++; }
   }
+  const SL = statsFrom(xp);
   return {
     map, list, cred, idx, safe, verdict, good, floor, act0,
+    stats: SL.stats, level: SL.level,
     vouchers: vouchers - usedV,
     unopened: ent.filter(x => !opened.has(x))
   };
 }
 const gotE = (D, cat, key, id) => (D.idx[cat][key] || {})[id] || null;
 const got = (D, cat, key, id) => !!gotE(D, cat, key, id);
-const verdictFor = (D, d) => D.verdict[d] || verdictOf(D.idx, d);
+const verdictFor = (D, d) => D.verdict[d] || verdictOf(D.idx, d, D.safe);
 const dailyCount = (D, day) => verdictFor(D, day).n;
 const reviewDay = () => addDays(S.ship.actStart || DEFAULT_SHIP.actStart, 28);
 const showFromOf = t => !t.showFrom ? null : (t.showFrom === 'act-review' ? reviewDay() : t.showFrom);
@@ -866,13 +1001,16 @@ async function commit(writes, label){
   busy = false;
   let suffix = '';
   const DP = DAYPAY();
-  const days = writes.map(w => w[1] && w[1].kind === 'daily' ? w[1].day : null).filter(Boolean);
+  const days = writes.map(w => w[1] && (w[1].kind === 'daily' || w[1].kind === 'safe') ? w[1].day : null).filter(Boolean);
   for (const d of days){
     const a = (D0.verdict[d] || {}).state, b = (D1a.verdict[d] || {}).state;
     if (b === 'good' && a !== 'good') suffix = ' · Good Day · ' + DP.good + ' cred';
     else if (b === 'floor' && a === 'blank') suffix = ' · Day started · ' + DP.floor + ' cred';
   }
-  if (reveals.length) showCache(reveals[0], null);
+  const D1 = derive(temp);
+  const ups = STATS.filter(st => D1.stats[st].level > D0.stats[st].level).map(st => ({stat: st, level: D1.stats[st].level}));
+  if (reveals.length) showCache(reveals[0], ups.length ? ups.map(u => u.stat + ' reached L' + u.level).join(' · ') + ' · You’re Level ' + pad(D1.level) : null);
+  else if (ups.length) showStatUp(ups, D1.level);
   else sfx(/Good Day/.test(suffix) ? 'level' : 'tap');
   toast(label + suffix, created);
   render();
@@ -910,6 +1048,12 @@ function logTask(cat, tid, day, viaTimer, variant){
   if (S.timer && S.timer.cat === cat && S.timer.id === tid) S.timer = null;
   commit([[id, e]], 'Logged · ' + t.name + (variant ? ' · ' + variant : '') + (cat === 'daily' && day !== today ? ' · ' + fmtDay(day) : '') + (viaTimer ? ' · 2:00 done' : ''));
 }
+/* Safe Mode: one action under 5 minutes. Makes the day a Floor Day if nothing else is logged; never counts toward a Good Day. */
+function logSafe(){
+  const day = dayKey(new Date()), id = 'safe-' + day;
+  if (allEntries().has(id)) return;
+  commit([[id, {kind:'safe', ref:'safe', day, at:new Date().toISOString(), amount:0}]], 'Safe Mode logged');
+}
 /* Workout asks which variant before it logs or starts the timer. */
 function askVariant(cat, id, day, mode){
   const t = task(cat, id); if (!t) return;
@@ -940,7 +1084,7 @@ function openCacheManual(ent){
     const temp = new Map(allEntries()); temp.set(pair[0], pair[1]);
     const D1 = derive(temp);
     busy = false;
-    showCache(pair[1], D1.level > D0.level ? D1.level : null);
+    showCache(pair[1], null);
     render();
   }).catch(err => { busy = false; failToast(err); });
 }
@@ -1063,7 +1207,7 @@ function showCache(ce, newLevel){
     big:    ['+' + ce.amount + ' cred', 'A good haul.', 'cache'],
     jackpot:['Jackpot', 'One free Small item from the Black Market, saved as a voucher.', 'jackpot']
   }[ce.result] || ['Cache', '', 'cache'];
-  const lvl = newLevel ? '<p class="ph-body" style="margin-top:12px">Level ' + newLevel + ' reached.</p>' : '';
+  const lvl = newLevel ? '<p class="ph-body" style="margin-top:12px">' + esc(newLevel) + '</p>' : '';
   openModal(
     '<section class="phosphor"><div class="ph-k">Cargo hold · cache</div>' +
     '<div class="cache-code" id="cache-code">' + hex() + '</div>' +
@@ -1100,7 +1244,7 @@ function openSafe(){
     '<p class="instr">' + esc(SAFE_ACTIONS[idx]) + '</p>' +
     '<div class="actions"><button class="btn primary" type="button" data-action="safe-done" data-focus' + (ready() ? '' : ' disabled') + '>Done</button>' +
     '<button class="link" type="button" data-action="close-modal">Close</button></div>' +
-    '<p class="fine" style="margin-top:14px">' + (used ? 'Already logged today. Doing it again still counts for you.' : 'Pays 1 cred and makes today a floor day.') + '</p></section>'
+    '<p class="fine" style="margin-top:14px">' + (used ? 'Already logged today. Doing it again still counts for you.' : 'Makes today a Floor Day if nothing else is logged. It never counts toward a Good Day.') + '</p></section>'
   );
 }
 function copyReport(){
@@ -1179,8 +1323,14 @@ function renderHud(D, now){
       '<div class="stat"><div class="lvl-row"><span class="k">Good Days · Act ' + pad(S.ship.act) + '</span><span class="v">' + pad(D.good) + '</span></div>' +
         '<div class="segbar s20" role="img" aria-label="' + D.good + ' Good Days. Clear at 14, two stars at 17, three at 20">' + segs + '</div>' +
         '<span class="k">Clear 14 · ★★ 17 · ★★★ 20' + stars + '</span></div>' +
-      '<div class="stat stat-side">' + (chips.length ? '<div class="chips">' + chips.join('') + '</div>' : '<span></span>') + '</div>' +
-    '</div>';
+      '<div class="stat stat-side">' + (chips.length ? '<div class="chips">' + chips.join('') + '</div>' : '<span></span>') + '<button class="pill safe" type="button" data-action="safe">Safe Mode</button></div>' +
+    '</div>' +
+    '<div class="cockpit"><div class="cp-top"><span class="cp-name"><i class="dot" aria-hidden="true"></i>' + esc(S.ship.name) + '</span>' +
+      (chips.length ? '<span class="cp-chip">' + chips.map(c => c.replace(/<[^>]+>/g, '')).join(' · ') + '</span>' : '') +
+      '<span class="cp-clock">' + hhmm(now) + '</span></div>' +
+      '<div class="cp-stats"><span class="cp-cred">◆ <b>' + D.cred + '</b></span><span>Good Days <b>' + pad(D.good) + '</b>/14</span>' +
+      '<span>D<b>' + Math.max(1, Math.min(diffDays(today, act0) + 1, 28)) + '</b>/28</span>' +
+      '<button class="cp-safe" type="button" data-action="safe">Safe</button></div></div>';
 }
 
 function renderNow(D, now){
@@ -1223,7 +1373,7 @@ function renderNow(D, now){
   /* Live meter */
   let cells = '';
   for (let i = 1; i <= v.total; i++) cells += '<i class="' + (i <= v.n ? 'on' : '') + (i === v.need ? ' need' : '') + '"></i>';
-  const meterLabel = v.state === 'good' ? 'Good Day ✓ · ' + v.n + ' of ' + v.total : v.n + ' of ' + v.need + ' for a Good Day';
+  const meterLabel = v.state === 'good' ? 'Good Day ✓ · ' + v.n + ' of ' + v.total : (v.n === 0 && v.safe) ? 'Floor Day · Safe Mode' : v.n + ' of ' + v.need + ' for a Good Day';
   const meter = '<div class="gd"><div class="gd-top"><span class="k">' + (dow === 0 ? 'Sunday · rest day · basics only' : 'Today') + '</span><span class="gd-n' + (v.state === 'good' ? ' ok' : '') + '">' + esc(meterLabel) + '</span></div>' +
     '<div class="gd-bar" style="--n:' + Math.max(1, v.total) + '">' + cells + '</div></div>';
   /* Today's checklist, grouped by time of day */
@@ -1259,13 +1409,64 @@ function renderNow(D, now){
     '<div class="ck-act">' + (t.tab ? '' : '<button class="btn sm" type="button" data-action="timer" data-cat="' + cat + '" data-id="' + esc(t.id) + '"' + dis + '>2:00</button>') + '</div></div>';
   const dueHtml = due.length ? '<div class="sec"><div class="sec-h"><span>Due today</span><i class="rule"></i><span>Weekly · monthly</span></div><div class="ck">' + due.map(dueRow).join('') + '</div></div>' : '';
 
-  const main = out.join('') + meter + '<div class="ck">' + groups + '</div>' + dueHtml;
+  const main = out.join('') + meter + miniSheet(D, 'main') + '<div class="ck">' + groups + '</div>' + dueHtml;
   const tx = unreadComms() ? '<button class="tx-chip" type="button" data-action="tab" data-tab="debrief"><span>Incoming transmission</span><span>&gt;&gt;&gt;</span></button>' : '';
   const di = diffDays(today, act0);
   const big = di < 0 ? pad(-di) : pad(Math.min(di + 1, 99));
   const bigLabel = di < 0 ? 'Days to launch<br>Act ' + pad(S.ship.act) : 'Day of Act ' + pad(S.ship.act) + '<br>of 28';
-  return '<div class="now-grid"><div class="hud-col' + (S.booted ? '' : ' boot') + '">' + main + '</div><aside class="side">' + timeline(now) + tx + '</aside></div>' +
+  return '<div class="now-grid"><div class="hud-col' + (S.booted ? '' : ' boot') + '">' + main + '</div><aside class="side">' + miniSheet(D, 'side') + timeline(now) + tx + '</aside></div>' +
     '<div class="bigrow" aria-hidden="true"><span class="bign">' + big + '</span><span class="bigl">' + bigLabel + '</span></div>';
+}
+
+/* ================= Character sheet ================= */
+function miniSheet(D, where){
+  const rows = STATS.map(s => {
+    const st = D.stats[s], pct = Math.round(st.into / st.th * 100);
+    return '<div class="mini-r"><span class="mini-s">' + STAT_SHORT[s] + '</span><span class="mini-l">L' + st.level + '</span>' +
+      '<span class="mini-bar" role="img" aria-label="' + esc(s) + ' level ' + st.level + ', ' + st.into + ' of ' + st.th + ' to the next"><i style="width:' + pct + '%"></i></span></div>';
+  }).join('');
+  return '<button class="mini mini-' + where + '" type="button" data-action="tab" data-tab="char" aria-label="Open the character sheet">' +
+    '<span class="mini-head"><span class="k">Character</span><span class="mini-lv">Level <b>' + pad(D.level) + '</b></span></span>' +
+    '<span class="mini-rows">' + rows + '</span></button>';
+}
+function renderChar(D, now){
+  const today = dayKey(now);
+  const feeds = s => {
+    const names = [];
+    ['daily','weekly','monthly','asneeded'].forEach(cat => roster(cat).forEach(t => { if (t.stat === s) names.push(t.name); }));
+    if (S.firewall && Array.isArray(S.firewall.nodes) && S.firewall.nodes.some(n => n.stat === s)) names.push('gigs');
+    return names.join(' · ');
+  };
+  const starts = STATS.reduce((a, s) => a + D.stats[s].xp, 0);
+  const card = s => {
+    const st = D.stats[s], pct = Math.round(st.into / st.th * 100);
+    const perks = perksOf(s).map(p => {
+      const on = st.level >= p.lv, next = !on && p.lv === st.level + 1;
+      return '<li class="perk' + (on ? ' on' : next ? ' next' : '') + '"><span class="perk-lv">L' + p.lv + '</span><span><b>' + esc(p.name) + '</b>' +
+        '<span class="perk-fx">' + esc(p.fx) + '</span>' + (on ? '<span class="perk-tag">Unlocked · switches on next build</span>' : next ? '<span class="perk-tag">Next</span>' : '') + '</span></li>';
+    }).join('');
+    return '<section class="statc"><div class="statc-top"><div><div class="statc-name">' + esc(s) + '</div><div class="statc-feed">' + esc(feeds(s)) + '</div></div>' +
+      '<div class="statc-lv"><span class="k">Level</span><b>' + st.level + '</b></div></div>' +
+      '<div class="statc-bar"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="statc-xp"><span>' + st.into + ' / ' + st.th + ' starts to L' + (st.level + 1) + '</span><span>' + st.xp + ' total</span></div>' +
+      '<ol class="perks">' + perks + '</ol></section>';
+  };
+  return '<div class="sec"><div class="sec-h"><span>Character · Act ' + pad(S.ship.act) + '</span><i class="rule"></i><span>' + esc(fmtDay(today)) + '</span></div>' +
+      '<div class="char-hero"><div><div class="k" style="color:var(--muted)">Your level</div><div class="char-lv">Level ' + pad(D.level) + '</div></div>' +
+      '<dl class="char-nums"><div><dt>Starts this Act</dt><dd>' + starts + '</dd></div><div><dt>Good Days</dt><dd>' + D.good + '</dd></div></dl></div>' +
+      '<p class="fine">Every start feeds one stat. Each stat levels about once a week at Good-Day pace, so Money keeps up with Body. Your level goes up by one with every stat level gained.</p></div>' +
+    '<div class="sec"><div class="statgrid">' + STATS.map(card).join('') + '</div>' +
+      '<p class="fine">Perks never touch the Good Day count or the Act conditions. Unlocked perks start working in the next build.</p></div>';
+}
+function showStatUp(ups, level){
+  sfx('level');
+  const u = ups[0], p = perksOf(u.stat).find(x => x.lv === u.level);
+  openModal('<section class="frame"><div class="frame-head"><span>Level up · ' + esc(u.stat) + '</span><span class="tag">LVL &gt;&gt;&gt;</span></div>' +
+    '<h2 class="ptitle reveal">' + esc(STAT_SHORT[u.stat]) + ' L' + u.level + '</h2>' +
+    (p ? '<p class="instr"><b>Perk unlocked: ' + esc(p.name) + '.</b> ' + esc(p.fx) + '</p>' : '<p class="instr">' + esc(u.stat) + ' is now level ' + u.level + '.</p>') +
+    (ups.length > 1 ? '<p class="fine" style="margin-top:10px">Also: ' + ups.slice(1).map(x => esc(x.stat) + ' L' + x.level).join(', ') + '.</p>' : '') +
+    '<p class="fine" style="margin-top:12px">You’re now Level ' + pad(level) + '.</p>' +
+    '<div class="actions"><button class="btn primary" type="button" data-action="close-modal">Continue</button></div></section>');
 }
 
 function renderTabs(D){
@@ -1502,6 +1703,7 @@ function reportText(D){
   const lines = [
     S.ship.name.toUpperCase() + ' · DEBRIEF · Act ' + pad(S.ship.act) + ' · Deck v2 · Slice 1',
     'Days: Good ' + W.good + ' · Floor ' + W.floorN + ' · Act 1 Good Days so far ' + D.good,
+    'Level ' + pad(D.level) + ' · ' + STATS.map(st => STAT_SHORT[st] + ' L' + D.stats[st].level + ' (' + D.stats[st].xp + ')').join(' · '),
     'Week: ' + fmtDay(W.start) + ' – ' + fmtDay(W.end),
     'Daily (of 7): ' + roster('daily').map(t => t.name + ' ' + W.c[t.id]).join(' · '),
     'Weekly: ' + W.weekly.map(x => x.t.name + ' ' + (x.e ? 'done' : '—')).join(' · '),
@@ -1587,6 +1789,7 @@ function render(){
   if (S.mode === 'unlinked') html = renderLink();
   else if (S.tab === 'now') html = renderNow(D, now);
   else if (S.tab === 'log') html = renderLog(D, now);
+  else if (S.tab === 'char') html = renderChar(D, now);
   else if (S.tab === 'firewall') html = renderFirewall(D);
   else if (S.tab === 'market') html = renderMarket(D);
   else html = renderDebrief(D, now);
@@ -1629,7 +1832,7 @@ const handlers = {
   'node-rm-no'(){ S.confirmRm = null; render(); },
   cache(b){ openCacheManual(b.dataset.ent); },
   safe(){ openSafe(); },
-  'safe-done'(){ closeModal(); },
+  'safe-done'(){ const used = allEntries().has('safe-' + dayKey(new Date())); closeModal(); if (!used) logSafe(); else { sfx('soft'); toast('Logged. Good restart.'); } },
   'close-modal'(){ closeModal(); },
   buy(b){ S.confirmBuy = b.dataset.id; render(); },
   'buy-yes'(b){ buy(b.dataset.id, false); },
