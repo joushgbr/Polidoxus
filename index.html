@@ -329,6 +329,52 @@ button.cell:active{transform:translateY(1px)}
 .assist b{font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);white-space:nowrap}
 .frame .assist{margin-top:14px;font-size:13px}
 .node-tools{flex-wrap:wrap}
+/* ---------- HUD (Slice 1): live meter, checklist, banners, the 19:00 stamp ---------- */
+.hud-col{display:grid;gap:14px;min-width:0;align-content:start}
+.gd{display:grid;gap:10px;border:1.5px solid var(--text);background:var(--panel);padding:14px 16px}
+.gd-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.gd-top .k{color:var(--muted)}
+.gd-n{font:800 clamp(20px,2.6vw,26px)/1 var(--font-grot);letter-spacing:-.02em;color:var(--text)}
+.gd-n.ok{color:var(--sage)}
+.gd-bar{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:4px}
+.gd-bar i{height:14px;border:1.5px solid var(--line-2)}
+.gd-bar i.on{background:var(--sage);border-color:var(--sage)}
+.gd-bar i.need{border-color:var(--orange)}
+.gd-bar i.on.need{box-shadow:inset 0 0 0 2px var(--orange)}
+.ck{border:1.5px solid var(--line-2);background:var(--panel)}
+.ck-g{padding:10px 14px 6px;font:500 10.5px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line)}
+.ck > .ck-g:first-child{border-top:0}
+.ck-row{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}
+.ck > .ck-row:first-child{border-top:0}
+.ck-g + .ck-row{border-top:0}
+.ck-box{width:44px;height:44px;border:1.5px solid var(--text);background:transparent;display:grid;place-items:center;color:var(--on-sage);font:800 20px/1 var(--font-grot);padding:0;cursor:pointer}
+button.ck-box:active{transform:translateY(1px)}
+.ck-box.on{background:var(--sage);border-color:var(--sage);cursor:default}
+.ck-box.wait{border-style:dashed;border-color:var(--line-2);cursor:default}
+button.ck-box[data-action="tab"]{color:var(--text);font-size:24px}
+.ck-row.next{box-shadow:inset 3px 0 0 var(--orange)}
+.ck-row.next .ck-box{border-color:var(--orange)}
+.ck-txt{min-width:0}
+.ck-name{font:700 19px/1.15 var(--font-grot);letter-spacing:-.015em}
+.ck-row.done .ck-name{color:var(--muted)}
+.ck-meta{font:500 10.5px/1.4 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.ck-act{display:flex;gap:8px;align-items:center}
+.ck-time{font:500 11px/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--sage);white-space:nowrap}
+.next-tag{font:500 10px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--on-orange);background:var(--orange);padding:4px 6px 3px;vertical-align:3px;margin-left:6px}
+.banner{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1.5px solid var(--orange);padding:12px 14px;font:500 16px/1.3 var(--font-grot)}
+.banner b{display:block;font:500 10.5px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--orange);margin-bottom:6px}
+.banner-act{display:flex;gap:10px;align-items:center}
+.stamp{border:3px solid var(--sage);padding:16px 18px;display:grid;gap:8px}
+.stamp.floor{border-color:var(--line-2)}
+.stamp .k{color:var(--muted)}
+.stamp-t{font:700 clamp(40px,7vw,72px)/.9 var(--font-pixel);text-transform:uppercase;color:var(--sage)}
+.stamp.floor .stamp-t{color:var(--text)}
+.stamp p{margin:0;font:400 17px/1.4 var(--font-grot)}
+.segbar.s20{grid-template-columns:repeat(20,minmax(0,1fr));gap:2px}
+.segbar i.mark{border-color:var(--orange)}
+.cell.rest{border-color:transparent;color:var(--line-2);font:500 13px/1 var(--font-mono)}
+.cell.pre{border-style:dotted;opacity:.3}
+.tab .tab-s{display:none}
 /* ---------- Toast & modal ---------- */
 .toast{position:absolute;left:0;right:0;bottom:84px;margin:0 auto;width:max-content;max-width:100%;z-index:80;display:flex;align-items:center;gap:14px;padding:11px 11px 11px 16px;background:var(--orange);color:var(--on-orange);font:500 12px/1.3 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .toast button{font:500 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--on-orange);background:transparent;border:1.5px solid var(--on-orange);padding:10px 12px;cursor:pointer}
@@ -382,6 +428,8 @@ button.cell:active{transform:translateY(1px)}
   .fw-top{grid-template-columns:minmax(0,1fr)}
   .fw-prog{text-align:left}
   .btn{padding:0 18px}
+  .tab .tab-l{display:none}
+  .tab .tab-s{display:inline}
   .wk-row{grid-template-columns:minmax(0,1fr) 46px}
   .rows3{grid-template-columns:minmax(0,1fr) auto}
   .wk-row > .cells,.rows3 > .cells,.rows3 > .wk-floor{grid-column:1/-1;order:3}
@@ -404,64 +452,69 @@ button.cell:active{transform:translateY(1px)}
 (function(){
 'use strict';
 
-/* ================= Rules (Deck v2 · from the rulebook) ================= */
+/* ================= Rules (v2 spec, locked Nov 2 2026 · Slice 1) ================= */
 const DEFAULT_SHIP = {
   name: 'Polidoxus',
   motto: 'Nec festinans nec cessans',
   act: 1,
   actName: 'Cold Start',
-  actStart: '2026-10-19',
-  cachesFrom: '2026-10-26'
+  actStart: '2026-11-02',
+  cachesFrom: '2026-11-02'
 };
 const DEFAULT_MARKET = {
-  note: 'Life Support is red, so everything here costs ₡0 in real money.',
+  note: 'Free lane only for now. The ₡ lane (snacks, takeout, meal out, gear) opens once the budget sets a treat line.',
   items: [
-    {id:'downtime',    tier:'small',  price:15,  name:'Downtime',    desc:'One extra hour of gaming or series, guilt-free.'},
-    {id:'deep-dive',   tier:'medium', price:40,  name:'Deep Dive',   desc:'One timed hour on the Side Quest. Use it before 18:00.'},
-    {id:'shore-leave', tier:'medium', price:40,  name:'Shore Leave', desc:'A free outing on an off day.'},
-    {id:'implant',     tier:'large',  price:150, name:'Implant',     desc:'An upgrade to this Deck, your pick. The Operator installs it at debrief.'}
+    {id:'screen-hour', tier:'small',  price:10, name:'Screen Hour', desc:'One hour of gaming or series.'},
+    {id:'marathon',    tier:'medium', price:30, name:'Marathon',    desc:'A three-hour gaming or series block.'},
+    {id:'shore-leave', tier:'medium', price:30, name:'Shore Leave', desc:'A free outing: a hike, a park, a free museum day.'},
+    {id:'implant',     tier:'large',  price:80, name:'Implant',     desc:'A Deck feature of your choice. The Operator builds it at the next debrief.'}
   ]
 };
-/* Placeholder until the ship's log loads. Real nodes live in your Google Sheet, never in this public file. */
-const FALLBACK_FIREWALL = {boss: 1, title: 'The Firewall', breached: false, condition: '', nodes: []};
-/* The task roster for the current Act. Every task is a two-minute start: starting is the whole job.
+/* Placeholder until the ship's log loads. Real gigs live in your Google Sheet, never in this public file. */
+const FALLBACK_FIREWALL = {boss: 1, title: 'Gigs', breached: false, condition: '', nodes: []};
+/* The task roster for the current Act. Every task is a two-minute start: a tap means "I started".
+   Cred comes from days, not tasks: a Good Day (50%+ of the day's dailies) pays 5, a Floor Day pays 1.
    The real roster lives in your Google Sheet (config → tasks), where the Operator patches it; this generic one is only a fallback.
-   slot = when Now offers a daily: wake · morning · midday · day · low (18:00) · night (19:00). */
+   slot = where a daily sits on the HUD: morning · midday · afternoon · evening · night (lights out). */
 const DEFAULT_TASKS = {
   act: 1,
-  rules: {xpPerLevel: 60, cacheAt: 6, maxQueue: 10, breach: 15},
-  pay: {daily: 1, weekly: 3, monthly: 5, asneeded: 2, oneoff: 5},
+  rules: {maxQueue: 10},
+  dayPay: {good: 5, floor: 1},
+  pay: {daily: 0, weekly: 0, monthly: 0, asneeded: 0, oneoff: 0},
+  sunday: ['breakfast', 'lunch', 'lights'],
   daily: [
-    {id:'wake',      name:'Wake',       station:'Quarters', slot:'wake',    when:'04:00',     start:'Feet on the floor by 04:00. Lights on.'},
-    {id:'breakfast', name:'Breakfast',  station:'Galley',   slot:'morning', when:'Morning',   start:'Eat something. Home food first.'},
-    {id:'lunch',     name:'Lunch',      station:'Galley',   slot:'midday',  when:'Midday',    start:'Eat lunch. Home food first.'},
-    {id:'move',      name:'Move',       station:'Airlock',  slot:'day',     when:'Afternoon', start:'Shoes on and out the door, or gym bag in hand.'},
-    {id:'business',  name:'Business',   station:'Bridge',   slot:'day',     when:'Afternoon', start:'Open the business list. Two minutes on the top line.'},
-    {id:'growth',    name:'Growth',     station:'Bridge',   slot:'day',     when:'Any time',  start:'Open what you’re learning. Two minutes.'},
-    {id:'timeoff',   name:'Time off',   station:'Lounge',   slot:'day',     when:'Any time',  start:'Stop on purpose. Start one thing that’s just for you.'},
-    {id:'loadout',   name:'Loadout',    station:'Airlock',  slot:'low',     when:'18:00',     start:'Bag at the door, clothes out, tomorrow’s food packed.'},
-    {id:'lights',    name:'Lights out', station:'Quarters', slot:'night',   when:'19:00',     start:'Lights out by 19:00.'}
+    {id:'breakfast', name:'Breakfast',  stat:'Body',              slot:'morning',   start:'Sit down with home food.'},
+    {id:'lunch',     name:'Lunch',      stat:'Body',              slot:'midday',    start:'Sit down with home food. Takeout is a blank.'},
+    {id:'move',      name:'Workout',    stat:'Body',              slot:'afternoon', start:'Rope in hand or shoes on.', variants:['Jump rope 30', 'Rope 15 + HIIT', 'Walk']},
+    {id:'business',  name:'Business',   stat:'Technical Ability', slot:'afternoon', start:'Open the business list. Two minutes on the top line.'},
+    {id:'growth',    name:'Growth',     stat:'Intelligence',      slot:'afternoon', start:'Open what you’re studying. Two minutes.'},
+    {id:'tidy',      name:'Ship tidy',  stat:'Ship',              slot:'afternoon', start:'Two minutes: put 10 things back where they belong.'},
+    {id:'timeoff',   name:'Time off',   stat:'',                  slot:'afternoon', start:'Stop on purpose. Start one thing that’s just for you.'},
+    {id:'loadout',   name:'Loadout',    stat:'Ship',              slot:'evening',   start:'Bag at the door, clothes out, tomorrow’s food packed.'},
+    {id:'lights',    name:'Lights out', stat:'Body',              slot:'night',     start:'In bed, lights off by 19:00.'}
   ],
   weekly: [
-    {id:'debrief',        name:'Debrief',        station:'Bridge',           days:[1],   tab:'debrief', start:'Open the Debrief tab. Fifteen minutes.'},
-    {id:'supply',         name:'Supply Run',     station:'Galley',           days:[1,2], start:'Take the supply list and go. Same list every week.'},
-    {id:'prep',           name:'Prep food',      station:'Galley',           days:[2],   start:'One pot on the stove, or wash the vegetables.'},
-    {id:'clean-quarters', name:'Clean Quarters', station:'Bedroom',          days:[3],   pay:2, start:'Two minutes: clear the floor.'},
-    {id:'clean-bridge',   name:'Clean Bridge',   station:'Office',           days:[4],   pay:2, start:'Two minutes: clear the desk.'},
-    {id:'clean-medbay',   name:'Clean Med Bay',  station:'Bathroom',         days:[5],   pay:2, start:'Two minutes: wipe the sink.'},
-    {id:'clean-galley',   name:'Clean Galley',   station:'Kitchen + Lounge', days:[6],   pay:2, start:'Two minutes: clear the counter.'}
+    {id:'debrief',        name:'Debrief',               stat:'Money', days:[1], tab:'debrief', start:'Open the Debrief tab.'},
+    {id:'supply',         name:'Supply Run',            stat:'Body',  days:[1], start:'Take the supply list and go.'},
+    {id:'prep',           name:'Prep food',             stat:'Body',  days:[1], start:'One pot on the stove, or wash the vegetables.'},
+    {id:'clean-quarters', name:'Clean Quarters',        stat:'Ship',  days:[2], start:'Two minutes: clear the floor.'},
+    {id:'clean-bridge',   name:'Clean Bridge',          stat:'Ship',  days:[3], start:'Two minutes: clear the desk.'},
+    {id:'clean-medbay',   name:'Clean Med Bay',         stat:'Ship',  days:[4], start:'Two minutes: wipe the sink.'},
+    {id:'clean-galley',   name:'Clean Galley + Lounge', stat:'Ship',  days:[5], start:'Two minutes: clear the counter.'}
   ],
   monthly: [
-    {id:'rent',   name:'Pay rent',   station:'Bridge', start:'Open the bank app and send the rent.'},
-    {id:'review', name:'Act review', station:'Bridge', showFrom:'act-review', start:'Thirty minutes with the Operator.'}
+    {id:'rent',   name:'Pay rent',        stat:'Money',        showDay:12, start:'Open the bank app and send the rent.'},
+    {id:'bills',  name:'Pay other bills', stat:'Money',        start:'Open the bank app. The budget lists which ones.'},
+    {id:'review', name:'Act review',      stat:'Intelligence', showFrom:'act-review', start:'Open the chat with the Operator.'}
   ],
   asneeded: [
-    {id:'laundry', name:'Laundry', station:'Quarters', start:'Carry the basket to the machine.'},
-    {id:'dishes',  name:'Dishes',  station:'Galley',   start:'Wash one plate.'},
-    {id:'trash',   name:'Trash',   station:'Airlock',  start:'Tie the bag and set it by the door.'}
+    {id:'laundry', name:'Laundry', stat:'Ship', start:'Carry the basket to the machine.'},
+    {id:'dishes',  name:'Dishes',  stat:'Ship', start:'Wash one plate.'},
+    {id:'trash',   name:'Trash',   stat:'Ship', start:'Tie the bag.'}
   ]
 };
 const CAT_NAME = {daily:'Daily', weekly:'Weekly', monthly:'Monthly', asneeded:'As needed'};
+const SLOT_GROUP = {morning:'Morning', midday:'Midday', afternoon:'Afternoon', evening:'Evening', night:'Evening'};
 const SAFE_ACTIONS = [
   'Drink one full glass of water.',
   'Put your shoes by the Airlock door.',
@@ -470,9 +523,9 @@ const SAFE_ACTIONS = [
   'Set a 5-minute timer and lie down until it rings.',
   'Step outside the front door, then come back in.'
 ];
-const SHIFT_DAYS = [0,3,4,5,6]; // Wed–Sun, 05:00–14:00
+const SHIFT_DAYS = [2,3,4,5,6]; // Tue–Sat, 05:00–14:00 · off Sun (rest) and Mon
 const TIMER_MS = 120000;        // the two-minute start
-const TABS = [['now','Now'],['log','Log'],['firewall','Firewall'],['market','Market'],['debrief','Debrief']];
+const TABS = [['now','HUD'],['log','Datalog'],['firewall','Gigs'],['market','Black Market','Market'],['debrief','Debrief']]; // [id, label, short label for phones]
 
 /* ================= Helpers ================= */
 const $ = s => document.querySelector(s);
@@ -551,7 +604,7 @@ const RULES = () => Object.assign({}, DEFAULT_TASKS.rules, S.tasks.rules || {});
 const PAY = () => Object.assign({}, DEFAULT_TASKS.pay, S.tasks.pay || {});
 const roster = cat => Array.isArray(S.tasks[cat]) ? S.tasks[cat] : [];
 const task = (cat, id) => roster(cat).find(t => t.id === id) || null;
-const payOf = (cat, t) => (t && t.pay != null && isFinite(Number(t.pay))) ? Number(t.pay) : (PAY()[cat] || 1);
+const payOf = (cat, t) => (t && t.pay != null && isFinite(Number(t.pay))) ? Number(t.pay) : (PAY()[cat] != null ? Number(PAY()[cat]) : 0);
 
 function allEntries(){
   const m = new Map(S.entries);
@@ -564,6 +617,8 @@ function allEntries(){
    v1 entries (Shutdown, EVA, Loadout, Supply, Debrief) map onto the v2 roster, so the history carries over. */
 const LEGACY = {shutdown:'lights', eva:'move', loadout:'loadout'};
 const monthOf = k => String(k).slice(0, 7);
+const DAYPAY = () => Object.assign({good: 5, floor: 1}, S.tasks.dayPay || {});
+const actStartOf = () => S.ship.actStart || DEFAULT_SHIP.actStart;
 function classify(e){
   switch (e.kind){
     case 'protocol': return LEGACY[e.ref] ? {cat:'daily', ref:LEGACY[e.ref], key:e.day} : null;
@@ -576,60 +631,56 @@ function classify(e){
   }
   return null;
 }
+/* The daily list for a given day: Sunday is rest, basics only. */
+function dayList(d){
+  const all = roster('daily').map(t => t.id);
+  if (parseDay(d).getDay() !== 0) return all;
+  const sun = Array.isArray(S.tasks.sunday) ? S.tasks.sunday : DEFAULT_TASKS.sunday;
+  return sun.filter(id => all.indexOf(id) >= 0);
+}
+function verdictOf(idx, d){
+  const ids = dayList(d), b = idx.daily[d] || {};
+  const n = ids.filter(id => b[id]).length, need = Math.max(1, Math.ceil(ids.length / 2));
+  return {n: n, need: need, total: ids.length, state: n >= need ? 'good' : n > 0 ? 'floor' : 'blank'};
+}
+/* Everything shown is computed from the ledger. The trial run (before the Act started, or marked archived) is kept but never counted.
+   Cred = what your days paid (Good 5 · Floor 1) + caches − spending. Task taps themselves carry no cred. */
 function derive(map){
-  const rules = RULES(), XPL = rules.xpPerLevel;
+  const act0 = actStartOf(), DP = DAYPAY(), today = dayKey(new Date());
   const list = [];
   for (const [id, e] of map) list.push(Object.assign({id: id}, e));
-  let cred = 0, xp = 0, vouchers = 0, usedV = 0, firstDay = null;
+  let cred = 0, vouchers = 0, usedV = 0;
   const idx = {daily:{}, weekly:{}, monthly:{}, asneeded:{}}, safe = {}, opened = new Set(), ent = [];
   for (const e of list){
-    const amt = Number(e.amount) || 0;
-    cred += amt; if (amt > 0) xp += amt;
+    const trial = !!e.archived || !!(e.day && e.day < act0);
+    if (!trial && (e.kind === 'cache' || e.kind === 'spend')) cred += Number(e.amount) || 0;
+    if (trial) continue;
     const c = classify(e);
     if (c && c.key && c.ref){
       const b = idx[c.cat][c.key] || (idx[c.cat][c.key] = {});
       if (!b[c.ref]) b[c.ref] = e;
-      if (c.cat === 'daily' && (!firstDay || c.key < firstDay)) firstDay = c.key;
     }
-    if (e.kind === 'safe' && e.day){ safe[e.day] = e; if (!firstDay || e.day < firstDay) firstDay = e.day; }
+    if (e.kind === 'safe' && e.day) safe[e.day] = e;
     if (e.kind === 'cache'){ opened.add(e.ref); if (e.voucher) vouchers++; }
     if (e.kind === 'spend' && e.voucher) usedV++;
-    if (e.kind === 'breach') ent.push('breach-' + e.ref);
   }
-  const cf = S.ship.cachesFrom || DEFAULT_SHIP.cachesFrom;
-  const ids = roster('daily').map(t => t.id);
-  for (const day in idx.daily){
-    const n = ids.filter(id => idx.daily[day][id]).length;
-    if (n >= rules.cacheAt && day >= cf) ent.push('day-' + day);
-  }
-  const pos = list.filter(e => (Number(e.amount) || 0) > 0)
-    .sort((a, b) => String(a.at || '').localeCompare(String(b.at || '')));
-  let acc = 0;
-  for (const e of pos){
-    const before = acc; acc += Number(e.amount);
-    for (let L = Math.floor(before / XPL) + 2; L <= Math.floor(acc / XPL) + 1; L++){
-      const d = e.at ? dayKey(new Date(e.at)) : e.day;
-      if (d && d >= cf) ent.push('lvl-' + L);
-    }
+  const verdict = {}; let good = 0, floor = 0;
+  const cf = S.ship.cachesFrom || act0;
+  for (let d = act0; d <= today; d = addDays(d, 1)){
+    const v = verdictOf(idx, d); verdict[d] = v;
+    if (v.state === 'good'){ cred += DP.good; good++; if (d >= cf) ent.push('day-' + d); }
+    else if (v.state === 'floor'){ cred += DP.floor; floor++; }
   }
   return {
-    map, list, cred, xp, idx, safe, firstDay,
-    level: Math.floor(xp / XPL) + 1,
+    map, list, cred, idx, safe, verdict, good, floor, act0,
     vouchers: vouchers - usedV,
     unopened: ent.filter(x => !opened.has(x))
   };
 }
 const gotE = (D, cat, key, id) => (D.idx[cat][key] || {})[id] || null;
 const got = (D, cat, key, id) => !!gotE(D, cat, key, id);
-const anyOn = (D, day) => !!(D.safe[day] || (D.idx.daily[day] && Object.keys(D.idx.daily[day]).length));
-function rebootFor(D, day){
-  if (anyOn(D, day) || !D.firstDay) return false;
-  const prev = addDays(day, -1);
-  if (prev < D.firstDay) return false;
-  return !anyOn(D, prev);
-}
-const dailyPay = (D, day, t) => payOf('daily', t) * (rebootFor(D, day) ? 2 : 1);
-const dailyCount = (D, day) => roster('daily').filter(t => got(D, 'daily', day, t.id)).length;
+const verdictFor = (D, d) => D.verdict[d] || verdictOf(D.idx, d);
+const dailyCount = (D, day) => verdictFor(D, day).n;
 const reviewDay = () => addDays(S.ship.actStart || DEFAULT_SHIP.actStart, 28);
 const showFromOf = t => !t.showFrom ? null : (t.showFrom === 'act-review' ? reviewDay() : t.showFrom);
 function monthsBack(today, n){
@@ -784,15 +835,16 @@ function sfx(kind){
 function rollCache(ent){
   const r = Math.random();
   let result = 'empty', amount = 0, voucher = null;
-  if (r >= 0.95){ result = 'jackpot'; voucher = 'medium'; }
-  else if (r >= 0.8){ result = 'big'; amount = 8; }
-  else if (r >= 0.5){ result = 'small'; amount = 3; }
+  if (r >= 0.95){ result = 'jackpot'; voucher = 'small'; }
+  else if (r >= 0.8){ result = 'big'; amount = 5; }
+  else if (r >= 0.5){ result = 'small'; amount = 2; }
   const e = {kind:'cache', ref:ent, day:dayKey(new Date()), at:new Date().toISOString(), amount, result};
   if (voucher) e.voucher = voucher;
   return ['cache-' + ent, e];
 }
 
 let busy = false;
+/* Writes entries, then checks what changed: a day turning Floor or Good, and any cache that came with it. */
 async function commit(writes, label){
   if (!ready() || busy) return;
   busy = true;
@@ -811,59 +863,62 @@ async function commit(writes, label){
     const pair = rollCache(ent);
     try { await Store.put(pair[0], pair[1]); created.push(pair[0]); temp.set(pair[0], pair[1]); reveals.push(pair[1]); } catch(e){}
   }
-  const D1 = derive(temp);
   busy = false;
-  const leveled = D1.level > D0.level ? D1.level : null;
-  if (reveals.length) showCache(reveals[0], leveled);
-  else if (leveled) showLevel(leveled);
-  else sfx('tap');
-  toast(label, created);
+  let suffix = '';
+  const DP = DAYPAY();
+  const days = writes.map(w => w[1] && w[1].kind === 'daily' ? w[1].day : null).filter(Boolean);
+  for (const d of days){
+    const a = (D0.verdict[d] || {}).state, b = (D1a.verdict[d] || {}).state;
+    if (b === 'good' && a !== 'good') suffix = ' · Good Day · ' + DP.good + ' cred';
+    else if (b === 'floor' && a === 'blank') suffix = ' · Day started · ' + DP.floor + ' cred';
+  }
+  if (reveals.length) showCache(reveals[0], null);
+  else sfx(/Good Day/.test(suffix) ? 'level' : 'tap');
+  toast(label + suffix, created);
   render();
 }
 
 /* One tap = one two-minute start logged. Daily: once a day. Weekly: once a week. Monthly: once a month. As needed: once a day. */
-function logTask(cat, tid, day, viaTimer){
+function logTask(cat, tid, day, viaTimer, variant){
   const t = task(cat, tid); if (!t) return;
   const today = dayKey(new Date()), at = new Date().toISOString();
   const D = derive(allEntries());
-  const pay = payOf(cat, t);
-  let id, e, label = null;
+  let id, e;
   if (cat === 'daily'){
     day = day || today;
     if (got(D, 'daily', day, tid)) return;
-    const reboot = rebootFor(D, day);
     id = 'd-' + day + '-' + tid;
-    e = {kind:'daily', ref:tid, day, at, amount: reboot ? pay * 2 : pay};
-    if (reboot) e.reboot = true;
-    label = '+' + e.amount + ' cred' + (reboot ? ' · Reboot bonus' : '') + ' · ' + t.name + (day !== today ? ' · ' + fmtDay(day) : '');
+    e = {kind:'daily', ref:tid, day, at, amount:0};
   } else if (cat === 'weekly'){
     const wk = mondayOf(today);
     if (got(D, 'weekly', wk, tid)) return;
     id = 'w-' + wk + '-' + tid;
-    e = {kind:'weekly', ref:tid, week:wk, day:today, at, amount:pay};
+    e = {kind:'weekly', ref:tid, week:wk, day:today, at, amount:0};
   } else if (cat === 'monthly'){
     const mo = monthOf(today);
     if (got(D, 'monthly', mo, tid)) return;
     id = 'm-' + mo + '-' + tid;
-    e = {kind:'monthly', ref:tid, month:mo, day:today, at, amount:pay};
+    e = {kind:'monthly', ref:tid, month:mo, day:today, at, amount:0};
   } else if (cat === 'asneeded'){
     if (got(D, 'asneeded', today, tid)) return;
     id = 'x-' + today + '-' + tid;
-    e = {kind:'asneeded', ref:tid, day:today, at, amount:pay};
+    e = {kind:'asneeded', ref:tid, day:today, at, amount:0};
   } else return;
+  if (t.stat) e.stat = t.stat;
+  if (variant) e.variant = variant;
   if (viaTimer) e.timer = true;
   if (S.timer && S.timer.cat === cat && S.timer.id === tid) S.timer = null;
-  commit([[id, e]], (label || '+' + pay + ' cred · ' + t.name) + (viaTimer ? ' · 2:00 done' : ''));
+  commit([[id, e]], 'Logged · ' + t.name + (variant ? ' · ' + variant : '') + (cat === 'daily' && day !== today ? ' · ' + fmtDay(day) : '') + (viaTimer ? ' · 2:00 done' : ''));
 }
-function logSafe(){
-  const day = dayKey(new Date());
-  const id = 'safe-' + day;
-  const D = derive(allEntries());
-  if (D.map.has(id)) return;
-  const reboot = rebootFor(D, day);
-  const e = {kind:'safe', ref:'safe', day, at:new Date().toISOString(), amount: reboot ? 2 : 1};
-  if (reboot) e.reboot = true;
-  commit([[id, e]], reboot ? '+2 cred · Reboot bonus' : '+1 cred · Safe Mode');
+/* Workout asks which variant before it logs or starts the timer. */
+function askVariant(cat, id, day, mode){
+  const t = task(cat, id); if (!t) return;
+  const d = day ? ' data-day="' + day + '"' : '';
+  openModal('<section class="frame"><div class="frame-head"><span>' + esc(t.stat || '') + ' · ' + (mode === 'timer' ? 'two-minute start' : 'log it') + '</span><span class="tag">Pick one</span></div>' +
+    '<h2 class="ptitle">' + esc(t.name) + '</h2>' +
+    '<div class="actions">' + t.variants.map((v, i) => '<button class="btn' + (i === 0 ? ' primary' : '') + '" type="button" data-action="' + mode + '" data-cat="' + cat + '" data-id="' + esc(id) + '"' + d + ' data-variant="' + esc(v) + '">' + esc(v) + '</button>').join('') +
+    '<button class="link" type="button" data-action="close-modal">Cancel</button></div>' +
+    '<p class="fine" style="margin-top:14px">All three count the same. The variant is only for your history.</p></section>');
 }
 function clearNode(nid){
   const fw = S.firewall; if (!fw || !Array.isArray(fw.nodes)) return;
@@ -873,7 +928,7 @@ function clearNode(nid){
   if (!n || D.map.has(nodeId(fw, n))) return;
   const pay = PAY().oneoff;
   const e = {kind:'node', ref:n.id, boss:fw.boss || 1, day:dayKey(new Date()), at:new Date().toISOString(), amount:pay};
-  commit([[nodeId(fw, n), e]], '+' + pay + ' cred · Node ' + pad(real.indexOf(n) + 1) + ' cleared');
+  commit([[nodeId(fw, n), e]], 'Gig cleared · ' + n.text.slice(0, 48));
 }
 function openCacheManual(ent){
   if (!ready() || busy) return;
@@ -899,7 +954,7 @@ function completeDebrief(){
   const e = {kind:'debrief', ref:mondayOf(today), day:today, at:new Date().toISOString(), amount:pay};
   if (money != null && isFinite(money)) e.money = money;
   if (food != null && isFinite(food)) e.food = food;
-  commit([[id, e]], '+' + pay + ' cred · Debrief logged');
+  commit([[id, e]], 'Debrief logged');
 }
 async function saveFirewall(nodes){
   const fw = Object.assign({}, S.firewall || FALLBACK_FIREWALL, {nodes: nodes});
@@ -954,9 +1009,9 @@ async function undo(){
 
 /* ================= The two-minute start ================= */
 const mmss = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return pad(Math.floor(s / 60)) + ':' + pad(s % 60); };
-function startTimer(cat, id, day){
+function startTimer(cat, id, day, variant){
   if (!ready() || !task(cat, id)) return;
-  S.timer = {cat: cat, id: id, day: day || null, ends: Date.now() + TIMER_MS};
+  S.timer = {cat: cat, id: id, day: day || null, variant: variant || null, ends: Date.now() + TIMER_MS};
   S.tab = 'now'; $('#main').scrollTop = 0;
   sfx('soft'); keepAwake(); render();
 }
@@ -966,7 +1021,7 @@ function tickTimer(){
   const left = S.timer.ends - Date.now();
   if (left <= 0){
     const tm = S.timer; S.timer = null;
-    logTask(tm.cat, tm.id, tm.day, true);
+    logTask(tm.cat, tm.id, tm.day, true, tm.variant);
     render();
     return;
   }
@@ -1006,7 +1061,7 @@ function showCache(ce, newLevel){
     empty:  ['Empty', 'Nothing inside this time. The next one might be different.', 'empty'],
     small:  ['+' + ce.amount + ' cred', 'Small cache. Still yours.', 'cache'],
     big:    ['+' + ce.amount + ' cred', 'A good haul.', 'cache'],
-    jackpot:['Jackpot', 'One free Medium from the Black Market, saved as a voucher.', 'jackpot']
+    jackpot:['Jackpot', 'One free Small item from the Black Market, saved as a voucher.', 'jackpot']
   }[ce.result] || ['Cache', '', 'cache'];
   const lvl = newLevel ? '<p class="ph-body" style="margin-top:12px">Level ' + newLevel + ' reached.</p>' : '';
   openModal(
@@ -1071,63 +1126,37 @@ function toggleFs(){
 document.addEventListener('fullscreenchange', () => render());
 document.addEventListener('webkitfullscreenchange', () => render());
 
-/* ================= Now queue: one thing at a time, by time of day ================= */
-function nowQueue(D, now){
-  const today = dayKey(now), yest = addDays(today, -1), h = hoursOf(now), ph = phaseOf(now);
-  const dow = now.getDay(), wk = mondayOf(today), mo = monthOf(today);
-  const shiftDay = SHIFT_DAYS.indexOf(dow) >= 0;
-  const q = [];
-  const bySlot = s => roster('daily').filter(t => t.slot === s);
-  const offer = (t, day) => { if (!got(D, 'daily', day, t.id) && !S.skipped.has('d-' + t.id)) q.push({t:'task', cat:'daily', id:t.id, day:day}); };
-  const night = bySlot('night')[0] || null;
-  if (S.timer) q.push({t:'timer'});
-  if (D.unopened.length && ph !== 'night') q.push({t:'cache', ent:D.unopened[0]});
-  if (ph === 'day'){
-    if (night && h < 12 && !got(D, 'daily', yest, night.id) && !dismissed('night-' + yest)) q.push({t:'confirm', id:night.id, day:yest});
-    bySlot('wake').forEach(t => { if (h < 12 && !got(D, 'daily', today, t.id) && !dismissed('wake-' + today)) q.push({t:'wake', id:t.id, day:today}); });
-    if (shiftDay && h < 5){
-      bySlot('morning').forEach(t => offer(t, today));
-      q.push({t:'preshift'});
-    } else if (shiftDay && h < 14){
-      q.push({t:'shift'});
-    } else {
-      if (h < 16) bySlot('morning').forEach(t => offer(t, today));
-      if (h >= 11) bySlot('midday').forEach(t => offer(t, today));
-      roster('weekly').forEach(t => {
-        if ((t.days || []).indexOf(dow) < 0 || got(D, 'weekly', wk, t.id) || S.skipped.has('w-' + t.id)) return;
-        q.push(t.tab === 'debrief' ? {t:'debrief', id:t.id, wk:wk} : {t:'task', cat:'weekly', id:t.id});
-      });
-      roster('monthly').forEach(t => {
-        const sf = showFromOf(t);
-        if ((sf && today < sf) || got(D, 'monthly', mo, t.id) || S.skipped.has('m-' + t.id)) return;
-        q.push({t:'task', cat:'monthly', id:t.id});
-      });
-      const n = currentNode(D, S.skipped);
-      if (n) q.push(Object.assign({t:'node'}, n));
-      bySlot('day').forEach(t => offer(t, today));
-      q.push({t:'clear'});
-    }
-  } else if (ph === 'low'){
-    bySlot('low').forEach(t => offer(t, today));
-    q.push({t:'target', id: night && night.id, day:today});
-  } else {
-    if (h >= 12) bySlot('low').forEach(t => offer(t, today));
-    q.push({t:'lights', id: night && night.id, day: h < 12 ? yest : today});
-  }
-  return q;
-}
 
 /* ================= Renderers ================= */
+
+/* ================= HUD: today's checklist, one suggested next task, nothing pushed ================= */
+function monthlyShows(t, today){
+  const sf = showFromOf(t); if (sf && today < sf) return false;
+  const d = parseDay(today), dom = d.getDate();
+  if (t.showDay && dom < t.showDay) return false;
+  if (t.showBeforeEnd != null){ const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); if (dom < last - t.showBeforeEnd) return false; }
+  return true;
+}
+/* The highlighted task: the first open one in the slot that fits the clock. A hint, never a prompt. */
+function suggestNext(D, now, ids){
+  const today = dayKey(now), h = hoursOf(now), ph = phaseOf(now);
+  const open = roster('daily').filter(t => ids.indexOf(t.id) >= 0 && !got(D, 'daily', today, t.id) && !(t.slot === 'night' && ph === 'day'));
+  if (!open.length) return null;
+  const order = h < 10 ? ['morning','midday','afternoon','evening','night']
+    : h < 14 ? ['midday','morning','afternoon','evening','night']
+    : h < 18 ? ['afternoon','midday','morning','evening','night']
+    : ['evening','night','afternoon','midday','morning'];
+  for (const s of order){ const t = open.find(x => x.slot === s); if (t) return t.id; }
+  return open[0].id;
+}
+
 function renderHud(D, now){
-  const today = dayKey(now);
-  const pre = today < S.ship.actStart;
-  const actLine = pre ? 'Shakedown · Act ' + pad(S.ship.act) + ' launches ' + fmtDay(S.ship.actStart)
-                      : 'Act ' + pad(S.ship.act) + ' · ' + S.ship.actName;
-  const XPL = RULES().xpPerLevel;
-  const into = D.xp % XPL;
-  const on = Math.floor(into / (XPL / 10));
+  const today = dayKey(now), act0 = D.act0;
+  const actLine = today < act0 ? 'Act ' + pad(S.ship.act) + ' launches ' + fmtDay(act0)
+    : 'Act ' + pad(S.ship.act) + ' · ' + S.ship.actName + ' · Day ' + Math.min(diffDays(today, act0) + 1, 28) + ' of 28';
   let segs = '';
-  for (let i = 0; i < 10; i++) segs += '<i' + (i < on ? ' class="on"' : '') + '></i>';
+  for (let i = 1; i <= 20; i++) segs += '<i class="' + (i <= D.good ? 'on' : '') + (i === 14 || i === 17 || i === 20 ? ' mark' : '') + '"></i>';
+  const stars = D.good >= 20 ? ' · ★★★' : D.good >= 17 ? ' · ★★' : D.good >= 14 ? ' · ★ cleared' : '';
   const chips = [];
   const ph = phaseOf(now);
   if (ph === 'low') chips.push('<span class="chip warn">Low-Power</span>');
@@ -1147,38 +1176,106 @@ function renderHud(D, now){
     '<div class="stats">' +
       '<div class="stat stat-cred"><span class="k">◆ Cred</span><span class="v">' + D.cred + '</span>' +
         (D.vouchers > 0 ? '<span class="k">+' + D.vouchers + ' voucher</span>' : '') + '</div>' +
-      '<div class="stat"><div class="lvl-row"><span class="k">Level</span><span class="v">' + pad(D.level) + '</span></div>' +
-        '<div class="segbar" role="img" aria-label="XP ' + into + ' of ' + XPL + '">' + segs + '</div>' +
-        '<span class="k">XP ' + D.xp + ' · ' + (XPL - into) + ' to lvl ' + (D.level + 1) + '</span></div>' +
-      '<div class="stat stat-side">' + (chips.length ? '<div class="chips">' + chips.join('') + '</div>' : '<span></span>') +
-        '<button class="pill" type="button" data-action="safe">Safe Mode</button></div>' +
+      '<div class="stat"><div class="lvl-row"><span class="k">Good Days · Act ' + pad(S.ship.act) + '</span><span class="v">' + pad(D.good) + '</span></div>' +
+        '<div class="segbar s20" role="img" aria-label="' + D.good + ' Good Days. Clear at 14, two stars at 17, three at 20">' + segs + '</div>' +
+        '<span class="k">Clear 14 · ★★ 17 · ★★★ 20' + stars + '</span></div>' +
+      '<div class="stat stat-side">' + (chips.length ? '<div class="chips">' + chips.join('') + '</div>' : '<span></span>') + '</div>' +
     '</div>';
 }
 
+function renderNow(D, now){
+  const today = dayKey(now), yest = addDays(today, -1), h = hoursOf(now), ph = phaseOf(now), dow = now.getDay();
+  const dis = ready() ? '' : ' disabled';
+  const act0 = D.act0;
+  const ids = dayList(today);
+  const v = verdictFor(D, today);
+  const out = [];
+
+  /* Running two-minute start */
+  if (S.timer){
+    const tm = S.timer, t = task(tm.cat, tm.id) || {name:'Start', start:''};
+    out.push('<section class="frame"><div class="frame-head"><span>' + esc(t.stat || CAT_NAME[tm.cat] || '') + ' · two-minute start</span><span class="tag">Running</span></div>' +
+      '<h2 class="ptitle">' + esc(t.name) + '</h2>' + (tm.variant ? '<p class="fine">' + esc(tm.variant) + '</p>' : '') +
+      '<div class="led" id="timer-led" role="timer">' + mmss(tm.ends - Date.now()) + '</div>' +
+      '<p class="instr">' + esc(t.start || '') + '</p>' +
+      '<p class="fine" style="margin-top:12px">At 00:00 it logs itself. Keep going or stop there. Both count the same.</p>' +
+      '<div class="actions"><button class="btn primary" type="button" data-action="log" data-cat="' + tm.cat + '" data-id="' + esc(tm.id) + '"' + (tm.day ? ' data-day="' + tm.day + '"' : '') + (tm.variant ? ' data-variant="' + esc(tm.variant) + '"' : '') + dis + '>Done</button>' +
+      '<button class="link" type="button" data-action="timer-stop">Stop the timer</button></div></section>');
+  }
+  /* A cache from a Good Day */
+  if (D.unopened.length && ph !== 'night'){
+    out.push('<div class="banner"><span><b>Cargo hold</b>A sealed cache is waiting.</span><button class="btn sm primary" type="button" data-action="cache" data-ent="' + esc(D.unopened[0]) + '"' + dis + '>Crack it open</button></div>');
+  }
+  /* Morning check for last night's lights out */
+  const night = roster('daily').find(t => t.slot === 'night');
+  if (night && ph === 'day' && h < 12 && yest >= act0 && !got(D, 'daily', yest, night.id) && !dismissed('night-' + yest)){
+    out.push('<div class="banner"><span><b>Last night</b>' + esc(night.name) + ' by 19:00?</span><span class="banner-act">' +
+      '<button class="btn sm primary" type="button" data-action="log" data-cat="daily" data-id="' + esc(night.id) + '" data-day="' + yest + '"' + dis + '>Yes</button>' +
+      '<button class="link" type="button" data-action="not-last" data-day="' + yest + '">No</button></span></div>');
+  }
+  /* The 19:00 stamp */
+  if (h >= 19 && today >= act0 && v.state !== 'blank'){
+    const g = v.state === 'good';
+    out.push('<section class="stamp ' + v.state + '"><div class="k">Day ' + (diffDays(today, act0) + 1) + ' · ' + esc(fmtDay(today)) + ' · ' + v.n + ' of ' + v.total + '</div>' +
+      '<div class="stamp-t">' + (g ? 'Good Day' : 'Floor Day') + '</div>' +
+      '<p>' + (g ? 'Today was a good day. Sleep well.' : 'You showed up today. Sleep well.') + '</p></section>');
+  }
+  /* Live meter */
+  let cells = '';
+  for (let i = 1; i <= v.total; i++) cells += '<i class="' + (i <= v.n ? 'on' : '') + (i === v.need ? ' need' : '') + '"></i>';
+  const meterLabel = v.state === 'good' ? 'Good Day ✓ · ' + v.n + ' of ' + v.total : v.n + ' of ' + v.need + ' for a Good Day';
+  const meter = '<div class="gd"><div class="gd-top"><span class="k">' + (dow === 0 ? 'Sunday · rest day · basics only' : 'Today') + '</span><span class="gd-n' + (v.state === 'good' ? ' ok' : '') + '">' + esc(meterLabel) + '</span></div>' +
+    '<div class="gd-bar" style="--n:' + Math.max(1, v.total) + '">' + cells + '</div></div>';
+  /* Today's checklist, grouped by time of day */
+  const next = suggestNext(D, now, ids);
+  const row = t => {
+    const e = gotE(D, 'daily', today, t.id);
+    const tonight = !e && t.slot === 'night' && ph === 'day';
+    const isNext = !e && next === t.id;
+    const box = e ? '<span class="ck-box on" aria-label="Done">✓</span>'
+      : tonight ? '<span class="ck-box wait" aria-hidden="true"></span>'
+      : '<button class="ck-box" type="button" data-action="log" data-cat="daily" data-id="' + esc(t.id) + '" data-day="' + today + '" aria-label="Log ' + esc(t.name) + '"' + dis + '></button>';
+    const act = e ? '<span class="ck-time">' + hhmm(new Date(e.at)) + (e.variant ? ' · ' + esc(e.variant) : '') + '</span>'
+      : tonight ? '<span class="ck-time">Tonight</span>'
+      : '<button class="btn sm" type="button" data-action="timer" data-cat="daily" data-id="' + esc(t.id) + '" data-day="' + today + '"' + dis + '>2:00</button>';
+    return '<div class="ck-row' + (e ? ' done' : '') + (isNext ? ' next' : '') + '">' + box +
+      '<div class="ck-txt"><div class="ck-name">' + esc(t.name) + (isNext ? ' <span class="next-tag">Next</span>' : '') + '</div>' +
+      '<div class="ck-meta">' + esc(t.stat || 'No stat') + ' · ' + esc(t.start) + '</div></div>' +
+      '<div class="ck-act">' + act + '</div></div>';
+  };
+  const groups = ['Morning','Midday','Afternoon','Evening'].map(g => {
+    const ts = roster('daily').filter(t => ids.indexOf(t.id) >= 0 && SLOT_GROUP[t.slot] === g);
+    return ts.length ? '<div class="ck-g">' + g + '</div>' + ts.map(row).join('') : '';
+  }).join('');
+  /* Weekly and monthly items due today */
+  const wk = mondayOf(today), mo = monthOf(today);
+  const due = [];
+  roster('weekly').forEach(t => { if ((t.days || []).indexOf(dow) >= 0 && !got(D, 'weekly', wk, t.id)) due.push(['weekly', t]); });
+  roster('monthly').forEach(t => { if (monthlyShows(t, today) && !got(D, 'monthly', mo, t.id)) due.push(['monthly', t]); });
+  const dueRow = ([cat, t]) => '<div class="ck-row">' +
+    (t.tab ? '<button class="ck-box" type="button" data-action="tab" data-tab="' + esc(t.tab) + '" aria-label="Open ' + esc(t.name) + '">›</button>'
+           : '<button class="ck-box" type="button" data-action="log" data-cat="' + cat + '" data-id="' + esc(t.id) + '" aria-label="Log ' + esc(t.name) + '"' + dis + '></button>') +
+    '<div class="ck-txt"><div class="ck-name">' + esc(t.name) + '</div><div class="ck-meta">' + CAT_NAME[cat] + ' · ' + esc(t.stat || '') + ' · ' + esc(t.start) + '</div></div>' +
+    '<div class="ck-act">' + (t.tab ? '' : '<button class="btn sm" type="button" data-action="timer" data-cat="' + cat + '" data-id="' + esc(t.id) + '"' + dis + '>2:00</button>') + '</div></div>';
+  const dueHtml = due.length ? '<div class="sec"><div class="sec-h"><span>Due today</span><i class="rule"></i><span>Weekly · monthly</span></div><div class="ck">' + due.map(dueRow).join('') + '</div></div>' : '';
+
+  const main = out.join('') + meter + '<div class="ck">' + groups + '</div>' + dueHtml;
+  const tx = unreadComms() ? '<button class="tx-chip" type="button" data-action="tab" data-tab="debrief"><span>Incoming transmission</span><span>&gt;&gt;&gt;</span></button>' : '';
+  const di = diffDays(today, act0);
+  const big = di < 0 ? pad(-di) : pad(Math.min(di + 1, 99));
+  const bigLabel = di < 0 ? 'Days to launch<br>Act ' + pad(S.ship.act) : 'Day of Act ' + pad(S.ship.act) + '<br>of 28';
+  return '<div class="now-grid"><div class="hud-col' + (S.booted ? '' : ' boot') + '">' + main + '</div><aside class="side">' + timeline(now) + tx + '</aside></div>' +
+    '<div class="bigrow" aria-hidden="true"><span class="bign">' + big + '</span><span class="bigl">' + bigLabel + '</span></div>';
+}
+
 function renderTabs(D){
-  return TABS.map(([k, l], i) => {
+  return TABS.map(([k, l, sl], i) => {
     const badge = (k === 'debrief' && unreadComms()) || (k === 'now' && S.tab !== 'now' && D.unopened.length) ? '<i class="badge" aria-hidden="true"></i>' : '';
     const on = S.tab === k;
-    return '<button class="tab' + (on ? ' on' : '') + '" type="button" data-action="tab" data-tab="' + k + '"' + (on ? ' aria-current="page"' : '') + '><span class="num">' + pad(i + 1) + '</span><span>' + l + '</span>' + badge + '</button>';
+    return '<button class="tab' + (on ? ' on' : '') + '" type="button" data-action="tab" data-tab="' + k + '"' + (on ? ' aria-current="page"' : '') + '><span class="num">' + pad(i + 1) + '</span><span class="tab-l">' + l + '</span><span class="tab-s">' + (sl || l) + '</span>' + badge + '</button>';
   }).join('');
 }
 
-function dataCard(D, now){
-  const today = dayKey(now), wk = mondayOf(today);
-  const st = (cls, txt) => '<span class="' + cls + '">' + txt + '</span>';
-  const rows = roster('daily').map(t => {
-    const e = gotE(D, 'daily', today, t.id);
-    const s = e ? st('st-done', '✓' + (e.reboot ? ' ×2' : ''))
-      : (t.slot === 'low' || t.slot === 'night') ? st('st-later', esc(t.when || 'Later'))
-      : st('st-open', 'Open');
-    return [esc(t.name), esc(t.station), s];
-  });
-  const wr = roster('weekly'), wn = wr.filter(t => got(D, 'weekly', wk, t.id)).length;
-  rows.push(['This week', 'Weekly', wn ? st('st-done', wn + '/' + wr.length) : st('st-later', '0/' + wr.length)]);
-  const n = dailyCount(D, today), tot = roster('daily').length;
-  return '<section class="datacard" aria-label="Today"><div class="dc-head"><span class="p">Data</span><span class="p o">Card</span><span class="m">' + esc(fmtDay(today)) + ' · ' + n + '/' + tot + '</span></div>' +
-    '<table class="dc"><tbody>' + rows.map(r => '<tr><td>' + r[0] + '</td><td class="dim">' + r[1] + '</td><td>' + r[2] + '</td></tr>').join('') + '</tbody></table></section>';
-}
 
 function timeline(now){
   const start = S.ship.actStart || DEFAULT_SHIP.actStart;
@@ -1196,119 +1293,6 @@ function timeline(now){
     '<div class="tl-bar">' + segs + '</div><div class="tl-dates">' + dates + '</div></section>';
 }
 
-function renderNow(D, now){
-  const q = nowQueue(D, now);
-  const it = q[0];
-  const dis = ready() ? '' : ' disabled';
-  const today = dayKey(now);
-  let eyebrow = '', title = '', body = '', extra = '', after = '', actions = '';
-  const logBtn = (cat, id, day, label, primary) => '<button class="btn' + (primary ? ' primary' : '') + '" type="button" data-action="log" data-cat="' + cat + '" data-id="' + esc(id) + '"' + (day ? ' data-day="' + day + '"' : '') + dis + '>' + label + '</button>';
-  switch (it.t){
-    case 'timer': {
-      const tm = S.timer, t = task(tm.cat, tm.id) || {name:'Start', station:'', start:''};
-      eyebrow = esc(t.station) + ' · two-minute start'; title = t.name;
-      extra = '<div class="led" id="timer-led" role="timer">' + mmss(tm.ends - Date.now()) + '</div>';
-      body = esc(t.start);
-      after = '<p class="fine" style="margin-top:14px">At 00:00 it logs itself. Keep going or stop there. Both count the same.</p>';
-      actions = logBtn(tm.cat, tm.id, tm.day, 'Done · +' + (tm.cat === 'daily' ? dailyPay(D, tm.day || today, t) : payOf(tm.cat, t)), true) +
-                '<button class="link" type="button" data-action="timer-stop">Stop the timer</button>';
-      break;
-    }
-    case 'cache':
-      eyebrow = 'Cargo hold'; title = 'Cache';
-      body = 'A sealed cache is waiting for you.';
-      actions = '<button class="btn primary" type="button" data-action="cache" data-ent="' + esc(it.ent) + '"' + dis + '>Crack it open</button>';
-      break;
-    case 'confirm': {
-      const t = task('daily', it.id);
-      eyebrow = esc(t.station) + ' · last night'; title = t.name;
-      body = 'Were the lights out by ' + esc(t.when || '19:00') + ' last night?';
-      actions = logBtn('daily', it.id, it.day, 'Yes, log it · +' + dailyPay(D, it.day, t), true) +
-                '<button class="link" type="button" data-action="not-last" data-day="' + it.day + '">Not last night</button>';
-      break;
-    }
-    case 'wake': {
-      const t = task('daily', it.id);
-      eyebrow = esc(t.station) + ' · this morning'; title = t.name;
-      body = 'Were your feet on the floor by ' + esc(t.when || '04:00') + '?';
-      actions = logBtn('daily', it.id, it.day, 'Yes, log it · +' + dailyPay(D, it.day, t), true) +
-                '<button class="link" type="button" data-action="not-today" data-day="' + it.day + '">Not today</button>';
-      break;
-    }
-    case 'preshift':
-      eyebrow = 'Bridge'; title = 'Standby';
-      body = 'Shift at 05:00. Nothing else is needed before you go.';
-      break;
-    case 'shift':
-      eyebrow = 'Off-ship'; title = 'On shift';
-      body = 'The ship keeps itself. Log breakfast and lunch here when you’re back at 14:00.';
-      break;
-    case 'debrief':
-      eyebrow = 'Bridge · Monday'; title = 'Debrief';
-      body = 'Fifteen minutes. Read the week, color the posters, log it, then send the report to the Operator.';
-      actions = '<button class="btn primary" type="button" data-action="tab" data-tab="debrief">Open debrief</button>' +
-                '<button class="link" type="button" data-action="skip" data-key="w-' + esc(it.id) + '">Later today</button>';
-      break;
-    case 'node':
-      eyebrow = 'Bridge · Firewall · node ' + it.index + ' of ' + it.total; title = 'Node ' + pad(it.index);
-      body = esc(it.node.text);
-      after = it.node.assist ? assistLine(it.node.assist) : '';
-      actions = '<button class="btn primary" type="button" data-action="node" data-id="' + esc(it.node.id) + '"' + dis + '>Node cleared · +' + PAY().oneoff + '</button>' +
-                '<button class="link" type="button" data-action="skip" data-key="node-' + esc(it.node.id) + '">Not now</button>';
-      break;
-    case 'task': {
-      const t = task(it.cat, it.id);
-      const pay = it.cat === 'daily' ? dailyPay(D, it.day, t) : payOf(it.cat, t);
-      const when = it.cat === 'daily' ? (t.when ? ' · ' + esc(t.when) : '')
-        : it.cat === 'weekly' && (t.days || []).length ? ' · ' + t.days.map(d => DOW[d]).join('/') : '';
-      const sk = (it.cat === 'daily' ? 'd-' : it.cat === 'weekly' ? 'w-' : 'm-') + it.id;
-      eyebrow = esc(t.station) + ' · ' + CAT_NAME[it.cat] + when; title = t.name;
-      body = esc(t.start);
-      after = '<p class="fine" style="margin-top:14px">Two minutes is the whole job. Anything after that is extra, never required.</p>';
-      actions = '<button class="btn primary" type="button" data-action="timer" data-cat="' + it.cat + '" data-id="' + esc(it.id) + '"' + (it.day ? ' data-day="' + it.day + '"' : '') + dis + '>Start 2:00</button>' +
-                logBtn(it.cat, it.id, it.day, 'Done · +' + pay, false) +
-                '<button class="link" type="button" data-action="skip" data-key="' + esc(sk) + '">Not now</button>';
-      break;
-    }
-    case 'clear': {
-      const n = dailyCount(D, today), tot = roster('daily').length;
-      eyebrow = 'All systems'; title = 'All clear';
-      body = n + ' of ' + tot + ' daily starts logged. Anything left waits in the Log, no cost. Low-Power Mode starts at 18:00.';
-      actions = '<button class="btn" type="button" data-action="tab" data-tab="log">Open the Log</button>';
-      break;
-    }
-    case 'target': {
-      const mins = Math.max(0, Math.round((19 - hoursOf(now)) * 60));
-      const t = it.id ? task('daily', it.id) : null;
-      eyebrow = 'Quarters · Low-Power Mode'; title = 'Lights out';
-      extra = '<div class="led" aria-label="Lights out in ' + mins + ' minutes">' + pad(Math.floor(mins / 60)) + ':' + pad(mins % 60) + '</div>';
-      body = 'Until lights out at 19:00.';
-      if (t && !got(D, 'daily', it.day, t.id)) actions = logBtn('daily', t.id, it.day, 'Lights out now · +' + dailyPay(D, it.day, t), false);
-      break;
-    }
-    case 'lights': {
-      const t = it.id ? task('daily', it.id) : null;
-      const done = !!(t && got(D, 'daily', it.day, t.id));
-      eyebrow = 'Quarters'; title = 'Lights out';
-      body = done ? 'Logged. Sleep well.' : 'Going dark? Log it now, or confirm it here in the morning.';
-      if (t && !done) actions = logBtn('daily', t.id, it.day, 'Lights are out · +' + dailyPay(D, it.day, t), true);
-      break;
-    }
-  }
-  const di = diffDays(today, S.ship.actStart || DEFAULT_SHIP.actStart);
-  const big = di < 0 ? pad(-di) : pad(Math.min(di + 1, 99));
-  const bigLabel = di < 0 ? 'Day' + (di === -1 ? '' : 's') + ' to launch<br>Act ' + pad(S.ship.act) : 'Day of Act ' + pad(S.ship.act) + '<br>of 28';
-  const boot = S.booted ? '' : ' boot';
-  const card = '<section class="frame' + boot + '" aria-labelledby="now-title">' +
-      '<div class="frame-head"><span>' + eyebrow + '</span><span class="tag">Now &gt;&gt;&gt;</span></div>' +
-      '<h1 class="ptitle" id="now-title">' + esc(title) + '</h1>' +
-      extra + '<p class="instr">' + body + '</p>' + after +
-      (actions ? '<div class="actions">' + actions + '</div>' : '') +
-    '</section>';
-  const tx = unreadComms() ? '<button class="tx-chip" type="button" data-action="tab" data-tab="debrief"><span>Incoming transmission</span><span>&gt;&gt;&gt;</span></button>' : '';
-  return '<div class="now-grid">' + card + '<aside class="side">' + dataCard(D, now) + timeline(now) + tx + '</aside></div>' +
-    '<div class="bigrow" aria-hidden="true"><span class="bign">' + big + '</span><span class="bigl">' + bigLabel + '</span></div>';
-}
 
 /* ================= Log: did / didn't, by cadence ================= */
 function renderLog(D, now){
@@ -1318,7 +1302,7 @@ function renderLog(D, now){
   /* A rolling 7 days, today on the right, so today and yesterday are always one tap away. ‹ › step a week. */
   const end = addDays(today, 7 * S.wkOff), start = addDays(end, -6);
   const days = []; for (let i = 0; i < 7; i++) days.push(addDays(start, i));
-  const nav = '<span class="wknav"><button type="button" data-action="wk" data-d="-1" aria-label="Previous 7 days"' + (start <= (D.firstDay || today) ? ' disabled' : '') + '>‹</button>' +
+  const nav = '<span class="wknav"><button type="button" data-action="wk" data-d="-1" aria-label="Previous 7 days"' + (start <= D.act0 ? ' disabled' : '') + '>‹</button>' +
     '<button type="button" data-action="wk" data-d="1" aria-label="Next 7 days"' + (S.wkOff >= 0 ? ' disabled' : '') + '>›</button></span>';
   const rowL = (name, meta) => '<div class="wk-l"><div class="wk-name">' + esc(name) + '</div>' + (meta ? '<div class="wk-floor">' + esc(meta) + '</div>' : '') + '</div>';
 
@@ -1329,16 +1313,19 @@ function renderLog(D, now){
   const dRows = roster('daily').map(t => {
     let n = 0, past = 0;
     const cells = days.map(d => {
-      const e = gotE(D, 'daily', d, t.id), tc = d === today ? ' today' : '';
+      const tc = d === today ? ' today' : '';
+      if (d < D.act0) return '<span class="cell pre" title="Trial run"></span>';
+      if (dayList(d).indexOf(t.id) < 0) return '<span class="cell rest" title="Rest">–</span>';
+      const e = gotE(D, 'daily', d, t.id);
       if (d <= today) past++;
-      if (e){ n++; return '<span class="cell on' + tc + '" title="Did' + (e.reboot ? ' · Reboot ×2' : '') + '">✓</span>'; }
+      if (e){ n++; return '<span class="cell on' + tc + '" title="Did' + (e.variant ? ' · ' + esc(e.variant) : '') + '">✓</span>'; }
       if (d > today) return '<span class="cell fut"></span>';
       const tonight = d === today && t.slot === 'night' && ph === 'day';
       if ((d === today || d === yest) && !tonight && ready())
-        return '<button class="cell' + tc + '" type="button" data-action="log" data-cat="daily" data-id="' + esc(t.id) + '" data-day="' + d + '" aria-label="Log ' + esc(t.name) + ', ' + fmtDay(d) + '">+' + dailyPay(D, d, t) + '</button>';
+        return '<button class="cell' + tc + '" type="button" data-action="log" data-cat="daily" data-id="' + esc(t.id) + '" data-day="' + d + '" aria-label="Log ' + esc(t.name) + ', ' + fmtDay(d) + '">+</button>';
       return '<span class="cell' + tc + (tonight ? ' fut' : '') + '"></span>';
     }).join('');
-    return '<div class="wk-row">' + rowL(t.name, t.station + (t.when ? ' · ' + t.when : '')) + '<div class="cells">' + cells + '</div><div class="wk-cnt">' + n + '<small>/' + past + '</small></div></div>';
+    return '<div class="wk-row">' + rowL(t.name, t.stat || 'No stat') + '<div class="cells">' + cells + '</div><div class="wk-cnt">' + n + '<small>/' + past + '</small></div></div>';
   }).join('');
 
   /* Weekly: this week plus the 3 before it */
@@ -1350,9 +1337,9 @@ function renderLog(D, now){
     const e = gotE(D, 'weekly', wk0, t.id);
     const act = e ? '<span class="done-tag">Done · ' + esc(fmtDay(e.day)) + '</span>'
       : t.tab ? '<button class="btn sm" type="button" data-action="tab" data-tab="' + esc(t.tab) + '">Open</button>'
-      : '<button class="btn sm" type="button" data-action="log" data-cat="weekly" data-id="' + esc(t.id) + '"' + dis + '>Done · +' + payOf('weekly', t) + '</button>';
+      : '<button class="btn sm" type="button" data-action="log" data-cat="weekly" data-id="' + esc(t.id) + '"' + dis + '>Done</button>';
     const dn = (t.days || []).map(d => DOW[d]).join('/');
-    return '<div class="rows3">' + rowL(t.name, t.station + (dn ? ' · ' + dn : '')) + '<div class="cells c4">' + cells + '</div><div class="row-act">' + act + '</div></div>';
+    return '<div class="rows3">' + rowL(t.name, (t.stat || '') + (dn ? ' · ' + dn : '')) + '<div class="cells c4">' + cells + '</div><div class="row-act">' + act + '</div></div>';
   }).join('');
 
   /* Monthly: this month plus the 2 before it */
@@ -1364,8 +1351,8 @@ function renderLog(D, now){
     const e = gotE(D, 'monthly', mo, t.id), sf = showFromOf(t);
     const act = e ? '<span class="done-tag">Done · ' + esc(fmtDay(e.day)) + '</span>'
       : (sf && today < sf) ? '<span class="later-tag">' + esc(fmtDay(sf)) + '</span>'
-      : '<button class="btn sm" type="button" data-action="log" data-cat="monthly" data-id="' + esc(t.id) + '"' + dis + '>Done · +' + payOf('monthly', t) + '</button>';
-    return '<div class="rows3">' + rowL(t.name, t.station) + '<div class="cells c3">' + cells + '</div><div class="row-act">' + act + '</div></div>';
+      : '<button class="btn sm" type="button" data-action="log" data-cat="monthly" data-id="' + esc(t.id) + '"' + dis + '>Done</button>';
+    return '<div class="rows3">' + rowL(t.name, t.stat || '') + '<div class="cells c3">' + cells + '</div><div class="row-act">' + act + '</div></div>';
   }).join('');
 
   /* As needed */
@@ -1374,28 +1361,28 @@ function renderLog(D, now){
     const wkN = mine.filter(e => e.day >= wk0).length, last = mine[0];
     const meta = wkN + ' this week' + (last ? ' · last ' + fmtDay(last.day) : '');
     const act = got(D, 'asneeded', today, t.id) ? '<span class="done-tag">Logged today</span>'
-      : '<button class="btn sm" type="button" data-action="log" data-cat="asneeded" data-id="' + esc(t.id) + '"' + dis + '>Log · +' + payOf('asneeded', t) + '</button>';
+      : '<button class="btn sm" type="button" data-action="log" data-cat="asneeded" data-id="' + esc(t.id) + '"' + dis + '>Log</button>';
     return '<div class="rows3">' + rowL(t.name, t.start) + '<div class="wk-floor">' + esc(meta) + '</div><div class="row-act">' + act + '</div></div>';
   }).join('');
 
   /* One-offs live on the Firewall */
   const open = openList(D);
   const fwRow = '<div class="rows3">' + rowL(open.length + ' open', open[0] ? 'Next: ' + open[0].text : 'Nothing open') + '<div></div>' +
-    '<div class="row-act"><button class="btn sm" type="button" data-action="tab" data-tab="firewall">Open the Firewall</button></div></div>';
+    '<div class="row-act"><button class="btn sm" type="button" data-action="tab" data-tab="firewall">Open Gigs</button></div></div>';
 
   const P = PAY();
   return '' +
     '<div class="sec"><div class="sec-h"><span>Daily · did / didn’t</span><i class="rule"></i><span>' + esc(S.wkOff === 0 ? 'Last 7 days' : fmtDay(start) + ' – ' + fmtDay(end)) + '</span>' + nav + '</div>' +
       '<div class="frameset">' + dHead + dRows + '</div>' +
-      '<p class="fine">Every task is a two-minute start. Dailies pay ' + P.daily + ', tap today or yesterday to log. ' + RULES().cacheAt + ' dailies in one day open a cache. A blank costs nothing.</p></div>' +
+      '<p class="fine">Tap today or yesterday to log. 5 of 9 is a Good Day; on Sunday, 2 of 3. Dotted cells are the trial run, dashes are Sunday rest. A blank costs nothing.</p></div>' +
     '<div class="sec"><div class="sec-h"><span>Weekly</span><i class="rule"></i><span>Week of ' + esc(fmtDay(wk0)) + '</span></div>' +
       '<div class="frameset">' + wHead + wRows + '</div>' +
       '<p class="fine">Cleaning runs one station a day. The day is a suggestion; any day this week counts.</p></div>' +
     '<div class="sec"><div class="sec-h"><span>Monthly</span><i class="rule"></i><span>' + esc(monthName(mo)) + '</span></div>' +
       '<div class="frameset">' + mHead + mRows + '</div></div>' +
-    '<div class="sec"><div class="sec-h"><span>As needed</span><i class="rule"></i><span>When it comes up · +' + P.asneeded + '</span></div>' +
+    '<div class="sec"><div class="sec-h"><span>As needed</span><i class="rule"></i><span>When it comes up</span></div>' +
       '<div class="frameset">' + xRows + '</div></div>' +
-    '<div class="sec"><div class="sec-h"><span>One-offs</span><i class="rule"></i><span>The Firewall · +' + P.oneoff + ' each</span></div>' +
+    '<div class="sec"><div class="sec-h"><span>One-offs</span><i class="rule"></i><span>Gigs</span></div>' +
       '<div class="frameset">' + fwRow + '</div></div>';
 }
 
@@ -1422,7 +1409,7 @@ function renderFirewall(D){
     '<label for="newnode">Add a one-off</label>' +
     '<div class="addrow"><input id="newnode" maxlength="140" autocomplete="off" enterkeyhint="done" placeholder="One step that ends where you’d ask “what now?”" value="' + esc(S.nodeDraft) + '"' + (canAdd ? '' : ' disabled') + '>' +
     '<button class="btn primary sm" type="submit"' + (canAdd ? '' : ' disabled') + '>Add</button></div>' +
-    '<p class="fine">' + (queued < rules.maxQueue ? queued + ' of ' + rules.maxQueue + ' open slots used. Each node pays ' + pay + ' cred when cleared.' : 'All ' + rules.maxQueue + ' slots are full. Clear a node first, or put the idea in Cold Storage.') + '</p></form>';
+    '<p class="fine">' + (queued < rules.maxQueue ? queued + ' of ' + rules.maxQueue + ' open slots used.' : 'All ' + rules.maxQueue + ' slots are full. Clear a node first, or put the idea in Cold Storage.') + '</p></form>';
   const lis = nodes.map(n => {
     if (n.locked){
       return '<li class="node locked"><span class="nid">??</span><div class="nb"><div class="node-k">Locked</div><p>' + esc(n.text) + '</p><div class="node-tools">' + rm(n) + '</div></div></li>';
@@ -1434,17 +1421,17 @@ function renderFirewall(D){
     const k = e ? 'Cleared · ' + fmtDay(e.day) : isCur ? 'Suggested next' : 'Open';
     return '<li class="node ' + cls + '"><span class="nid">' + pad(i) + '</span><div class="nb"><div class="node-k">' + k + '</div><p>' + esc(n.text) + '</p>' +
       (!e && n.assist ? assistLine(n.assist) : '') +
-      (e ? '' : '<div class="node-tools"><button class="btn sm' + (isCur ? ' primary' : '') + '" type="button" data-action="node" data-id="' + esc(n.id) + '"' + dis + '>Cleared · +' + pay + '</button>' + rm(n) + '</div>') +
+      (e ? '' : '<div class="node-tools"><button class="btn sm' + (isCur ? ' primary' : '') + '" type="button" data-action="node" data-id="' + esc(n.id) + '"' + dis + '>Cleared</button>' + rm(n) + '</div>') +
       '</div></li>';
   }).join('');
-  return '<div class="sec"><div class="sec-h"><span>Bridge · Boss ' + pad(fw.boss || 1) + ' · one-offs</span><i class="rule"></i><span>Node +' + pay + ' · Breach +' + rules.breach + ' · 1 cache</span></div>' +
+  return '<div class="sec"><div class="sec-h"><span>Bridge · Act ' + pad(S.ship.act) + ' · one-offs</span><i class="rule"></i><span>' + openNodes(fw, D) + ' open</span></div>' +
       '<div class="fw-top"><div><h1 class="h2">' + esc(fw.title || 'The Firewall') + '</h1>' +
-      '<p class="fw-cond">Breach condition: ' + esc(fw.condition || '') + '</p></div>' +
-      '<div class="fw-prog"><div class="n">' + cleared + '<small>/' + real.length + '</small></div><div class="k" style="color:var(--muted);margin-top:8px">Nodes cleared</div></div></div>' +
-      (fw.breached ? '<div class="breached">Breached · +' + rules.breach + ' cred and a cache</div>' : '') +
+      (fw.condition ? '<p class="fw-cond">Breach condition: ' + esc(fw.condition) + '</p>' : '<p class="fw-cond">One-off tasks for this Act, in any order.</p>') + '</div>' +
+      '<div class="fw-prog"><div class="n">' + cleared + '<small>/' + real.length + '</small></div><div class="k" style="color:var(--muted);margin-top:8px">Gigs cleared</div></div></div>' +
+      
     '</div>' +
     '<ol class="nodes" style="margin-top:18px">' + lis + '</ol>' + addForm +
-    '<p class="fine" style="margin-top:14px">One-offs for this Act. Clear them in any order; Now offers one at a time. A node ends where you’d have to stop and ask “what now?”. Stuck on one? Paste it to the Operator in chat and get the next two-minute step.</p>';
+    '<p class="fine" style="margin-top:14px">One-offs for this Act, in any order. A gig ends where you’d have to stop and ask “what now?”. Stuck on one? Paste it to the Operator in chat and get the next two-minute step.</p>';
 }
 
 function renderMarket(D){
@@ -1455,9 +1442,9 @@ function renderMarket(D){
     let act;
     if (S.confirmBuy === it.id){
       act = '<button class="btn primary sm" type="button" data-action="buy-yes" data-id="' + esc(it.id) + '"' + dis + '>Confirm · ' + it.price + ' cred</button>' +
-        (it.tier === 'medium' && D.vouchers > 0 ? '<button class="btn sm" type="button" data-action="buy-voucher" data-id="' + esc(it.id) + '"' + dis + '>Use voucher</button>' : '') +
+        (it.tier === 'small' && D.vouchers > 0 ? '<button class="btn sm" type="button" data-action="buy-voucher" data-id="' + esc(it.id) + '"' + dis + '>Use voucher</button>' : '') +
         '<button class="link" type="button" data-action="buy-no">Cancel</button>';
-    } else if (D.cred >= it.price || (it.tier === 'medium' && D.vouchers > 0)){
+    } else if (D.cred >= it.price || (it.tier === 'small' && D.vouchers > 0)){
       act = '<button class="btn sm sage" type="button" data-action="buy" data-id="' + esc(it.id) + '"' + dis + '>Buy</button>';
     } else {
       act = '<span class="later-tag">' + (it.price - D.cred) + ' cred to go</span>';
@@ -1474,11 +1461,11 @@ function renderMarket(D){
       '<li><span class="h-day">' + fmtDay(s.day) + '</span><span>' + esc(s.item && s.item.name) + (s.ref === 'implant' ? ' · installs at debrief' : '') + '</span><span class="h-amt">' + (s.voucher ? 'voucher' : (s.amount || 0)) + '</span></li>'
     ).join('') + '</ul>' : '<p class="fine">Nothing bought yet.</p>';
   return '<div class="sec"><div class="sec-h"><span>Black Market</span><i class="rule"></i><span>₡0 while Life Support is red</span></div>' +
-      '<div class="wallet"><div class="n">' + D.cred + '</div><div class="u"><b>◆ cred</b><span class="k" style="color:var(--muted)">available' + (D.vouchers > 0 ? ' · ' + D.vouchers + ' Medium voucher' : '') + '</span></div></div>' +
+      '<div class="wallet"><div class="n">' + D.cred + '</div><div class="u"><b>◆ cred</b><span class="k" style="color:var(--muted)">available' + (D.vouchers > 0 ? ' · ' + D.vouchers + ' Small voucher' : '') + '</span></div></div>' +
       '<p class="fine">' + esc(S.market.note || DEFAULT_MARKET.note) + ' Cred buys the guilt-free version of things you’d do anyway.</p></div>' +
     '<div class="sec"><div class="items">' + items.map(itemHtml).join('') + '</div></div>' +
     '<div class="sec"><div class="sec-h"><span>Bought</span><i class="rule"></i><span>Last 8</span></div>' + hist +
-    '<p class="fine">Not for sale: sleeping in, skipping Move, late nights, food delivery, and anything that costs real money while Life Support is red.</p></div>';
+    '</div>';
 }
 
 function weekStats(D, now){
@@ -1489,17 +1476,20 @@ function weekStats(D, now){
   const safe = days.filter(d => D.safe[d]).length;
   const wkKey = mondayOf(start);
   const weekly = roster('weekly').map(t => ({t: t, e: gotE(D, 'weekly', wkKey, t.id)}));
-  const inWeek = e => e.day >= start && e.day <= end;
+  const inWeek = e => e.day >= start && e.day <= end && e.day >= D.act0;
   const nodes = D.list.filter(e => e.kind === 'node' && inWeek(e));
   const asn = {};
   roster('asneeded').forEach(t => { asn[t.id] = D.list.filter(e => e.kind === 'asneeded' && e.ref === t.id && inWeek(e)).length; });
   let earned = 0, spent = 0; const bought = [];
   D.list.filter(inWeek).forEach(e => {
+    if (e.kind !== 'cache' && e.kind !== 'spend') return;
     const a = Number(e.amount) || 0;
     if (a > 0) earned += a; if (a < 0) spent += -a;
     if (e.kind === 'spend') bought.push(e);
   });
-  return {start, end, days, c, safe, wkKey, weekly, nodes, asn, earned, spent, bought};
+  const DP = DAYPAY(); let good = 0, floorN = 0;
+  days.forEach(d => { const v = D.verdict[d]; if (!v) return; if (v.state === 'good'){ good++; earned += DP.good; } else if (v.state === 'floor'){ floorN++; earned += DP.floor; } });
+  return {start, end, days, c, safe, wkKey, weekly, nodes, asn, earned, spent, bought, good, floorN};
 }
 
 function reportText(D){
@@ -1510,14 +1500,15 @@ function reportText(D){
   const money = db && db.money != null ? db.money : (S.moneyDraft ? Number(S.moneyDraft) : null);
   const food = db && db.food != null ? db.food : (S.foodDraft ? Number(S.foodDraft) : null);
   const lines = [
-    S.ship.name.toUpperCase() + ' · DEBRIEF · Act ' + pad(S.ship.act) + ' · Deck v2',
+    S.ship.name.toUpperCase() + ' · DEBRIEF · Act ' + pad(S.ship.act) + ' · Deck v2 · Slice 1',
+    'Days: Good ' + W.good + ' · Floor ' + W.floorN + ' · Act 1 Good Days so far ' + D.good,
     'Week: ' + fmtDay(W.start) + ' – ' + fmtDay(W.end),
-    'Daily (of 7): ' + roster('daily').map(t => t.name + ' ' + W.c[t.id]).join(' · ') + ' · Safe Mode ' + W.safe,
+    'Daily (of 7): ' + roster('daily').map(t => t.name + ' ' + W.c[t.id]).join(' · '),
     'Weekly: ' + W.weekly.map(x => x.t.name + ' ' + (x.e ? 'done' : '—')).join(' · '),
     'Monthly (' + monthName(mo) + ' so far): ' + roster('monthly').map(t => t.name + ' ' + (got(D, 'monthly', mo, t.id) ? 'done' : '—')).join(' · '),
     'As needed: ' + roster('asneeded').map(t => t.name + ' ' + W.asn[t.id]).join(' · '),
-    'Firewall nodes cleared: ' + W.nodes.length + (W.nodes.length ? ' (' + W.nodes.map(nodeName).join('; ') + ')' : '') + ' · open ' + openList(D).length,
-    'Cred: +' + W.earned + ' earned, −' + W.spent + ' spent · balance ' + D.cred + ' · XP ' + D.xp + ' · Lvl ' + D.level,
+    'Gigs cleared: ' + W.nodes.length + (W.nodes.length ? ' (' + W.nodes.map(nodeName).join('; ') + ')' : '') + ' · open ' + openList(D).length,
+    'Cred: +' + W.earned + ' earned, −' + W.spent + ' spent · balance ' + D.cred,
     'Bought: ' + (W.bought.length ? W.bought.map(b => (b.item && b.item.name) + (b.voucher ? ' (voucher)' : ' (' + (-b.amount) + ')')).join(', ') : 'nothing'),
     'Money number: ' + (money != null && isFinite(money) ? crc(money) : 'not entered'),
     'Food out (delivery + eating out): ' + (food != null && isFinite(food) ? crc(food) : 'not entered')
@@ -1544,11 +1535,11 @@ function renderDebrief(D, now){
   return (comms ? '<div class="sec">' + comms + '</div>' : '') +
     '<div class="sec"><div class="sec-h"><span>Last 7 days · daily</span><i class="rule"></i><span>' + fmtDay(W.start) + ' – ' + fmtDay(W.end) + '</span></div>' +
       '<div class="bars">' + roster('daily').map(barRow).join('') + '</div>' +
-      '<dl class="nums"><div><dt>Weekly done</dt><dd>' + wDone + '<small>/' + W.weekly.length + '</small></dd></div><div><dt>Nodes cleared</dt><dd>' + W.nodes.length + '</dd></div><div><dt>Cred earned</dt><dd>+' + W.earned + '</dd></div><div><dt>Cred spent</dt><dd>' + W.spent + '</dd></div><div><dt>Balance</dt><dd>' + D.cred + '</dd></div></dl></div>' +
+      '<dl class="nums"><div><dt>Good Days</dt><dd>' + W.good + '<small>/7</small></dd></div><div><dt>Weekly done</dt><dd>' + wDone + '<small>/' + W.weekly.length + '</small></dd></div><div><dt>Gigs cleared</dt><dd>' + W.nodes.length + '</dd></div><div><dt>Cred earned</dt><dd>+' + W.earned + '</dd></div><div><dt>Cred spent</dt><dd>' + W.spent + '</dd></div><div><dt>Balance</dt><dd>' + D.cred + '</dd></div></dl></div>' +
     '<div class="sec"><div class="sec-h"><span>Copy to the posters</span><i class="rule"></i><span>Highlighters</span></div><ul class="posters">' +
       '<li><b>Quarters</b>Lights out ' + L + ' of 7 nights. Color that many cells. ' + (L >= 5 ? 'That’s a gate week for the Crew meter.' : 'Gate weeks need 5.') + '</li>' +
-      '<li><b>Airlock</b>Move ' + cnt('move') + ' of 7 days, Loadout ' + cnt('loadout') + ' of 7. Color the EVA log.</li>' +
-      '<li><b>Bridge</b>Color ' + W.nodes.length + ' Firewall node' + (W.nodes.length === 1 ? '' : 's') + ', then move the Act marker.</li>' +
+      '<li><b>Airlock</b>Workout ' + cnt('move') + ' of 7 days, Loadout ' + cnt('loadout') + ' of 7. Color the EVA log.</li>' +
+      '<li><b>Bridge</b>Color ' + W.nodes.length + ' gig' + (W.nodes.length === 1 ? '' : 's') + ', then move the Act marker.</li>' +
       '<li><b>Galley</b>Supply Run ' + (wdone('supply') ? 'done' : 'blank') + ', Prep food ' + (wdone('prep') ? 'done' : 'blank') + '. Color this week’s box for each one done. Blanks cost nothing.</li>' +
       (zones.length ? '<li><b>Cleaning</b>' + zones.filter(x => x.e).length + ' of ' + zones.length + ' stations: ' + zones.map(x => x.t.name.replace(/^Clean /, '') + (x.e ? ' ✓' : ' —')).join(', ') + '.</li>' : '') +
     '</ul></div>' +
@@ -1565,7 +1556,7 @@ function renderDebrief(D, now){
       '</div>' +
       '<div class="actions" style="margin-top:6px">' +
         (logged ? '<span class="done-tag">Debrief logged · ' + fmtDay(logged.day) + '</span>'
-                : '<button class="btn primary" type="button" data-action="debrief"' + dis + '>Log debrief · +' + debriefPay + '</button>') +
+                : '<button class="btn primary" type="button" data-action="debrief"' + dis + '>Log debrief</button>') +
         '<button class="btn" type="button" data-action="copy">Copy for the Operator</button>' +
       '</div></div>' +
     '<div class="sec"><div class="sec-h"><span>Deck</span><i class="rule"></i><span>Settings · v2</span></div><div class="settings">' +
@@ -1617,8 +1608,16 @@ const handlers = {
     if (S.tab === 'debrief' && S.comms && S.comms.id) ls.set('read', S.comms.id);
     $('#main').scrollTop = 0; render();
   },
-  log(b){ logTask(b.dataset.cat, b.dataset.id, b.dataset.day || null); },
-  timer(b){ startTimer(b.dataset.cat, b.dataset.id, b.dataset.day || null); },
+  log(b){
+    const t = task(b.dataset.cat, b.dataset.id);
+    if (t && t.variants && !b.dataset.variant){ askVariant(b.dataset.cat, b.dataset.id, b.dataset.day || null, 'log'); return; }
+    closeModal(); logTask(b.dataset.cat, b.dataset.id, b.dataset.day || null, false, b.dataset.variant || null);
+  },
+  timer(b){
+    const t = task(b.dataset.cat, b.dataset.id);
+    if (t && t.variants && !b.dataset.variant){ askVariant(b.dataset.cat, b.dataset.id, b.dataset.day || null, 'timer'); return; }
+    closeModal(); startTimer(b.dataset.cat, b.dataset.id, b.dataset.day || null, b.dataset.variant || null);
+  },
   'timer-stop'(){ stopTimer(); },
   'not-last'(b){ ls.set('dismiss:night-' + b.dataset.day, '1'); sfx('soft'); toast('Blank night. No cost.'); render(); },
   'not-today'(b){ ls.set('dismiss:wake-' + b.dataset.day, '1'); sfx('soft'); toast('Blank morning. No cost.'); render(); },
@@ -1630,7 +1629,7 @@ const handlers = {
   'node-rm-no'(){ S.confirmRm = null; render(); },
   cache(b){ openCacheManual(b.dataset.ent); },
   safe(){ openSafe(); },
-  'safe-done'(){ const used = allEntries().has('safe-' + dayKey(new Date())); closeModal(); if (!used) logSafe(); else { sfx('soft'); toast('Logged. Good restart.'); } },
+  'safe-done'(){ closeModal(); },
   'close-modal'(){ closeModal(); },
   buy(b){ S.confirmBuy = b.dataset.id; render(); },
   'buy-yes'(b){ buy(b.dataset.id, false); },
