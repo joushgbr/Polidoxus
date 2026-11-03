@@ -387,6 +387,46 @@ button.ck-box[data-action="tab"]{color:var(--text);font-size:24px}
 .cell.rest{border-color:transparent;color:var(--line-2);font:500 13px/1 var(--font-mono)}
 .cell.pre{border-style:dotted;opacity:.3}
 .tab .tab-s{display:none}
+/* ---------- Slice 4: Act progress (Good Days with stars, the 3 conditions) ---------- */
+.act-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.act-gd .k{display:block;color:var(--muted);margin-bottom:8px}
+.act-gd .v{font:800 clamp(56px,9vw,88px)/.85 var(--font-grot);letter-spacing:-.05em;color:var(--good);font-variant-numeric:tabular-nums}
+.act-gd small{font-size:.3em;color:var(--muted);letter-spacing:0;margin-left:6px}
+.act-stars{display:flex;gap:16px;padding-bottom:4px}
+.act-star{display:grid;justify-items:center;gap:6px;font:500 10px/1 var(--font-mono);letter-spacing:.1em;color:var(--muted)}
+.act-star b{font:700 24px/1 var(--font-grot);color:var(--line-2);letter-spacing:.04em}
+.act-star.on b{color:var(--good);text-shadow:0 0 10px var(--good-glow)}
+.conds{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.cond{border:1.5px solid var(--line-2);background:var(--panel);padding:14px 16px;display:grid;gap:11px;align-content:start;min-width:0}
+.cond.met{border-color:var(--orange)}
+.cond-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}
+.cond-n{font:700 13px/1 var(--font-pixel);color:var(--orange)}
+.cond-top b{font:700 17px/1.2 var(--font-grot)}
+.cond-tag{font:500 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;border:1.5px solid var(--line-2);color:var(--muted);padding:6px 8px;white-space:nowrap}
+.cond-tag.met{background:var(--orange);border-color:var(--orange);color:var(--on-orange)}
+.cond-tag.out{border-style:dashed}
+.cond-rule{margin:0;font:400 14px/1.4 var(--font-grot);color:var(--muted)}
+.wk4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.wk4 span{border:1.5px solid var(--line-2);padding:7px 8px;display:grid;gap:6px;font:500 10px/1 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+.wk4 span b{font:700 16px/1 var(--font-grot);color:var(--text);letter-spacing:-.01em}
+.wk4 span.cur{border-color:var(--orange)}
+.wk4 span.hit{background:var(--orange);border-color:var(--orange);color:var(--on-orange)}
+.wk4 span.hit b{color:var(--on-orange)}
+.wk4 span.fut{opacity:.45}
+.cond-steps{list-style:none;margin:0;padding:0;display:grid;gap:7px;font:400 14.5px/1.35 var(--font-grot)}
+.cond-steps li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px}
+.cond-steps i{font:700 13px/1.35 var(--font-mono);font-style:normal;color:var(--muted)}
+.cond-steps li.ok i{color:var(--orange)}
+.act-verdict{border:3px solid var(--orange);padding:14px 16px;display:grid;gap:8px}
+.act-verdict b{font:700 clamp(24px,4vw,36px)/1 var(--font-pixel);text-transform:uppercase;color:var(--orange)}
+.act-verdict.done{border-color:var(--good)}
+.act-verdict.done b{color:var(--good)}
+.act-verdict p{margin:0;font:400 15px/1.4 var(--font-grot)}
+.tl-conds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:10px;width:100%;padding:0;border:0;background:none;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.tl-conds .tc{border:1.5px solid var(--line-2);padding:7px 8px;display:grid;gap:5px;font:500 10px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-conds .tc b{font:600 10px/1 var(--font-mono);letter-spacing:.12em;color:var(--text)}
+.tl-conds .tc.met{border-color:var(--orange);color:var(--orange)}
+.perk-note{margin-top:8px}
 /* ---------- Slice 2: character sheet, mini sheet, phone cockpit ---------- */
 .mini{display:grid;gap:10px;width:100%;text-align:left;border:1.5px solid var(--text);background:var(--panel);color:var(--text);padding:12px 14px;cursor:pointer;font:inherit}
 .mini-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
@@ -740,7 +780,7 @@ function statsFrom(xp){
   return {stats, level};
 }
 /* ================= Perks and market helpers (Slice 3) ================= */
-const PERK_LATER = new Set(['Debt Relief', 'Interest', 'Compound']); // Money L3–L5: switch on in a later build
+const PERK_LATER = new Set(); // every perk is live as of Slice 4 (Money L3–L5 switched on Nov 2)
 function perkOn(D, name){
   if (PERK_LATER.has(name)) return false;
   for (const s of STATS){
@@ -918,26 +958,65 @@ function verdictOf(idx, d, safe){
   const n = ids.filter(id => b[id]).length, need = Math.max(1, Math.ceil(ids.length / 2));
   return {n: n, need: need, total: ids.length, state: n >= need ? 'good' : (n > 0 || (safe && safe[d])) ? 'floor' : 'blank', safe: !!(safe && safe[d])};
 }
+/* ================= Cred, day by day (Slice 4) =================
+   The balance is replayed in order so the Money perks apply at the level you had on that day:
+   - Debt Relief (Money L3): while Owed, each earning pays the debt back 1.5× (the bonus stops once you're even).
+   - Interest (Money L4): every Monday, +1 per 20 held at the end of Sunday, max +5.
+   - Compound (Money L5): Interest improves to +1 per 15 held, max +8. */
+function perkLv(name){
+  for (const s of STATS){ const p = perksOf(s).find(x => x.name === name); if (p) return p.lv; }
+  return Infinity;
+}
+function moneyRun(act0, today, cash, payDay, mxp){
+  const th = statThresholds().Money || 2;
+  const lvRelief = perkLv('Debt Relief'), lvInt = perkLv('Interest'), lvComp = perkLv('Compound');
+  let bal = 0, mx = 0;
+  const interest = [], relief = {};
+  const lvNow = () => 1 + Math.floor(mx / th);
+  const earn = (a, d) => {
+    if (a > 0 && bal < 0 && lvNow() >= lvRelief){
+      const b = Math.floor(Math.min(a / 2, -bal / 3));
+      if (b > 0){ bal += b; relief[d] = (relief[d] || 0) + b; }
+    }
+    bal += a;
+  };
+  let last = today;
+  Object.keys(cash).forEach(d => { if (d > last) last = d; });
+  for (let d = act0; d <= last; d = addDays(d, 1)){
+    if (d > act0 && parseDay(d).getDay() === 1 && bal > 0){
+      const L = lvNow(), r = L >= lvComp ? {per: 15, max: 8, perk: 'Compound'} : L >= lvInt ? {per: 20, max: 5, perk: 'Interest'} : null;
+      if (r){ const n = Math.min(r.max, Math.floor(bal / r.per)); if (n > 0){ bal += n; interest.push({day: d, n: n, perk: r.perk}); } }
+    }
+    mx += mxp[d] || 0;
+    (cash[d] || []).slice().sort((a, b) => String(a.at || '').localeCompare(String(b.at || ''))).forEach(e => {
+      const a = Number(e.amount) || 0;
+      if (a > 0) earn(a, d); else bal += a;
+    });
+    if (payDay[d]) earn(payDay[d], d);
+  }
+  return {bal, interest, relief};
+}
 /* Everything shown is computed from the ledger. The trial run (before the Act started, or marked archived) is kept but never counted.
    Cred = what your days paid (Good 5 · Floor 1) + caches − spending. Task taps themselves carry no cred. */
 function derive(map){
   const act0 = actStartOf(), DP = DAYPAY(), today = dayKey(new Date());
   const list = [];
   for (const [id, e] of map) list.push(Object.assign({id: id}, e));
-  let cred = 0, vouchers = 0, usedV = 0;
+  let vouchers = 0, usedV = 0;
+  const cash = {}, payDay = {}, mxp = {};
   const xp = {}; STATS.forEach(st => { xp[st] = 0; });
   const rest = new Set();
   const idx = {daily:{}, weekly:{}, monthly:{}, asneeded:{}}, safe = {}, opened = new Set(), ent = [];
   for (const e of list){
     const trial = !!e.archived || !!(e.day && e.day < act0);
-    if (!trial && (e.kind === 'cache' || e.kind === 'spend')) cred += Number(e.amount) || 0;
+    if (!trial && (e.kind === 'cache' || e.kind === 'spend') && e.day) (cash[e.day] || (cash[e.day] = [])).push(e);
     if (trial) continue;
     const c = classify(e);
     if (c && c.key && c.ref){
       const b = idx[c.cat][c.key] || (idx[c.cat][c.key] = {});
       if (!b[c.ref]) b[c.ref] = e;
     }
-    if (c || e.kind === 'node'){ const st = statOf(e, c); if (st && xp[st] != null) xp[st] += e.double ? 2 : 1; }
+    if (c || e.kind === 'node'){ const st = statOf(e, c); if (st && xp[st] != null){ xp[st] += e.double ? 2 : 1; if (st === 'Money' && e.day) mxp[e.day] = (mxp[e.day] || 0) + (e.double ? 2 : 1); } }
     if (e.kind === 'safe' && e.day) safe[e.day] = e;
     if (e.kind === 'node') ent.push('gig-' + e.ref);
     if (e.perkCache) ent.push('pc-' + e.id);
@@ -950,12 +1029,13 @@ function derive(map){
   const cf = S.ship.cachesFrom || act0;
   for (let d = act0; d <= today; d = addDays(d, 1)){
     const v = verdictOf(idx, d, safe); verdict[d] = v;
-    if (v.state === 'good'){ cred += DP.good; good++; if (d >= cf) ent.push('day-' + d); }
-    else if (v.state === 'floor'){ cred += DP.floor; floor++; }
+    if (v.state === 'good'){ payDay[d] = DP.good; good++; if (d >= cf) ent.push('day-' + d); }
+    else if (v.state === 'floor'){ payDay[d] = DP.floor; floor++; }
   }
   const SL = statsFrom(xp);
+  const M = moneyRun(act0, today, cash, payDay, mxp);
   return {
-    map, list, cred, idx, safe, verdict, good, floor, act0,
+    map, list, cred: M.bal, interest: M.interest, relief: M.relief, idx, safe, verdict, good, floor, act0,
     stats: SL.stats, level: SL.level,
     vouchers: vouchers - usedV,
     unopened: ent.filter(x => !opened.has(x))
@@ -1629,7 +1709,7 @@ function renderNow(D, now){
   const di = diffDays(today, act0);
   const big = di < 0 ? pad(-di) : pad(Math.min(di + 1, 99));
   const bigLabel = di < 0 ? 'Days to launch<br>Act ' + pad(S.ship.act) : 'Day of Act ' + pad(S.ship.act) + '<br>of 28';
-  return '<div class="now-grid"><div class="hud-col' + (S.booted ? '' : ' boot') + '">' + main + '</div><aside class="side">' + miniSheet(D, 'side') + timeline(now) + tx + '</aside></div>' +
+  return '<div class="now-grid"><div class="hud-col' + (S.booted ? '' : ' boot') + '">' + main + '</div><aside class="side">' + miniSheet(D, 'side') + timeline(now, D) + tx + '</aside></div>' +
     '<div class="bigrow" aria-hidden="true"><span class="bign">' + big + '</span><span class="bigl">' + bigLabel + '</span></div>';
 }
 
@@ -1693,7 +1773,7 @@ function renderTabs(D){
 }
 
 
-function timeline(now){
+function timeline(now, D){
   const start = S.ship.actStart || DEFAULT_SHIP.actStart;
   const di = diffDays(dayKey(now), start);
   let segs = '', dates = '';
@@ -1706,7 +1786,7 @@ function timeline(now){
   dates += '<span>' + fmtShort(addDays(start, 28)) + '</span>';
   const m = di < 0 ? 'Launch in ' + (-di) + ' day' + (di === -1 ? '' : 's') : 'Day ' + Math.min(di + 1, 28) + ' of 28';
   return '<section class="tl" aria-label="Act timeline"><div class="tl-head"><span class="phase">Act ' + pad(S.ship.act) + ' · ' + esc(S.ship.actName) + '</span><span class="m">' + m + '</span></div>' +
-    '<div class="tl-bar">' + segs + '</div><div class="tl-dates">' + dates + '</div></section>';
+    '<div class="tl-bar">' + segs + '</div><div class="tl-dates">' + dates + '</div>' + (D && di >= 0 ? actChips(D, dayKey(now)) : '') + '</section>';
 }
 
 
@@ -1867,6 +1947,20 @@ function renderFirewall(D){
     '<p class="fine" style="margin-top:14px">A gig ends where you’d have to stop and ask “what now?”. Locked gigs open once the one before them is cleared. Stuck on one? Paste it to the Operator in chat and get the next two-minute step.</p>';
 }
 
+/* Money perks, as one line under the wallet: what's switched on and what it paid. */
+function moneyPerkNote(D, today){
+  const out = [];
+  const comp = perkOn(D, 'Compound'), intr = comp || perkOn(D, 'Interest');
+  if (D.cred < 0 && perkOn(D, 'Debt Relief')) out.push('Debt Relief is on: while you’re Owed, earnings pay it back 1.5×.');
+  if (intr){
+    const wk = mondayOf(today), hit = (D.interest || []).find(x => x.day === wk);
+    out.push((comp ? 'Compound' : 'Interest') + ' pays every Monday: +1 per ' + (comp ? 15 : 20) + ' you hold, max +' + (comp ? 8 : 5) + '.' + (hit ? ' This Monday: +' + hit.n + '.' : ''));
+  }
+  const relief = Object.keys(D.relief || {}).reduce((a, d) => a + D.relief[d], 0);
+  const paid = (D.interest || []).reduce((a, x) => a + x.n, 0);
+  if (paid || relief) out.push('This Act so far: ' + [paid ? '+' + paid + ' interest' : '', relief ? '+' + relief + ' from Debt Relief' : ''].filter(Boolean).join(', ') + '.');
+  return out.length ? '<p class="fine perk-note">' + esc(out.join(' ')) + '</p>' : '';
+}
 function renderMarket(D, now){
   now = now || new Date();
   const today = dayKey(now), dis = ready() ? '' : ' disabled';
@@ -1919,11 +2013,117 @@ function renderMarket(D, now){
   const owed = D.cred < 0;
   return '<div class="sec"><div class="sec-h"><span>Black Market</span><i class="rule"></i><span>Act ' + pad(S.ship.act) + '</span></div>' +
       '<div class="wallet"><div class="n' + (owed ? ' owed' : '') + '">' + Math.abs(D.cred) + '</div><div class="u"><b>' + (owed ? '◆ owed' : '◆ cred') + '</b><span class="k" style="color:var(--muted)">' + (owed ? 'earned back by Good and Floor Days' : 'available') + (D.vouchers > 0 ? ' · ' + D.vouchers + ' Small voucher' + (D.vouchers > 1 ? 's' : '') : '') + '</span></div></div>' +
-      '<p class="fine">Cred comes from days: Good Day 5, Floor Day 1. Gated items cost cred whether you buy them first or log them after.</p></div>' +
+      '<p class="fine">Cred comes from days: Good Day 5, Floor Day 1. Gated items cost cred whether you buy them first or log them after.</p>' + moneyPerkNote(D, today) + '</div>' +
     '<div class="sec"><div class="sec-h"><span>Free lane</span><i class="rule"></i><span>No ₡</span></div><div class="items">' + lane('free').map(card).join('') + '</div></div>' +
     '<div class="sec"><div class="sec-h"><span>₡ lane</span><i class="rule"></i><span>' + (tl ? 'Treat line ' + esc(crc(tl)) + ' a month' : 'Locked until the budget sets a treat line') + '</span></div><div class="items">' + lane('crc').map(card).join('') + '</div></div>' +
     (boosters.length ? '<div class="sec"><div class="sec-h"><span>Booster</span><i class="rule"></i><span>One free pass</span></div><div class="items">' + boosters.map(card).join('') + '</div></div>' : '') +
     '<div class="sec"><div class="sec-h"><span>Bought</span><i class="rule"></i><span>Last 8</span></div>' + hist + '</div>';
+}
+
+/* ================= Act progress (Slice 4) =================
+   Clear = 14 Good Days of 28 plus all 3 conditions. Stars at 17 and 20. Each condition is met, still open, or out of reach this run.
+   Out of reach is only said when the math rules it out: today and yesterday can still be logged. */
+const ACT_LEN = 28;
+function actProgress(D, today){
+  const act0 = D.act0, end = addDays(act0, ACT_LEN - 1), review = addDays(act0, ACT_LEN), yest = addDays(today, -1);
+  const lightsT = roster('daily').find(t => t.slot === 'night') || {id: 'lights'};
+  const stations = roster('weekly').filter(t => /^clean-/.test(t.id));
+  const nS = stations.length || 4;
+  const weeks = [];
+  for (let w = 0; w < 4; w++){
+    const ws = addDays(act0, w * 7), we = addDays(ws, 6);
+    let n = 0, open = 0;
+    for (let i = 0; i < 7; i++){
+      const d = addDays(ws, i);
+      if (d <= today && got(D, 'daily', d, lightsT.id)) n++;
+      else if (d >= yest) open++;
+    }
+    const cleaned = stations.filter(t => got(D, 'weekly', ws, t.id)).length;
+    weeks.push({w: w + 1, start: ws, end: we, lights: n, lightsMax: n + open, cleaned: cleaned, cur: ws <= today && today <= we, fut: ws > today});
+  }
+  let sleepMet = false, sleepOpen = false;
+  for (let i = 0; i < 3; i++){
+    if (weeks[i].lights >= 5 && weeks[i + 1].lights >= 5) sleepMet = true;
+    if (weeks[i].lightsMax >= 5 && weeks[i + 1].lightsMax >= 5) sleepOpen = true;
+  }
+  const full = weeks.filter(x => x.cleaned >= nS).length;
+  const shipMet = full >= 2, shipOpen = full + weeks.filter(x => x.cleaned < nS && x.end >= today).length >= 2;
+  const fw = S.firewall, bnode = fw && Array.isArray(fw.nodes) ? fw.nodes.find(n => n.id === 'budget') : null;
+  const gig = bnode ? D.map.get(nodeId(fw, bnode)) || null : null;
+  const checks = gig ? D.list.filter(e => e.kind === 'budgetcheck' && !e.archived && e.day >= act0 && e.day <= review && e.day >= (gig.day || act0)) : [];
+  const budgetMet = !!gig && checks.length > 0, budgetOpen = today <= review;
+  let good = 0, left = 0;
+  for (let d = act0; d <= end; d = addDays(d, 1)){
+    const g = D.verdict[d] && D.verdict[d].state === 'good';
+    if (g && d <= today) good++;
+    else if (d >= yest) left++;
+  }
+  const gdMet = good >= 14, gdOpen = good + left >= 14;
+  const st = (met, open) => met ? 'met' : open ? 'open' : 'out';
+  const curW = weeks.find(x => x.cur) || (today > end ? weeks[3] : weeks[0]);
+  return {
+    act0, end, review, today, weeks, curW, nS, good, left,
+    stars: good >= 20 ? 3 : good >= 17 ? 2 : good >= 14 ? 1 : 0,
+    gd: st(gdMet, gdOpen), sleep: st(sleepMet, sleepOpen), ship: st(shipMet, shipOpen), budget: st(budgetMet, budgetOpen),
+    full, gig, checks, ended: today > end,
+    complete: gdMet && sleepMet && budgetMet && shipMet,
+    thisCheck: D.map.get('budgetcheck-' + mondayOf(today)) || null
+  };
+}
+function logBudgetCheck(){
+  const today = dayKey(new Date()), id = 'budgetcheck-' + mondayOf(today);
+  if (allEntries().has(id)) return;
+  commit([[id, {kind: 'budgetcheck', ref: mondayOf(today), day: today, at: new Date().toISOString()}]], 'Budget check logged');
+}
+function condTag(status){
+  return status === 'met' ? '<span class="cond-tag met">Met ✓</span>' : status === 'open' ? '<span class="cond-tag">In progress</span>' : '<span class="cond-tag out">Out of reach this run</span>';
+}
+function actSection(D, today){
+  const A = actProgress(D, today), dis = ready() ? '' : ' disabled';
+  const wkCells = (val, hit) => '<div class="wk4">' + A.weeks.map(x =>
+    '<span class="' + (hit(x) ? 'hit' : x.cur ? 'cur' : x.fut ? 'fut' : '') + '">W' + x.w + '<b>' + (x.fut ? '–' : val(x)) + '</b></span>').join('') + '</div>';
+  const sleep = '<section class="cond ' + A.sleep + '"><div class="cond-top"><span class="cond-n">1</span><b>Sleep gate</b>' + condTag(A.sleep) + '</div>' +
+    '<p class="cond-rule">Lights out by 19:00 on 5 of 7 nights, two weeks in a row.</p>' +
+    wkCells(x => x.lights + '/5', x => x.lights >= 5) + '</section>';
+  const ship = '<section class="cond ' + A.ship + '"><div class="cond-top"><span class="cond-n">3</span><b>Ship cleaned</b>' + condTag(A.ship) + '</div>' +
+    '<p class="cond-rule">All ' + A.nS + ' stations cleaned in 2 of the 4 weeks.</p>' +
+    wkCells(x => x.cleaned + '/' + A.nS, x => x.cleaned >= A.nS) + '</section>';
+  const checked = A.checks.length ? A.checks[A.checks.length - 1] : null;
+  let bAct = '';
+  if (!A.gig) bAct = '<p class="fine">The check opens once the budget gig clears (Gigs tab).</p>';
+  else if (A.thisCheck) bAct = '<span class="done-tag">Checked · ' + esc(fmtDay(A.thisCheck.day)) + '</span>';
+  else if (A.budget !== 'out') bAct = '<div class="actions"><button class="btn sm primary" type="button" data-action="budget-check"' + dis + '>Budget checked this week</button></div>' +
+    '<p class="fine">Tap it after you’ve compared this week’s spending with the budget.</p>';
+  const budget = '<section class="cond ' + A.budget + '"><div class="cond-top"><span class="cond-n">2</span><b>Budget built and used</b>' + condTag(A.budget) + '</div>' +
+    '<p class="cond-rule">Build the budget, then check your spending against it at one Monday debrief.</p>' +
+    '<ul class="cond-steps"><li class="' + (A.gig ? 'ok' : '') + '"><i>' + (A.gig ? '✓' : '—') + '</i><span>Budget gig cleared' + (A.gig ? ' · ' + esc(fmtDay(A.gig.day)) : '') + '</span></li>' +
+    '<li class="' + (checked ? 'ok' : '') + '"><i>' + (checked ? '✓' : '—') + '</i><span>Spending checked against it' + (checked ? ' · ' + esc(fmtDay(checked.day)) : '') + '</span></li></ul>' + bAct + '</section>';
+  let segs = '';
+  for (let i = 1; i <= 20; i++) segs += '<i class="' + (i <= A.good ? 'on' : '') + (i === 14 || i === 17 || i === 20 ? ' mark' : '') + '"></i>';
+  const star = (n, at) => '<span class="act-star' + (A.stars >= n ? ' on' : '') + '"><b>' + '★'.repeat(n) + '</b>' + at + '</span>';
+  const need = Math.max(0, 14 - A.good);
+  const gdLine = A.good >= 20 ? 'Three stars. Every Good Day from here is extra.'
+    : A.good >= 14 ? 'Good Days cleared. ' + ((A.good >= 17 ? 20 : 17) - A.good) + ' more for the next star.'
+    : A.gd === 'out' ? '14 is out of reach this run. The Act reruns with a smaller list; the goal stays the same.'
+    : need + ' more Good Day' + (need === 1 ? '' : 's') + ' to clear, with ' + A.left + ' day' + (A.left === 1 ? '' : 's') + ' left to play.';
+  const verdict = !A.ended ? '' : A.complete
+    ? '<div class="act-verdict done"><b>Act ' + pad(S.ship.act) + ' complete' + (A.stars > 1 ? ' · ' + '★'.repeat(A.stars) : '') + '</b><p>All four in. Act 2 opens at the review: paste the report to the Operator.</p></div>'
+    : '<div class="act-verdict"><b>Act ' + pad(S.ship.act) + ' reruns</b><p>Not every condition landed this time, so the Act runs again with a smaller daily list. The goal stays the same. Paste the report to the Operator at the review.</p></div>';
+  const dayN = Math.min(diffDays(today, A.act0) + 1, ACT_LEN);
+  return '<div class="sec"><div class="sec-h"><span>Act ' + pad(S.ship.act) + ' · ' + esc(S.ship.actName) + '</span><i class="rule"></i><span>' + (A.ended ? 'Review ' + esc(fmtDay(A.review)) : 'Day ' + dayN + ' of ' + ACT_LEN) + '</span></div>' + verdict +
+      '<div class="act-top"><div class="act-gd"><span class="k">Good Days</span><span class="v">' + pad(A.good) + '<small>/ 14</small></span></div>' +
+      '<div class="act-stars">' + star(1, '14') + star(2, '17') + star(3, '20') + '</div></div>' +
+      '<div class="segbar s20" role="img" aria-label="' + A.good + ' Good Days. Clear at 14, two stars at 17, three at 20">' + segs + '</div>' +
+      '<p class="fine">' + esc(gdLine) + ' Clearing the Act also needs all 3 conditions.' + (A.ended ? '' : ' Last day: ' + esc(fmtDay(A.end)) + '.') + '</p>' +
+      '<div class="conds">' + sleep + budget + ship + '</div></div>';
+}
+function actChips(D, today){
+  const A = actProgress(D, today), c = A.curW;
+  const chip = (label, status, val) => '<span class="tc' + (status === 'met' ? ' met' : '') + '"><b>' + label + '</b>' + (status === 'met' ? '✓ Met' : val) + '</span>';
+  return '<button class="tl-conds" type="button" data-action="tab" data-tab="debrief" aria-label="Act conditions. Open the Debrief">' +
+    chip('Sleep', A.sleep, 'W' + c.w + ' ' + c.lights + '/5') +
+    chip('Budget', A.budget, (A.gig ? 1 : 0) + ' of 2') +
+    chip('Ship', A.ship, A.full + ' of 2 wks') + '</button>';
 }
 
 function weekStats(D, now){
@@ -1947,19 +2147,23 @@ function weekStats(D, now){
   });
   const DP = DAYPAY(); let good = 0, floorN = 0;
   days.forEach(d => { const v = D.verdict[d]; if (!v) return; if (v.state === 'good'){ good++; earned += DP.good; } else if (v.state === 'floor'){ floorN++; earned += DP.floor; } });
-  return {start, end, days, c, safe, wkKey, weekly, nodes, asn, earned, spent, bought, good, floorN};
+  days.forEach(d => { earned += (D.relief && D.relief[d]) || 0; });
+  const intr = (D.interest || []).filter(x => x.day >= start && x.day <= end).reduce((a, x) => a + x.n, 0);
+  earned += intr;
+  return {start, end, days, c, safe, wkKey, weekly, nodes, asn, earned, spent, bought, good, floorN, intr};
 }
 
 function reportText(D){
-  const now = new Date(), W = weekStats(D, now), today = dayKey(now), mo = monthOf(today);
+  const now = new Date(), W = weekStats(D, now), today = dayKey(now), mo = monthOf(today), A = actProgress(D, today);
   const fw = S.firewall;
   const nodeName = e => { const n = fw && Array.isArray(fw.nodes) ? fw.nodes.find(x => x.id === e.ref) : null; return n ? n.text : e.ref; };
   const db = D.map.get('debrief-' + mondayOf(today));
   const money = db && db.money != null ? db.money : (S.moneyDraft ? Number(S.moneyDraft) : null);
   const food = db && db.food != null ? db.food : (S.foodDraft ? Number(S.foodDraft) : null);
   const lines = [
-    S.ship.name.toUpperCase() + ' · DEBRIEF · Act ' + pad(S.ship.act) + ' · Deck v2 · Slice 1',
-    'Days: Good ' + W.good + ' · Floor ' + W.floorN + ' · Act 1 Good Days so far ' + D.good,
+    S.ship.name.toUpperCase() + ' · DEBRIEF · Act ' + pad(S.ship.act) + ' · Deck v2 · Slice 4',
+    'Days: Good ' + W.good + ' · Floor ' + W.floorN + ' · Act ' + S.ship.act + ' Good Days so far ' + A.good + '/14' + (A.stars ? ' ' + '★'.repeat(A.stars) : ''),
+    'Act conditions: Sleep gate ' + A.sleep + ' (' + A.weeks.filter(x => !x.fut).map(x => 'W' + x.w + ' ' + x.lights + '/5').join(', ') + ') · Budget ' + A.budget + ' (gig ' + (A.gig ? 'cleared' : 'open') + ', checks ' + A.checks.length + ') · Ship cleaned ' + A.ship + ' (' + A.weeks.filter(x => !x.fut).map(x => 'W' + x.w + ' ' + x.cleaned + '/' + A.nS).join(', ') + ')' + (A.ended ? ' · ACT ' + (A.complete ? 'COMPLETE' : 'RERUNS') : ''),
     'Level ' + pad(D.level) + ' · ' + STATS.map(st => STAT_SHORT[st] + ' L' + D.stats[st].level + ' (' + D.stats[st].xp + ')').join(' · '),
     'Week: ' + fmtDay(W.start) + ' – ' + fmtDay(W.end),
     'Daily (of 7): ' + roster('daily').map(t => t.name + ' ' + W.c[t.id]).join(' · '),
@@ -1967,7 +2171,7 @@ function reportText(D){
     'Monthly (' + monthName(mo) + ' so far): ' + roster('monthly').map(t => t.name + ' ' + (got(D, 'monthly', mo, t.id) ? 'done' : '—')).join(' · '),
     'As needed: ' + roster('asneeded').map(t => t.name + ' ' + W.asn[t.id]).join(' · '),
     'Gigs cleared: ' + W.nodes.length + (W.nodes.length ? ' (' + W.nodes.map(nodeName).join('; ') + ')' : '') + ' · open ' + openList(D).length,
-    'Cred: +' + W.earned + ' earned, −' + W.spent + ' spent · balance ' + (D.cred < 0 ? 'Owed ' + (-D.cred) : D.cred),
+    'Cred: +' + W.earned + ' earned' + (W.intr ? ' (incl. interest +' + W.intr + ')' : '') + ', −' + W.spent + ' spent · balance ' + (D.cred < 0 ? 'Owed ' + (-D.cred) : D.cred),
     'Bought: ' + (W.bought.length ? W.bought.map(b => (b.item && b.item.name) + (b.voucher ? ' (voucher)' : ' (' + (-b.amount) + ')')).join(', ') : 'nothing'),
     'Money number: ' + (money != null && isFinite(money) ? crc(money) : 'not entered'),
     'Food out (delivery + eating out): ' + (food != null && isFinite(food) ? crc(food) : 'not entered')
@@ -1991,10 +2195,11 @@ function renderDebrief(D, now){
   const wdone = id => { const x = W.weekly.find(y => y.t.id === id); return !!(x && x.e); };
   const zones = W.weekly.filter(x => /^clean-/.test(x.t.id));
   const debriefPay = payOf('weekly', task('weekly', 'debrief'));
-  return (comms ? '<div class="sec">' + comms + '</div>' : '') +
+  const bStep = !!actProgress(D, today).gig;
+  return (comms ? '<div class="sec">' + comms + '</div>' : '') + actSection(D, today) +
     '<div class="sec"><div class="sec-h"><span>Last 7 days · daily</span><i class="rule"></i><span>' + fmtDay(W.start) + ' – ' + fmtDay(W.end) + '</span></div>' +
       '<div class="bars">' + '<div class="bar-row"><span class="bar-label">Day</span><div class="days">' + W.days.map(d => { const v = D.verdict[d]; const c = v ? (v.state === 'good' ? ' vgood' : v.state === 'floor' ? ' vfloor' : '') : ''; return '<span class="day' + c + '"><i></i>' + DOW[parseDay(d).getDay()].slice(0, 2) + '</span>'; }).join('') + '</div><span class="bar-val">' + W.good + '<span style="color:var(--muted);font-size:.6em">/7</span></span></div>' + roster('daily').map(barRow).join('') + '</div>' +
-      '<dl class="nums"><div><dt>Good Days</dt><dd>' + W.good + '<small>/7</small></dd></div><div><dt>Weekly done</dt><dd>' + wDone + '<small>/' + W.weekly.length + '</small></dd></div><div><dt>Gigs cleared</dt><dd>' + W.nodes.length + '</dd></div><div><dt>Cred earned</dt><dd>+' + W.earned + '</dd></div><div><dt>Cred spent</dt><dd>' + W.spent + '</dd></div><div><dt>Balance</dt><dd>' + D.cred + '</dd></div></dl></div>' +
+      '<dl class="nums"><div><dt>Good Days</dt><dd>' + W.good + '<small>/7</small></dd></div><div><dt>Weekly done</dt><dd>' + wDone + '<small>/' + W.weekly.length + '</small></dd></div><div><dt>Gigs cleared</dt><dd>' + W.nodes.length + '</dd></div><div><dt>Cred earned</dt><dd>+' + W.earned + '</dd></div><div><dt>Cred spent</dt><dd>' + W.spent + '</dd></div><div><dt>' + (D.cred < 0 ? 'Owed' : 'Balance') + '</dt><dd>' + Math.abs(D.cred) + '</dd></div></dl></div>' +
     trendsHtml(D, today) +
     '<div class="sec"><div class="sec-h"><span>Copy to the posters</span><i class="rule"></i><span>Highlighters</span></div><ul class="posters">' +
       '<li><b>Quarters</b>Lights out ' + L + ' of 7 nights. Color that many cells. ' + (L >= 5 ? 'That’s a gate week for the Crew meter.' : 'Gate weeks need 5.') + '</li>' +
@@ -2003,9 +2208,10 @@ function renderDebrief(D, now){
       '<li><b>Galley</b>Supply Run ' + (wdone('supply') ? 'done' : 'blank') + ', Prep food ' + (wdone('prep') ? 'done' : 'blank') + '. Color this week’s box for each one done. Blanks cost nothing.</li>' +
       (zones.length ? '<li><b>Cleaning</b>' + zones.filter(x => x.e).length + ' of ' + zones.length + ' stations: ' + zones.map(x => x.t.name.replace(/^Clean /, '') + (x.e ? ' ✓' : ' —')).join(', ') + '.</li>' : '') +
     '</ul></div>' +
-    '<div class="sec"><div class="sec-h"><span>Debrief · Mondays · 15 min</span><i class="rule"></i><span>06 steps</span></div><ol class="steps">' +
+    '<div class="sec"><div class="sec-h"><span>Debrief · Mondays · 15 min</span><i class="rule"></i><span>' + (bStep ? '07' : '06') + ' steps</span></div><ol class="steps">' +
       '<li>Read the week above.</li><li>Color the posters.</li><li>Move the Act marker on the Bridge poster.</li>' +
       '<li>Spend cred in the Black Market, if you want.</li><li>Enter the money number and the food-out number, then log the debrief.</li>' +
+      (bStep ? '<li>Compare this week’s spending with the budget, then tap Budget checked in the Act section.</li>' : '') +
       '<li>Copy the report and paste it to the Operator in chat. Patch notes and a transmission come back.</li>' +
     '</ol></div>' +
     '<div class="sec"><div class="fields">' +
@@ -2101,6 +2307,7 @@ const handlers = {
   'log-no'(){ S.confirmLog = null; render(); },
   'timer-long'(){ extendTimer(); },
   debrief(){ completeDebrief(); },
+  'budget-check'(){ logBudgetCheck(); },
   copy(){ copyReport(); },
   sound(){ ls.set('sound', ls.get('sound') === 'off' ? 'on' : 'off'); render(); sfx('tap'); },
   undo(){ undo(); },
