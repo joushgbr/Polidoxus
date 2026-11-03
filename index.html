@@ -387,6 +387,11 @@ button.ck-box[data-action="tab"]{color:var(--text);font-size:24px}
 .cell.rest{border-color:transparent;color:var(--line-2);font:500 13px/1 var(--font-mono)}
 .cell.pre{border-style:dotted;opacity:.3}
 .tab .tab-s{display:none}
+/* ---------- Press and hold a done task to remove its mark ---------- */
+[data-hold]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;cursor:pointer}
+.ck-row[data-hold].holding{background:var(--panel-2);box-shadow:inset 3px 0 0 var(--orange);transition:background .5s,box-shadow .5s}
+.cell[data-hold].holding,.done-tag[data-hold].holding{opacity:.5;transition:opacity .5s}
+.unmark-warn{margin:10px 0 0;font:400 15px/1.4 var(--font-grot);color:var(--floor)}
 /* ---------- Slice 4: Act progress (Good Days with stars, the 3 conditions) ---------- */
 .act-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
 .act-gd .k{display:block;color:var(--muted);margin-bottom:8px}
@@ -1683,7 +1688,7 @@ function renderNow(D, now){
     const act = e ? '<span class="ck-time">' + hhmm(new Date(e.at)) + (e.variant ? ' · ' + esc(e.variant) : '') + '</span>'
       : tonight ? '<span class="ck-time">Tonight</span>'
       : '<button class="btn sm" type="button" data-action="timer" data-cat="daily" data-id="' + esc(t.id) + '" data-day="' + today + '"' + dis + '>2:00</button>';
-    return '<div class="ck-row' + (e ? ' done' : '') + (isNext ? ' next' : '') + '">' + box +
+    return '<div class="ck-row' + (e ? ' done' : '') + (isNext ? ' next' : '') + '"' + holdAttrs(e) + '>' + box +
       '<div class="ck-txt"><div class="ck-name">' + esc(t.name) + (isNext ? ' <span class="next-tag">Next</span>' : '') + '</div>' +
       '<div class="ck-meta">' + esc(t.stat || 'No stat') + ' · ' + esc(t.start) + '</div></div>' +
       '<div class="ck-act">' + act + '</div></div>';
@@ -1816,7 +1821,7 @@ function renderLog(D, now){
       const bonus = !inList && t.id === 'growth' && parseDay(d).getDay() === 0 && perkOn(D, 'Quick Study');
       if (!inList && !e && !bonus) return '<span class="cell rest" title="Rest">–</span>';
       if (d <= today && (inList || e)) past++;
-      if (e){ n++; return '<span class="cell on' + tc + '" title="Did' + (e.variant ? ' · ' + esc(e.variant) : '') + '">✓</span>'; }
+      if (e){ n++; return '<span class="cell on' + tc + '"' + holdAttrs(e) + '>✓</span>'; }
       if (d > today) return '<span class="cell fut"></span>';
       const tonight = d === today && t.slot === 'night' && ph === 'day';
       if (diffDays(today, d) <= win && !tonight && ready())
@@ -1843,9 +1848,9 @@ function renderLog(D, now){
   const wHead = '<div class="rows3 wk-head"><div class="legend">Last 4 weeks</div><div class="cells c4">' +
     weeks.map(w => '<span class="dl' + (w === wk0 ? ' today' : '') + '">' + (w === wk0 ? 'This<br>week' : esc(fmtShort(w)).replace(' ', '<br>')) + '</span>').join('') + '</div><div></div></div>';
   const wRows = roster('weekly').map(t => {
-    const cells = weeks.map(w => { const on = got(D, 'weekly', w, t.id); return '<span class="cell' + (on ? ' on' : '') + (w === wk0 ? ' today' : '') + '">' + (on ? '✓' : '') + '</span>'; }).join('');
+    const cells = weeks.map(w => { const we = gotE(D, 'weekly', w, t.id); return '<span class="cell' + (we ? ' on' : '') + (w === wk0 ? ' today' : '') + '"' + holdAttrs(we) + '>' + (we ? '✓' : '') + '</span>'; }).join('');
     const e = gotE(D, 'weekly', wk0, t.id);
-    const act = e ? '<span class="done-tag">Done · ' + esc(fmtDay(e.day)) + '</span>'
+    const act = e ? '<span class="done-tag"' + holdAttrs(e) + '>Done · ' + esc(fmtDay(e.day)) + '</span>'
       : t.tab ? '<button class="btn sm" type="button" data-action="tab" data-tab="' + esc(t.tab) + '">Open</button>'
       : '<button class="btn sm" type="button" data-action="log" data-cat="weekly" data-id="' + esc(t.id) + '"' + dis + '>Done</button>';
     const dn = (t.days || []).map(d => DOW[d]).join('/');
@@ -1857,9 +1862,9 @@ function renderLog(D, now){
   const mHead = '<div class="rows3 wk-head"><div class="legend">Last 3 months</div><div class="cells c3">' +
     months.map(m => '<span class="dl' + (m === mo ? ' today' : '') + '">' + monthName(m) + '</span>').join('') + '</div><div></div></div>';
   const mRows = roster('monthly').map(t => {
-    const cells = months.map(m => { const on = got(D, 'monthly', m, t.id); return '<span class="cell' + (on ? ' on' : '') + (m === mo ? ' today' : '') + '">' + (on ? '✓' : '') + '</span>'; }).join('');
+    const cells = months.map(m => { const me = gotE(D, 'monthly', m, t.id); return '<span class="cell' + (me ? ' on' : '') + (m === mo ? ' today' : '') + '"' + holdAttrs(me) + '>' + (me ? '✓' : '') + '</span>'; }).join('');
     const e = gotE(D, 'monthly', mo, t.id), sf = showFromOf(t);
-    const act = e ? '<span class="done-tag">Done · ' + esc(fmtDay(e.day)) + '</span>'
+    const act = e ? '<span class="done-tag"' + holdAttrs(e) + '>Done · ' + esc(fmtDay(e.day)) + '</span>'
       : (sf && today < sf) ? '<span class="later-tag">' + esc(fmtDay(sf)) + '</span>'
       : '<button class="btn sm" type="button" data-action="log" data-cat="monthly" data-id="' + esc(t.id) + '"' + dis + '>Done</button>';
     return '<div class="rows3">' + rowL(t.name, t.stat || '') + '<div class="cells c3">' + cells + '</div><div class="row-act">' + act + '</div></div>';
@@ -1870,7 +1875,8 @@ function renderLog(D, now){
     const mine = D.list.filter(e => e.kind === 'asneeded' && e.ref === t.id).sort((a, b) => String(b.day).localeCompare(String(a.day)));
     const wkN = mine.filter(e => e.day >= wk0).length, last = mine[0];
     const meta = wkN + ' this week' + (last ? ' · last ' + fmtDay(last.day) : '');
-    const act = got(D, 'asneeded', today, t.id) ? '<span class="done-tag">Logged today</span>'
+    const xe = gotE(D, 'asneeded', today, t.id);
+    const act = xe ? '<span class="done-tag"' + holdAttrs(xe) + '>Logged today</span>'
       : '<button class="btn sm" type="button" data-action="log" data-cat="asneeded" data-id="' + esc(t.id) + '"' + dis + '>Log</button>';
     return '<div class="rows3">' + rowL(t.name, t.start) + '<div class="wk-floor">' + esc(meta) + '</div><div class="row-act">' + act + '</div></div>';
   }).join('');
@@ -2307,6 +2313,8 @@ const handlers = {
   'log-no'(){ S.confirmLog = null; render(); },
   'timer-long'(){ extendTimer(); },
   debrief(){ completeDebrief(); },
+  'hold-hint'(){ sfx('soft'); toast('Press and hold to remove the mark.'); },
+  'unmark-yes'(b){ unmark(b.dataset.eid); },
   'budget-check'(){ logBudgetCheck(); },
   copy(){ copyReport(); },
   sound(){ ls.set('sound', ls.get('sound') === 'off' ? 'on' : 'off'); render(); sfx('tap'); },
@@ -2322,7 +2330,77 @@ const handlers = {
     S.confirmUnlink = false; S.tab = 'now'; render();
   }
 };
+/* ================= Remove a mark (press and hold a done task) =================
+   For a mistaken tap. If removing it takes the day below a Good Day, the Good Day cache goes with it;
+   a perk cache tied to that tap (Daemon, Hull Plating) goes too. Logging it again later rolls a fresh cache. */
+const holdAttrs = e => e && e.id ? ' data-hold="1" data-eid="' + esc(e.id) + '" data-action="hold-hint" title="Press and hold to remove the mark"' : '';
+function unmarkPlan(eid){
+  const map = allEntries(), e = map.get(eid);
+  if (!e) return null;
+  const temp = new Map(map); temp.delete(eid);
+  const D0 = derive(map), D1 = derive(temp), d = e.day;
+  const a = d && D0.verdict[d] ? D0.verdict[d].state : null, b = d && D1.verdict[d] ? D1.verdict[d].state : null;
+  const lostGood = a === 'good' && b !== 'good';
+  const dels = [eid];
+  if (map.has('cache-pc-' + eid)) dels.push('cache-pc-' + eid);
+  if (lostGood && map.has('cache-day-' + d)) dels.push('cache-day-' + d);
+  return {e, d, a, b, lostGood, dels, v1: d ? D1.verdict[d] : null};
+}
+function openUnmark(eid){
+  const P = unmarkPlan(eid); if (!P) return;
+  const e = P.e, c = classify(e), t = c ? task(c.cat, c.ref) : null;
+  const name = t ? t.name : String(e.ref || 'This task');
+  const when = c && c.cat === 'weekly' ? 'the week of ' + fmtDay(c.key) : c && c.cat === 'monthly' ? monthName(c.key) : fmtDay(e.day);
+  let warn = '';
+  if (P.lostGood) warn = 'This takes ' + fmtDay(P.d) + ' back to ' + P.v1.n + ' of ' + P.v1.need + ', so the Good Day comes off' + (P.dels.indexOf('cache-day-' + P.d) >= 0 ? ', and its cache with it' : '') + '.';
+  else if (P.a === 'floor' && P.b === 'blank') warn = 'That was the only mark on ' + fmtDay(P.d) + ', so the day goes back to blank.';
+  sfx('soft');
+  openModal('<section class="frame"><div class="frame-head"><span>Remove mark</span><span class="tag">EDIT</span></div>' +
+    '<h2 class="ptitle">' + esc(name) + '</h2>' +
+    '<p class="instr">Logged for ' + esc(when) + (e.at ? ' at ' + hhmm(new Date(e.at)) : '') + '. Remove it if the tap was a mistake.</p>' +
+    (warn ? '<p class="unmark-warn">' + esc(warn) + '</p>' : '') +
+    '<div class="actions"><button class="btn primary" type="button" data-action="unmark-yes" data-eid="' + esc(eid) + '">Remove mark</button>' +
+    '<button class="btn" type="button" data-action="close-modal">Keep it</button></div></section>');
+}
+async function unmark(eid){
+  if (!ready() || busy) return;
+  const P = unmarkPlan(eid);
+  closeModal();
+  if (!P) return;
+  try { for (const id of P.dels) await Store.del(id); }
+  catch(err){ failToast(err); render(); return; }
+  sfx('undo');
+  toast('Mark removed' + (P.lostGood ? ' · Good Day undone' : ''));
+  render();
+}
+/* The hold itself: 550 ms on a done task opens the dialog. Moving the finger cancels it. */
+let holdT = null, holdEl = null, holdXY = null, holdAt = 0, holdMute = 0; // holdMute: ignore the click that comes from lifting the finger after a hold
+function holdCancel(){
+  if (holdT){ clearTimeout(holdT); holdT = null; }
+  if (holdEl){ holdEl.classList.remove('holding'); holdEl = null; }
+}
+document.addEventListener('pointerdown', e => {
+  const el = e.target.closest('[data-hold]');
+  if (!el || !ready() || (e.button != null && e.button > 0)) return;
+  holdCancel();
+  holdEl = el; holdXY = [e.clientX, e.clientY]; el.classList.add('holding');
+  holdT = setTimeout(() => {
+    holdT = null; const id = el.dataset.eid; holdCancel(); holdAt = Date.now(); holdMute = holdAt + 10000;
+    try { if (navigator.vibrate) navigator.vibrate(12); } catch(_){}
+    openUnmark(id);
+  }, 550);
+}, {passive:true});
+document.addEventListener('pointermove', e => { if (holdT && holdXY && Math.hypot(e.clientX - holdXY[0], e.clientY - holdXY[1]) > 10) holdCancel(); }, {passive:true});
+const holdEnd = () => { holdCancel(); if (holdMute > Date.now() + 400) holdMute = Date.now() + 400; };
+document.addEventListener('pointerup', holdEnd, {passive:true});
+document.addEventListener('pointercancel', holdEnd, {passive:true});
+document.addEventListener('contextmenu', e => {
+  const el = e.target.closest('[data-hold]'); if (!el) return;
+  e.preventDefault();
+  if (Date.now() - holdAt > 800 && ready()){ holdCancel(); holdAt = Date.now(); openUnmark(el.dataset.eid); }
+});
 document.addEventListener('click', e => {
+  if (Date.now() < holdMute) return; // the finger lifting after a hold is not a tap
   const b = e.target.closest('[data-action]');
   if (!b || b.disabled) return;
   const h = handlers[b.dataset.action];
