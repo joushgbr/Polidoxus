@@ -26,8 +26,13 @@
   --line-2:#55534c;
   --text:#ede5d3;
   --muted:#9b968a;
-  --sage:#c4d9c7;
-  --on-sage:#151514;
+  --sage:#ff6a3d;          /* accent = orange: done tasks, bars, names */
+  --on-sage:#160904;
+  --good:#2bd97c;          /* terminal green: Good Days and the Debrief card only */
+  --good-on:#06170d;
+  --good-glow:rgba(43,217,124,.38);
+  --floor:#ffb23e;         /* amber phosphor: Floor Days */
+  --floor-on:#1a0f02;
   --orange:#ff6a3d;
   --on-orange:#160904;
   --glow:rgba(255,106,61,.34);
@@ -44,24 +49,25 @@
 /* Low-Power Mode (18:00–19:00): the console becomes a red LED matrix. */
 html[data-mode="low"]{
   --void:#0b0605; --panel:#120907; --panel-2:#1a0d0a; --line:#341710; --line-2:#5c2a1d;
-  --text:#ff9068; --muted:#b45d42; --sage:#ff6a3d; --on-sage:#0b0605;
+  --text:#ff9068; --muted:#b45d42; --sage:#ff6a3d; --on-sage:#0b0605; --good:#22b86a; --good-on:#04120a; --good-glow:rgba(34,184,106,.32); --floor:#e09a2e; --floor-on:#140b02;
   --orange:#ff5a2a; --on-orange:#0b0605; --glow:rgba(255,90,42,.5);
   --phosphor:#ff8a5a; --phosphor-glow:rgba(255,120,80,.4); --crt:#0b0403;
 }
 /* Night (19:00–03:30): barely lit, so the Bridge stays dark. */
 html[data-mode="night"]{
   --void:#040202; --panel:#080404; --panel-2:#0d0605; --line:#1d0d0a; --line-2:#301610;
-  --text:#97432e; --muted:#5e2a1e; --sage:#7e3221; --on-sage:#040202;
+  --text:#97432e; --muted:#5e2a1e; --sage:#7e3221; --on-sage:#040202; --good:#1f7a4a; --good-on:#020a05; --good-glow:rgba(31,122,74,.22); --floor:#8f6220; --floor-on:#0a0601;
   --orange:#a8432b; --on-orange:#040202; --glow:rgba(168,67,43,.25);
   --phosphor:#a8432b; --phosphor-glow:rgba(168,67,43,.2); --crt:#040202;
 }
 
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
-:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-text-size-adjust:100%}
-html{height:100%}
+:root{-webkit-text-size-adjust:100%}
+html{height:100%;background:var(--void)}
 body{
-  height:100%; margin:0; overflow:hidden;
+  height:100%; height:100dvh; margin:0; overflow:hidden;
+  padding-top:env(safe-area-inset-top, 0px); padding-bottom:env(safe-area-inset-bottom, 0px);
   background:var(--void); color:var(--text);
   font-family:var(--font-grot); font-size:16px; line-height:1.45;
   padding-left:max(16px, env(safe-area-inset-left, 0px));
@@ -92,7 +98,12 @@ main{grid-area:main;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;-
 .meta .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--glow);flex:none}
 .fs{background:none;border:1px solid var(--line-2);color:var(--muted);font:inherit;letter-spacing:inherit;text-transform:inherit;padding:6px 9px;margin-left:10px;cursor:pointer}
 .hud-main{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 20px;align-items:end;padding-block:14px 14px}
-.wordmark{font:800 clamp(38px,6.4vw,66px)/.88 var(--font-grot);letter-spacing:-.04em;color:var(--sage);overflow-wrap:anywhere}
+.wordmark{font:800 clamp(38px,6.4vw,66px)/.88 var(--font-grot);letter-spacing:-.04em;color:var(--sage);overflow-wrap:anywhere;margin:0}
+/* Hull stencil wordmark (concept B, Nov 2): custom letters, bridges cut into the bowls and bars */
+.pdx{display:block;fill:currentColor;aspect-ratio:864/100;height:auto}
+.wordmark.wm{color:var(--text);line-height:0}
+.wordmark.wm .pdx{width:min(100%,380px)}
+.wordmark.wm + .act-line{margin-top:12px}
 .act-line{font:700 clamp(15px,2vw,20px)/1.15 var(--font-grot);letter-spacing:-.01em;color:var(--orange);margin-top:7px}
 .motto{font:400 11px/1 var(--font-mono);letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-top:9px}
 .clockbox{display:flex;flex-direction:column;align-items:flex-end;gap:9px}
@@ -108,7 +119,7 @@ main{grid-area:main;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;-
 .stat-cred .k{color:var(--on-orange)}
 .stat-cred .v{font:800 38px/.85 var(--font-grot);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .lvl-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.lvl-row .v{font:800 28px/.85 var(--font-grot);letter-spacing:-.03em;color:var(--sage);font-variant-numeric:tabular-nums}
+.lvl-row .v{font:800 28px/.85 var(--font-grot);letter-spacing:-.03em;color:var(--good);font-variant-numeric:tabular-nums}
 .segbar{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;height:10px}
 .segbar i{background:var(--panel-2);border:1px solid var(--line)}
 .segbar i.on{background:var(--sage);border-color:var(--sage)}
@@ -185,7 +196,7 @@ table.dc td:last-child{text-align:right;white-space:nowrap}
 .tl-head .m{font:500 10.5px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .tl-bar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:12px}
 .tl-seg{height:42px;border:1.5px solid var(--line-2);display:flex;align-items:flex-end;padding:5px 6px;font:500 10px/1 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
-.tl-seg.past{background:var(--sage);border-color:var(--sage);color:var(--on-sage)}
+.tl-seg.past{background:transparent;border-color:var(--orange);color:var(--orange)}
 .tl-seg.cur{background:var(--orange);border-color:var(--orange);color:var(--on-orange)}
 .tl-seg.rev{background-image:repeating-linear-gradient(-45deg,var(--line-2) 0 2px,transparent 2px 7px)}
 .tl-dates{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:6px;font:500 9.5px/1 var(--font-mono);letter-spacing:.06em;color:var(--muted)}
@@ -257,12 +268,13 @@ table.dc td:last-child{text-align:right;white-space:nowrap}
 .history .h-amt{color:var(--orange)}
 
 /* ---------- Debrief ---------- */
-.phosphor{position:relative;background:var(--sage);color:var(--on-sage);padding:clamp(18px,3.2vw,30px)}
-.ph-k{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:12px;border-bottom:2px solid var(--on-sage);font:500 11px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase}
-.ph-k .barcode{color:var(--on-sage)}
+.phosphor{position:relative;background:var(--good);color:var(--good-on);padding:clamp(18px,3.2vw,30px)}
+.ph-k{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:12px;border-bottom:2px solid var(--good-on);font:500 11px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase}
+.ph-k .barcode{color:var(--good-on)}
 .ph-title{font:800 clamp(24px,3.4vw,36px)/1.02 var(--font-grot);letter-spacing:-.03em;margin:18px 0 12px;text-wrap:balance}
 .ph-body{white-space:pre-line;font:400 16px/1.6 var(--font-grot);max-width:62ch;margin:0}
-.phosphor .ptitle{color:var(--on-sage)}
+.phosphor .ptitle{color:var(--good-on)}
+.phosphor .btn.ph{border-color:var(--good-on);color:var(--good-on)}
 .bars{display:grid;gap:12px;border:1.5px solid var(--line-2);padding:14px 16px}
 .bar-row{display:grid;grid-template-columns:104px minmax(0,1fr) 52px;gap:14px;align-items:center}
 .bar-label{font:500 11.5px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}
@@ -364,11 +376,11 @@ button.ck-box[data-action="tab"]{color:var(--text);font-size:24px}
 .banner{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1.5px solid var(--orange);padding:12px 14px;font:500 16px/1.3 var(--font-grot)}
 .banner b{display:block;font:500 10.5px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--orange);margin-bottom:6px}
 .banner-act{display:flex;gap:10px;align-items:center}
-.stamp{border:3px solid var(--sage);padding:16px 18px;display:grid;gap:8px}
-.stamp.floor{border-color:var(--line-2)}
+.stamp{border:3px solid var(--good);padding:16px 18px;display:grid;gap:8px}
+.stamp.floor{border-color:var(--floor)}
 .stamp .k{color:var(--muted)}
-.stamp-t{font:700 clamp(40px,7vw,72px)/.9 var(--font-pixel);text-transform:uppercase;color:var(--sage)}
-.stamp.floor .stamp-t{color:var(--text)}
+.stamp-t{font:700 clamp(40px,7vw,72px)/.9 var(--font-pixel);text-transform:uppercase;color:var(--good)}
+.stamp.floor .stamp-t{color:var(--floor)}
 .stamp p{margin:0;font:400 17px/1.4 var(--font-grot)}
 .segbar.s20{grid-template-columns:repeat(20,minmax(0,1fr));gap:2px}
 .segbar i.mark{border-color:var(--orange)}
@@ -416,11 +428,12 @@ button.ck-box[data-action="tab"]{color:var(--text);font-size:24px}
 .perk.on .perk-tag{color:var(--sage)}
 .cockpit{display:none}
 .cp-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.cp-name{display:flex;align-items:center;gap:8px;font:500 12px/1 var(--font-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--sage)}
+.cp-name{display:flex;align-items:center;gap:8px;font:500 12px/1 var(--font-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--sage);margin:0;flex:none}
+.cp-name .pdx{height:15px;width:auto;color:var(--text)}
 .cp-name .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--glow)}
 .cp-clock{font:400 30px/1 var(--font-time);color:var(--orange);text-shadow:0 0 14px var(--glow);font-variant-numeric:tabular-nums}
 .cp-stats{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:0;border:1.5px solid var(--line-2);align-items:stretch}
-.cp-stats > *{padding:9px 10px;border-left:1.5px solid var(--line-2);font:500 11px/1.1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap;min-width:0}
+.cp-stats > *{overflow:hidden;padding:9px 9px;border-left:1.5px solid var(--line-2);font:500 11px/1.1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap;min-width:0}
 .cp-stats > :first-child{border-left:0}
 .cp-stats b{font:800 17px/1 var(--font-grot);color:var(--text);letter-spacing:-.02em}
 .cp-cred{background:var(--orange);color:var(--on-orange)!important}
@@ -428,6 +441,55 @@ button.ck-box[data-action="tab"]{color:var(--text);font-size:24px}
 .cp-safe{background:transparent;border:0;border-left:1.5px solid var(--line-2);color:var(--orange)!important;cursor:pointer;font:inherit}
 .cp-chip{font:500 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--orange)}
 .pill.safe{padding:11px 16px}
+/* ---------- Slice 3: market lanes, gig locks, trends ---------- */
+.price s{font-size:.55em;color:var(--muted);margin-right:6px;text-decoration-thickness:2px}
+.item.shut{border-style:dashed}
+.item.shut .item-name,.item.shut .item-desc{opacity:.6}
+.passes{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.passes li{font:400 14px/1.4 var(--font-grot);color:var(--muted)}
+.passes b{display:block;font:700 15px/1.2 var(--font-grot);color:var(--text)}
+.wallet .n.owed{color:var(--orange)}
+.node.waits{opacity:.55;border-style:dashed}
+.trend{border:1.5px solid var(--line-2);padding:6px 14px}
+.trend-r{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(4,minmax(0,1fr));gap:8px;padding:8px 0;border-top:1px solid var(--line);font:500 12px/1.2 var(--font-mono);letter-spacing:.06em;text-transform:uppercase}
+.trend-r span:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
+.trend-h{color:var(--muted);border-top:0}
+
+/* ---------- UI pass (Nov 2): Level up top, a louder Good Day panel, iPhone landscape ---------- */
+button.stat{font:inherit;text-align:left;cursor:pointer;width:100%}
+.stat-lv .v{font:700 54px/.8 var(--font-pixel);letter-spacing:0}
+.cp-lv{border:0;cursor:pointer}
+.gd{gap:14px;border:2px solid var(--orange);background:var(--panel-2);padding:16px 18px}
+.gd-top{align-items:flex-end}
+.gd-k{font:500 11px/1.2 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--orange)}
+.gd-big{font:800 clamp(54px,8vw,76px)/.85 var(--font-grot);letter-spacing:-.045em;color:var(--text);font-variant-numeric:tabular-nums;margin-top:10px}
+.gd-big small{font-size:.42em;letter-spacing:-.01em;color:var(--muted)}
+.gd-sub{font:500 11px/1.55 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:right;margin-left:auto}
+.gd .gd-bar{gap:5px}
+.gd .gd-bar i{height:24px;border-width:2px}
+.gd.good{background:var(--good);border:4px solid var(--good);outline:2px solid var(--good);outline-offset:4px;margin:6px;color:var(--good-on);box-shadow:0 0 30px var(--good-glow)}
+.gd.good .gd-k,.gd.good .gd-sub{color:var(--good-on)}
+.gd-title{font:700 clamp(38px,6.4vw,60px)/.95 var(--font-pixel);text-transform:uppercase;margin-top:8px}
+.gd.good .gd-bar i{border-color:var(--good-on);opacity:.3}
+.gd.good .gd-bar i.on{background:var(--good-on);opacity:1}
+.gd.good .gd-bar i.need{box-shadow:none}
+@media (prefers-reduced-motion:no-preference){ .gd.good{animation:gdOn .5s steps(4,end) both} }
+@keyframes gdOn{0%{filter:brightness(1.6)}100%{filter:none}}
+
+/* ---------- Day verdicts: green = Good Day, amber phosphor = Floor Day ---------- */
+.segbar.s20 i.on{background:var(--good);border-color:var(--good)}
+.cp-good b{color:var(--good)}
+.gd.floor{border-color:var(--floor)}
+.gd.floor .gd-k{color:var(--floor)}
+.gd.floor .gd-bar i.on{background:var(--floor);border-color:var(--floor)}
+.cell.vgood{background:var(--good);border-color:var(--good);color:var(--good-on)}
+.cell.vfloor{background:var(--floor);border-color:var(--floor);color:var(--floor-on);font:700 12px/1 var(--font-mono)}
+.wk-day{background:var(--panel-2)}
+.day.vgood i{background:var(--good);border-color:var(--good)}
+.day.vfloor i{background:var(--floor);border-color:var(--floor)}
+.legend i.vgood{background:var(--good);border-color:var(--good)}
+.legend i.vfloor{background:var(--floor);border-color:var(--floor)}
+
 /* ---------- Toast & modal ---------- */
 .toast{position:absolute;left:0;right:0;bottom:84px;margin:0 auto;width:max-content;max-width:100%;z-index:80;display:flex;align-items:center;gap:14px;padding:11px 11px 11px 16px;background:var(--orange);color:var(--on-orange);font:500 12px/1.3 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .toast button{font:500 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--on-orange);background:transparent;border:1.5px solid var(--on-orange);padding:10px 12px;cursor:pointer}
@@ -456,6 +518,7 @@ button.ck-box[data-action="tab"]{color:var(--text);font-size:24px}
   .clockbox{grid-area:clock}
   .stats{grid-area:stats;padding-bottom:0;grid-template-columns:minmax(110px,140px) minmax(150px,1fr) auto}
   .wordmark{font-size:54px}
+  .wordmark.wm .pdx{width:100%;max-width:300px}
   .ptitle{font-size:clamp(40px,5vw,64px)}
 }
 @media (min-width:1000px){
@@ -504,6 +567,30 @@ button.ck-box[data-action="tab"]{color:var(--text);font-size:24px}
   .rows3{grid-template-columns:minmax(0,1fr) auto}
   .wk-row > .cells,.rows3 > .cells,.rows3 > .wk-floor{grid-column:1/-1;order:3}
 }
+/* iPhone landscape (short screens): one-line cockpit on top, a slim tab rail on the left */
+@media (orientation:landscape) and (max-height:500px){
+  #app{grid-template-columns:84px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"hud hud" "nav main";column-gap:14px}
+  .meta,.hud-main,.stats{display:none}
+  .cockpit{display:flex;align-items:center;gap:14px;padding-block:8px 8px;border-bottom:2px solid var(--sage)}
+  .cockpit .cp-top{flex:none;gap:14px}
+  .cockpit .cp-stats{flex:1}
+  .cp-clock{font-size:22px}
+  .cp-stats > *{padding:7px 10px}
+  .nav{display:flex;flex-direction:column;align-self:start;gap:0;margin:10px 0 0;border:1.5px solid var(--line-2)}
+  .tab{border-left:0;border-top:1.5px solid var(--line-2);padding:11px 4px;font-size:10px;letter-spacing:.08em}
+  .tab:first-child{border-top:0}
+  .tab .num{display:none}
+  .tab .tab-l{display:none}
+  .tab .tab-s{display:inline}
+  main{padding-block:10px 18px}
+  .bigrow{display:none}
+  .ptitle{font-size:34px}
+  .gd-big{font-size:48px}
+  .gd-title{font-size:34px}
+  .gd{padding:12px 16px}
+  .mini-main{display:none}
+  .toast{bottom:12px}
+}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
@@ -532,12 +619,20 @@ const DEFAULT_SHIP = {
   cachesFrom: '2026-11-02'
 };
 const DEFAULT_MARKET = {
-  note: 'Free lane only for now. The ₡ lane (snacks, takeout, meal out, gear) opens once the budget sets a treat line.',
+  treatLine: null, // ₡ a month, set by the Operator once the budget exists; opens the ₡ lane
   items: [
-    {id:'screen-hour', tier:'small',  price:10, name:'Screen Hour', desc:'One hour of gaming or series.'},
-    {id:'marathon',    tier:'medium', price:30, name:'Marathon',    desc:'A three-hour gaming or series block.'},
-    {id:'shore-leave', tier:'medium', price:30, name:'Shore Leave', desc:'A free outing: a hike, a park, a free museum day.'},
-    {id:'implant',     tier:'large',  price:80, name:'Implant',     desc:'A Deck feature of your choice. The Operator builds it at the next debrief.'}
+    {id:'screen-hour', lane:'free', tier:'small',  price:10,  gated:true, tags:['screen'], name:'Screen Hour', desc:'One hour of gaming or series.'},
+    {id:'marathon',    lane:'free', tier:'medium', price:30,  gated:true, tags:['screen'], name:'Marathon',    desc:'A three-hour gaming or series block.'},
+    {id:'shore-leave', lane:'free', tier:'medium', price:30,  tags:['outing'], name:'Shore Leave', desc:'A free outing: a hike, a park, a free museum day.'},
+    {id:'implant',     lane:'free', tier:'large',  price:80,  tags:['deck'],   name:'Implant',     desc:'A Deck feature of your choice. The Operator builds it at the next debrief.'},
+    {id:'snack',       lane:'crc',  tier:'small',  price:10,  gated:true, name:'Snack',    desc:'One treat snack or sweet.'},
+    {id:'takeout',     lane:'crc',  tier:'large',  price:80,  gated:true, cap:1, name:'Takeout', desc:'One takeout or delivery meal.'},
+    {id:'meal-out',    lane:'crc',  tier:'large',  price:80,  name:'Meal out', desc:'Eat out with someone. Social, not delivery.'},
+    {id:'gear',        lane:'crc',  tier:'gear',   price:150, tags:['gear'], name:'Gear', desc:'A piece of gear: gym, desk or tech. The ₡ must fit the treat line.'},
+    {id:'booster', tier:'booster', price:120, name:'Booster', desc:'A one-time free pass for something normally off-limits.', passes:[
+      {id:'late',  name:'Late Night', desc:'Stay up past 19:00 once. That night is a blank for the sleep gate, nothing more.'},
+      {id:'rest',  name:'Rest Day',   desc:'Today becomes a Sunday: basics only, 2 of 3 is a Good Day.'},
+      {id:'feast', name:'Feast',      desc:'Any meal from anywhere, no gate charge. The ₡ still has to fit the treat line.'}]}
   ]
 };
 /* Placeholder until the ship's log loads. Real gigs live in your Google Sheet, never in this public file. */
@@ -644,6 +739,54 @@ function statsFrom(xp){
   });
   return {stats, level};
 }
+/* ================= Perks and market helpers (Slice 3) ================= */
+const PERK_LATER = new Set(['Debt Relief', 'Interest', 'Compound']); // Money L3–L5: switch on in a later build
+function perkOn(D, name){
+  if (PERK_LATER.has(name)) return false;
+  for (const s of STATS){
+    const p = perksOf(s).find(x => x.name === name);
+    if (p) return !!(D.stats && D.stats[s] && D.stats[s].level >= p.lv);
+  }
+  return false;
+}
+let REST_DAYS = new Set(); // days turned into a Sunday by a Rest Day pass (set by derive)
+function gigLocked(D, n){
+  if (!n.requires || !S.firewall || !Array.isArray(S.firewall.nodes)) return false;
+  const r = S.firewall.nodes.find(x => x.id === n.requires);
+  return !!(r && !D.map.has(nodeId(S.firewall, r)));
+}
+/* How far back a daily can still be logged: 1 day, or 2 with Second Wind (Body), Maintenance Drone (Ship) or Overtime (Business). */
+function backWindow(D, t){
+  if ((t.stat === 'Body' && perkOn(D, 'Second Wind')) || (t.stat === 'Ship' && perkOn(D, 'Maintenance Drone')) || (t.id === 'business' && perkOn(D, 'Overtime'))) return 2;
+  return 1;
+}
+const tagged = (it, tag) => Array.isArray(it.tags) && it.tags.indexOf(tag) >= 0;
+const laneOpen = it => (it.lane || 'free') !== 'crc' || !!(S.market && S.market.treatLine);
+const actSpends = D => D.list.filter(e => e.kind === 'spend' && !e.archived && e.day >= D.act0);
+function weekSpends(D, today){ const wk = mondayOf(today), end = addDays(wk, 6); return actSpends(D).filter(e => e.day >= wk && e.day <= end); }
+function capLeft(D, it, today){ return it.cap ? it.cap - weekSpends(D, today).filter(e => e.ref === it.id && !e.logged).length : Infinity; }
+/* What an item costs you right now, and which perk made it cheaper or free. */
+function offerFor(D, it, today){
+  let price = it.price, perk = null, note = '';
+  [['Field Medic', 'outing', 0.8], ['Reinforced Frame', 'gear', 0.85], ['Neural Discount', 'screen', 0.8], ['Clean Room', 'deck', 0.8]].forEach(([n, tag, f]) => {
+    if (tagged(it, tag) && perkOn(D, n)){ price = Math.round(price * f); note = n; }
+  });
+  if (it.tier === 'booster' && perkOn(D, 'Backdoor') && !actSpends(D).some(e => e.perk === 'backdoor')){ price = Math.round(it.price / 2); perk = 'backdoor'; note = 'Backdoor'; }
+  if (tagged(it, 'outing') && perkOn(D, 'Shore Pass') && !actSpends(D).some(e => e.perk === 'shore-pass')){ price = 0; perk = 'shore-pass'; note = 'Shore Pass'; }
+  if (it.tier === 'small' && perkOn(D, 'Tax Break') && !weekSpends(D, today).some(e => e.perk === 'tax-break')){ price = 0; perk = 'tax-break'; note = 'Tax Break'; }
+  return {price, perk, note};
+}
+function trendsHtml(D, today){
+  if (!perkOn(D, 'Pattern Recognition')) return '';
+  const weeks = [3, 2, 1, 0].map(o => addDays(mondayOf(today), -7 * o));
+  const head = '<div class="trend-r trend-h"><span>Daily</span>' + weeks.map(w => '<span>' + esc(fmtShort(w)) + '</span>').join('') + '</div>';
+  const rows = roster('daily').map(t => '<div class="trend-r"><span>' + esc(t.name) + '</span>' + weeks.map(w => {
+    if (addDays(w, 6) < D.act0) return '<span>–</span>';
+    let n = 0; for (let i = 0; i < 7; i++){ const d = addDays(w, i); if (d >= D.act0 && got(D, 'daily', d, t.id)) n++; }
+    return '<span>' + n + '</span>';
+  }).join('') + '</div>').join('');
+  return '<div class="sec"><div class="sec-h"><span>Pattern Recognition</span><i class="rule"></i><span>Starts per week</span></div><div class="trend">' + head + rows + '</div></div>';
+}
 const CAT_NAME = {daily:'Daily', weekly:'Weekly', monthly:'Monthly', asneeded:'As needed'};
 const SLOT_GROUP = {morning:'Morning', midday:'Midday', afternoon:'Afternoon', evening:'Evening', night:'Evening'};
 const SAFE_ACTIONS = [
@@ -715,6 +858,7 @@ const S = {
   tab: 'now',
   skipped: new Set(),
   confirmBuy: null,
+  confirmLog: null,
   moneyDraft: '',
   foodDraft: '',
   nodeDraft: '',
@@ -765,7 +909,7 @@ function classify(e){
 /* The daily list for a given day: Sunday is rest, basics only. */
 function dayList(d){
   const all = roster('daily').map(t => t.id);
-  if (parseDay(d).getDay() !== 0) return all;
+  if (parseDay(d).getDay() !== 0 && !REST_DAYS.has(d)) return all;
   const sun = Array.isArray(S.tasks.sunday) ? S.tasks.sunday : DEFAULT_TASKS.sunday;
   return sun.filter(id => all.indexOf(id) >= 0);
 }
@@ -782,6 +926,7 @@ function derive(map){
   for (const [id, e] of map) list.push(Object.assign({id: id}, e));
   let cred = 0, vouchers = 0, usedV = 0;
   const xp = {}; STATS.forEach(st => { xp[st] = 0; });
+  const rest = new Set();
   const idx = {daily:{}, weekly:{}, monthly:{}, asneeded:{}}, safe = {}, opened = new Set(), ent = [];
   for (const e of list){
     const trial = !!e.archived || !!(e.day && e.day < act0);
@@ -794,9 +939,13 @@ function derive(map){
     }
     if (c || e.kind === 'node'){ const st = statOf(e, c); if (st && xp[st] != null) xp[st] += e.double ? 2 : 1; }
     if (e.kind === 'safe' && e.day) safe[e.day] = e;
+    if (e.kind === 'node') ent.push('gig-' + e.ref);
+    if (e.perkCache) ent.push('pc-' + e.id);
+    if (e.kind === 'spend' && e.pass === 'rest' && e.day) rest.add(e.day);
     if (e.kind === 'cache'){ opened.add(e.ref); if (e.voucher) vouchers++; }
     if (e.kind === 'spend' && e.voucher) usedV++;
   }
+  REST_DAYS = rest;
   const verdict = {}; let good = 0, floor = 0;
   const cf = S.ship.cachesFrom || act0;
   for (let d = act0; d <= today; d = addDays(d, 1)){
@@ -837,7 +986,7 @@ function currentNode(D, skipped){
   const real = fw.nodes.filter(n => !n.locked);
   for (let i = 0; i < real.length; i++){
     const n = real[i];
-    if (D.map.has(nodeId(fw, n)) || (skipped && skipped.has('node-' + n.id))) continue;
+    if (D.map.has(nodeId(fw, n)) || gigLocked(D, n) || (skipped && skipped.has('node-' + n.id))) continue;
     return {node: n, index: i + 1, total: real.length};
   }
   return null;
@@ -845,6 +994,23 @@ function currentNode(D, skipped){
 const assistLine = text => '<p class="assist"><b>Operator</b><span>' + esc(text) + '</span></p>';
 const dismissed = k => ls.get('dismiss:' + k) === '1';
 const unreadComms = () => !!(S.comms && S.comms.id && ls.get('read') !== S.comms.id);
+/* ================= Ship wordmark (hull stencil) ================= */
+const PDX_GLYPHS = [
+  [0,   'M0 0 L20 0 L20 100 L0 100 Z M0 0 L74 0 L88 14 L88 46 L74 60 L0 60 Z M20 40 L61 40 L68 33 L68 27 L61 20 L20 20 Z M44.4 0 L44.4 20 L52.4 20 L52.4 0 Z'],
+  [102, 'M0 14 L14 0 L82 0 L96 14 L96 86 L82 100 L14 100 L0 86 Z M20 73 L27 80 L69 80 L76 73 L76 27 L69 20 L27 20 L20 27 Z M44 0 L44 20 L52 20 L52 0 Z M44 80 L44 100 L52 100 L52 80 Z'],
+  [212, 'M0 0 L20 0 L20 80 L76 80 L76 100 L14 100 L0 86 Z M26 80 L26 100 L34 100 L34 80 Z'],
+  [302, 'M0 0 L20 0 L20 100 L0 100 Z'],
+  [336, 'M0 0 L73.6 0 L96 22.4 L96 77.6 L73.6 100 L0 100 Z M20 80 L64.8 80 L76 68.8 L76 31.2 L64.8 20 L20 20 Z M44 0 L44 20 L52 20 L52 0 Z M44 80 L44 100 L52 100 L52 80 Z'],
+  [446, 'M0 14 L14 0 L82 0 L96 14 L96 86 L82 100 L14 100 L0 86 Z M20 73 L27 80 L69 80 L76 73 L76 27 L69 20 L27 20 L20 27 Z M44 0 L44 20 L52 20 L52 0 Z M44 80 L44 100 L52 100 L52 80 Z'],
+  [556, 'M0 0 L24 0 L96 100 L72 100 Z M72 0 L96 0 L24 100 L0 100 Z'],
+  [666, 'M0 0 L20 0 L20 80 L76 80 L76 0 L96 0 L96 86 L82 100 L14 100 L0 86 Z M44 80 L44 100 L52 100 L52 80 Z'],
+  [776, 'M0 14 L14 0 L88 0 L88 20 L20 20 L20 40 L74 40 L88 54 L88 86 L74 100 L0 100 L0 80 L68 80 L68 60 L14 60 L0 46 Z M40 0 L40 20 L48 20 L48 0 Z M40 80 L40 100 L48 100 L48 80 Z']
+];
+const PDX_SVG = '<svg class="pdx" viewBox="0 0 864 100" aria-hidden="true" focusable="false">' +
+  PDX_GLYPHS.map(g => '<path transform="translate(' + g[0] + ' 0)" d="' + g[1] + '"/>').join('') + '</svg>';
+/* The drawn mark only spells POLIDOXUS; any other ship name falls back to type. */
+const hasMark = () => String(S.ship && S.ship.name || '').toUpperCase() === 'POLIDOXUS';
+
 /* ================= Storage: the ship's log (your Google Sheet, via your Apps Script web app) =================
    Every tap is queued on this device first, then sent. If the network drops, taps wait here and sync later. */
 const Remote = {
@@ -967,15 +1133,22 @@ function sfx(kind){
 }
 
 /* ================= Actions ================= */
-function rollCache(ent){
-  const r = Math.random();
+/* Caches: normal 50% empty · 30% +2 · 15% +5 · 5% a free Small item. Better odds (perks): 30 · 40 · 20 · 10. */
+function rollCache(ent, better){
+  const r = Math.random(), t = better ? [0.3, 0.7, 0.9] : [0.5, 0.8, 0.95];
   let result = 'empty', amount = 0, voucher = null;
-  if (r >= 0.95){ result = 'jackpot'; voucher = 'small'; }
-  else if (r >= 0.8){ result = 'big'; amount = 5; }
-  else if (r >= 0.5){ result = 'small'; amount = 2; }
+  if (r >= t[2]){ result = 'jackpot'; voucher = 'small'; }
+  else if (r >= t[1]){ result = 'big'; amount = 5; }
+  else if (r >= t[0]){ result = 'small'; amount = 2; }
   const e = {kind:'cache', ref:ent, day:dayKey(new Date()), at:new Date().toISOString(), amount, result};
   if (voucher) e.voucher = voucher;
+  if (better) e.better = true;
   return ['cache-' + ent, e];
+}
+/* Adrenal Kick: a Good Day cache on a Workout day rolls with better odds. */
+function betterFor(D, ent){
+  if (ent.indexOf('day-') !== 0 || !perkOn(D, 'Adrenal Kick')) return false;
+  return got(D, 'daily', ent.slice(4), 'move');
 }
 
 let busy = false;
@@ -995,7 +1168,7 @@ async function commit(writes, label){
   const fresh = D1a.unopened.filter(x => D0.unopened.indexOf(x) < 0);
   const reveals = [];
   for (const ent of fresh){
-    const pair = rollCache(ent);
+    const pair = rollCache(ent, betterFor(D1a, ent));
     try { await Store.put(pair[0], pair[1]); created.push(pair[0]); temp.set(pair[0], pair[1]); reveals.push(pair[1]); } catch(e){}
   }
   busy = false;
@@ -1043,9 +1216,14 @@ function logTask(cat, tid, day, viaTimer, variant){
     e = {kind:'asneeded', ref:tid, day:today, at, amount:0};
   } else return;
   if (t.stat) e.stat = t.stat;
+  if (cat === 'daily' && tid === 'business' && perkOn(D, 'Daemon')){
+    const nB = D.list.filter(x => x.kind === 'daily' && x.ref === 'business' && !x.archived && x.day >= D.act0).length + 1;
+    if (nB % 5 === 0) e.perkCache = 'daemon';
+  }
+  if (cat === 'weekly' && /^clean-/.test(tid) && perkOn(D, 'Hull Plating') && (t.days || []).indexOf(new Date().getDay()) >= 0) e.perkCache = 'hull';
   if (variant) e.variant = variant;
   if (viaTimer) e.timer = true;
-  if (S.timer && S.timer.cat === cat && S.timer.id === tid) S.timer = null;
+  if (S.timer && S.timer.cat === cat && S.timer.id === tid){ if (S.timer.long) S.timer.logged = true; else S.timer = null; }
   commit([[id, e]], 'Logged · ' + t.name + (variant ? ' · ' + variant : '') + (cat === 'daily' && day !== today ? ' · ' + fmtDay(day) : '') + (viaTimer ? ' · 2:00 done' : ''));
 }
 /* Safe Mode: one action under 5 minutes. Makes the day a Floor Day if nothing else is logged; never counts toward a Good Day. */
@@ -1069,20 +1247,19 @@ function clearNode(nid){
   const D = derive(allEntries());
   const real = fw.nodes.filter(x => !x.locked);
   const n = real.find(x => x.id === nid);
-  if (!n || D.map.has(nodeId(fw, n))) return;
-  const pay = PAY().oneoff;
-  const e = {kind:'node', ref:n.id, boss:fw.boss || 1, day:dayKey(new Date()), at:new Date().toISOString(), amount:pay};
-  commit([[nodeId(fw, n), e]], 'Gig cleared · ' + n.text.slice(0, 48));
+  if (!n || D.map.has(nodeId(fw, n)) || gigLocked(D, n)) return;
+  const e = {kind:'node', ref:n.id, boss:fw.boss || 1, day:dayKey(new Date()), at:new Date().toISOString(), amount:0};
+  if (n.stat) e.stat = n.stat;
+  if (perkOn(D, 'Uplink')) e.double = true;
+  commit([[nodeId(fw, n), e]], 'Gig cleared · ' + n.text.slice(0, 48) + (e.double ? ' · Uplink ×2 XP' : ''));
 }
 function openCacheManual(ent){
   if (!ready() || busy) return;
   const D0 = derive(allEntries());
   if (D0.unopened.indexOf(ent) < 0) return;
   busy = true;
-  const pair = rollCache(ent);
+  const pair = rollCache(ent, betterFor(D0, ent));
   Store.put(pair[0], pair[1]).then(() => {
-    const temp = new Map(allEntries()); temp.set(pair[0], pair[1]);
-    const D1 = derive(temp);
     busy = false;
     showCache(pair[1], null);
     render();
@@ -1126,20 +1303,37 @@ function removeNode(id){
   S.confirmRm = null;
   saveFirewall(nodes).then(() => { sfx('soft'); toast('Node removed'); render(); }).catch(failToast);
 }
-function buy(itemId, useVoucher){
+/* Black Market. mode: 'buy' (pay what it costs you now), 'voucher' (a free Small), 'log' (did it without buying: full price, Owed if needed). */
+function buy(itemId, mode, pass){
   const item = (S.market.items || []).find(i => i.id === itemId);
-  if (!item) return;
-  const D = derive(allEntries());
-  if (useVoucher ? D.vouchers < 1 : D.cred < item.price) return;
+  if (!item || !ready()) return;
+  const today = dayKey(new Date()), D = derive(allEntries());
   const id = 'spend-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  const e = {kind:'spend', ref:item.id, day:dayKey(new Date()), at:new Date().toISOString(),
-    amount: useVoucher ? 0 : -item.price, item:{name:item.name, tier:item.tier, price:item.price}};
-  if (useVoucher) e.voucher = true;
-  S.confirmBuy = null;
-  if (!ready()) return;
-  Store.put(id, e).then(() => {
-    sfx('buy'); toast('Bought · ' + item.name + (useVoucher ? ' · voucher' : ''), [id]); render();
-  }).catch(failToast);
+  const e = {kind:'spend', ref:item.id, day:today, at:new Date().toISOString(),
+    item:{name:item.name, tier:item.tier, price:item.price, lane:item.lane || 'free'}};
+  let label;
+  if (mode === 'log'){
+    if (!item.gated) return;
+    e.amount = -item.price; e.logged = true;
+    label = 'Logged at full price · ' + item.name;
+  } else if (mode === 'voucher'){
+    if (D.vouchers < 1 || item.tier !== 'small' || !laneOpen(item)) return;
+    e.amount = 0; e.voucher = true;
+    label = 'Voucher used · ' + item.name;
+  } else {
+    if (!laneOpen(item) || capLeft(D, item, today) < 1) return;
+    const o = offerFor(D, item, today);
+    if (D.cred < o.price) return;
+    e.amount = -o.price; if (o.perk) e.perk = o.perk;
+    label = 'Bought · ' + item.name + (o.note ? ' · ' + o.note : '');
+  }
+  if (item.tier === 'booster'){
+    const ps = (item.passes || []).find(x => x.id === pass);
+    if (!ps || mode !== 'buy') return;
+    e.pass = ps.id; e.item.pass = ps.name; label += ' · ' + ps.name;
+  }
+  S.confirmBuy = null; S.confirmLog = null;
+  Store.put(id, e).then(() => { sfx(mode === 'log' ? 'soft' : 'buy'); toast(label, [id]); render(); }).catch(failToast);
 }
 async function undo(){
   const ids = S.undo; if (!ids) return;
@@ -1155,17 +1349,30 @@ async function undo(){
 const mmss = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return pad(Math.floor(s / 60)) + ':' + pad(s % 60); };
 function startTimer(cat, id, day, variant){
   if (!ready() || !task(cat, id)) return;
-  S.timer = {cat: cat, id: id, day: day || null, variant: variant || null, ends: Date.now() + TIMER_MS};
+  const now = Date.now();
+  S.timer = {cat: cat, id: id, day: day || null, variant: variant || null, start: now, ends: now + TIMER_MS};
   S.tab = 'now'; $('#main').scrollTop = 0;
   sfx('soft'); keepAwake(); render();
+}
+/* Focus Protocol: turn a running 2:00 into 25:00. The task still logs at the 2:00 mark. */
+function extendTimer(){
+  const D = derive(allEntries());
+  if (!S.timer || S.timer.long || !perkOn(D, 'Focus Protocol')) return;
+  S.timer.long = true; S.timer.ends = S.timer.start + 25 * 60000;
+  sfx('soft'); render();
 }
 function stopTimer(){ S.timer = null; sfx('undo'); toast('Timer stopped. Nothing lost.'); render(); }
 function tickTimer(){
   if (!S.timer) return;
-  const left = S.timer.ends - Date.now();
-  if (left <= 0){
-    const tm = S.timer; S.timer = null;
+  const tm = S.timer, now = Date.now(), left = tm.ends - now;
+  if (tm.long && !tm.logged && now - tm.start >= TIMER_MS){
+    tm.logged = true;
     logTask(tm.cat, tm.id, tm.day, true, tm.variant);
+  }
+  if (left <= 0){
+    S.timer = null;
+    if (!tm.long) logTask(tm.cat, tm.id, tm.day, true, tm.variant);
+    else { sfx('level'); toast('25:00 focus block done'); }
     render();
     return;
   }
@@ -1301,8 +1508,11 @@ function renderHud(D, now){
   let segs = '';
   for (let i = 1; i <= 20; i++) segs += '<i class="' + (i <= D.good ? 'on' : '') + (i === 14 || i === 17 || i === 20 ? ' mark' : '') + '"></i>';
   const stars = D.good >= 20 ? ' · ★★★' : D.good >= 17 ? ' · ★★' : D.good >= 14 ? ' · ★ cleared' : '';
+  const nx = STATS.map(st => ({st: st, left: D.stats[st].th - D.stats[st].into})).sort((a, b) => a.left - b.left)[0];
+  const nextHint = nx ? STAT_SHORT[nx.st] + ' ' + nx.left + ' to L' + (D.stats[nx.st].level + 1) : '';
   const chips = [];
   const ph = phaseOf(now);
+  if (D.cred < 0) chips.push('<span class="chip warn">Owed ' + (-D.cred) + '</span>');
   if (ph === 'low') chips.push('<span class="chip warn">Low-Power</span>');
   if (S.mode === 'unlinked') chips.push('<span class="chip warn">Not linked</span>');
   else if (S.syncError) chips.push('<span class="chip warn">Offline' + (pending.length ? ' · ' + pending.length + ' to sync' : '') + '</span>');
@@ -1311,24 +1521,23 @@ function renderHud(D, now){
   return '' +
     '<div class="meta"><span><i class="dot" aria-hidden="true"></i><span class="mc">Mission control · </span>' + esc(S.ship.name) + '</span><span>' + esc(fmtLong(today)) + (fsOK() ? '<button class="fs" type="button" data-action="fullscreen">' + (fsOn() ? 'Exit full screen' : 'Full screen') + '</button>' : '') + '</span></div>' +
     '<div class="hud-main">' +
-      '<div class="brand"><div class="wordmark">' + esc(S.ship.name) + '</div>' +
+      '<div class="brand">' + (hasMark() ? '<h1 class="wordmark wm" aria-label="' + esc(S.ship.name) + '">' + PDX_SVG + '</h1>' : '<h1 class="wordmark">' + esc(S.ship.name) + '</h1>') +
         '<div class="act-line">' + esc(actLine) + '</div>' +
         (S.ship.motto ? '<div class="motto">' + esc(S.ship.motto) + '</div>' : '') + '</div>' +
       '<div class="clockbox"><div class="clock" id="clock">' + hhmm(now) + '</div>' +
         '<div class="strip">' + barcode(0, 60, 11) + '<i></i>' + barcode(9, 34, 11) + '</div></div>' +
     '</div>' +
     '<div class="stats">' +
-      '<div class="stat stat-cred"><span class="k">◆ Cred</span><span class="v">' + D.cred + '</span>' +
-        (D.vouchers > 0 ? '<span class="k">+' + D.vouchers + ' voucher</span>' : '') + '</div>' +
+      '<button class="stat stat-cred stat-lv" type="button" data-action="tab" data-tab="char" aria-label="Level ' + D.level + '. Open the character sheet"><span class="k">◆ Level</span><span class="v">' + pad(D.level) + '</span><span class="k">Next · ' + esc(nextHint) + '</span></button>' +
       '<div class="stat"><div class="lvl-row"><span class="k">Good Days · Act ' + pad(S.ship.act) + '</span><span class="v">' + pad(D.good) + '</span></div>' +
         '<div class="segbar s20" role="img" aria-label="' + D.good + ' Good Days. Clear at 14, two stars at 17, three at 20">' + segs + '</div>' +
         '<span class="k">Clear 14 · ★★ 17 · ★★★ 20' + stars + '</span></div>' +
       '<div class="stat stat-side">' + (chips.length ? '<div class="chips">' + chips.join('') + '</div>' : '<span></span>') + '<button class="pill safe" type="button" data-action="safe">Safe Mode</button></div>' +
     '</div>' +
-    '<div class="cockpit"><div class="cp-top"><span class="cp-name"><i class="dot" aria-hidden="true"></i>' + esc(S.ship.name) + '</span>' +
+    '<div class="cockpit"><div class="cp-top"><h1 class="cp-name" aria-label="' + esc(S.ship.name) + '"><i class="dot" aria-hidden="true"></i>' + (hasMark() ? PDX_SVG : esc(S.ship.name)) + '</h1>' +
       (chips.length ? '<span class="cp-chip">' + chips.map(c => c.replace(/<[^>]+>/g, '')).join(' · ') + '</span>' : '') +
       '<span class="cp-clock">' + hhmm(now) + '</span></div>' +
-      '<div class="cp-stats"><span class="cp-cred">◆ <b>' + D.cred + '</b></span><span>Good Days <b>' + pad(D.good) + '</b>/14</span>' +
+      '<div class="cp-stats"><button class="cp-cred cp-lv" type="button" data-action="tab" data-tab="char" aria-label="Level ' + D.level + '">LV <b>' + pad(D.level) + '</b></button><span class="cp-good">Good <b>' + pad(D.good) + '</b>/14</span>' +
       '<span>D<b>' + Math.max(1, Math.min(diffDays(today, act0) + 1, 28)) + '</b>/28</span>' +
       '<button class="cp-safe" type="button" data-action="safe">Safe</button></div></div>';
 }
@@ -1344,12 +1553,13 @@ function renderNow(D, now){
   /* Running two-minute start */
   if (S.timer){
     const tm = S.timer, t = task(tm.cat, tm.id) || {name:'Start', start:''};
-    out.push('<section class="frame"><div class="frame-head"><span>' + esc(t.stat || CAT_NAME[tm.cat] || '') + ' · two-minute start</span><span class="tag">Running</span></div>' +
+    out.push('<section class="frame"><div class="frame-head"><span>' + esc(t.stat || CAT_NAME[tm.cat] || '') + ' · ' + (tm.long ? 'focus block' : 'two-minute start') + '</span><span class="tag">Running</span></div>' +
       '<h2 class="ptitle">' + esc(t.name) + '</h2>' + (tm.variant ? '<p class="fine">' + esc(tm.variant) + '</p>' : '') +
       '<div class="led" id="timer-led" role="timer">' + mmss(tm.ends - Date.now()) + '</div>' +
       '<p class="instr">' + esc(t.start || '') + '</p>' +
-      '<p class="fine" style="margin-top:12px">At 00:00 it logs itself. Keep going or stop there. Both count the same.</p>' +
-      '<div class="actions"><button class="btn primary" type="button" data-action="log" data-cat="' + tm.cat + '" data-id="' + esc(tm.id) + '"' + (tm.day ? ' data-day="' + tm.day + '"' : '') + (tm.variant ? ' data-variant="' + esc(tm.variant) + '"' : '') + dis + '>Done</button>' +
+      '<p class="fine" style="margin-top:12px">' + (tm.long ? (tm.logged ? 'Logged at 2:00. The rest of this block is yours.' : 'Focus block. It logs at the 2:00 mark.') : 'At 00:00 it logs itself. Keep going or stop there. Both count the same.') + '</p>' +
+      '<div class="actions">' + (tm.logged ? '<span class="done-tag">Logged</span>' : '<button class="btn primary" type="button" data-action="log" data-cat="' + tm.cat + '" data-id="' + esc(tm.id) + '"' + (tm.day ? ' data-day="' + tm.day + '"' : '') + (tm.variant ? ' data-variant="' + esc(tm.variant) + '"' : '') + dis + '>Done</button>') +
+      (perkOn(D, 'Focus Protocol') && !tm.long ? '<button class="btn" type="button" data-action="timer-long">Focus 25:00</button>' : '') +
       '<button class="link" type="button" data-action="timer-stop">Stop the timer</button></div></section>');
   }
   /* A cache from a Good Day */
@@ -1373,9 +1583,14 @@ function renderNow(D, now){
   /* Live meter */
   let cells = '';
   for (let i = 1; i <= v.total; i++) cells += '<i class="' + (i <= v.n ? 'on' : '') + (i === v.need ? ' need' : '') + '"></i>';
-  const meterLabel = v.state === 'good' ? 'Good Day ✓ · ' + v.n + ' of ' + v.total : (v.n === 0 && v.safe) ? 'Floor Day · Safe Mode' : v.n + ' of ' + v.need + ' for a Good Day';
-  const meter = '<div class="gd"><div class="gd-top"><span class="k">' + (dow === 0 ? 'Sunday · rest day · basics only' : 'Today') + '</span><span class="gd-n' + (v.state === 'good' ? ' ok' : '') + '">' + esc(meterLabel) + '</span></div>' +
-    '<div class="gd-bar" style="--n:' + Math.max(1, v.total) + '">' + cells + '</div></div>';
+  const good = v.state === 'good', restDay = REST_DAYS.has(today) && dow !== 0;
+  const where = dow === 0 ? 'Sunday · rest' : restDay ? 'Rest Day' : 'Today';
+  const bar = '<div class="gd-bar" style="--n:' + Math.max(1, v.total) + '">' + cells + '</div>';
+  const meter = good
+    ? '<div class="gd good" role="status"><div class="gd-top"><div><div class="gd-k">' + esc(where) + '</div><div class="gd-title">Good Day ✓</div></div>' +
+        '<div class="gd-sub">' + v.n + ' of ' + v.total + ' done<br>+' + DAYPAY().good + ' cred</div></div>' + bar + '</div>'
+    : '<div class="gd' + (v.state === 'floor' ? ' floor' : '') + '"><div class="gd-top"><div><div class="gd-k">' + esc(where) + (v.state === 'floor' ? ' · Floor Day' : '') + ' · Good Day at ' + v.need + '</div><div class="gd-big">' + v.n + '<small> / ' + v.need + '</small></div></div>' +
+        '<div class="gd-sub">' + ((v.n === 0 && v.safe) ? 'Floor Day · Safe Mode' : (v.need - v.n) + ' more for a Good Day') + '<br>' + v.n + ' of ' + v.total + ' done</div></div>' + bar + '</div>';
   /* Today's checklist, grouped by time of day */
   const next = suggestNext(D, now, ids);
   const row = t => {
@@ -1396,7 +1611,7 @@ function renderNow(D, now){
   const groups = ['Morning','Midday','Afternoon','Evening'].map(g => {
     const ts = roster('daily').filter(t => ids.indexOf(t.id) >= 0 && SLOT_GROUP[t.slot] === g);
     return ts.length ? '<div class="ck-g">' + g + '</div>' + ts.map(row).join('') : '';
-  }).join('');
+  }).join('') + (dow === 0 && perkOn(D, 'Quick Study') && task('daily', 'growth') ? '<div class="ck-g">Bonus · Quick Study · XP only</div>' + row(task('daily', 'growth')) : '');
   /* Weekly and monthly items due today */
   const wk = mondayOf(today), mo = monthOf(today);
   const due = [];
@@ -1443,7 +1658,7 @@ function renderChar(D, now){
     const perks = perksOf(s).map(p => {
       const on = st.level >= p.lv, next = !on && p.lv === st.level + 1;
       return '<li class="perk' + (on ? ' on' : next ? ' next' : '') + '"><span class="perk-lv">L' + p.lv + '</span><span><b>' + esc(p.name) + '</b>' +
-        '<span class="perk-fx">' + esc(p.fx) + '</span>' + (on ? '<span class="perk-tag">Unlocked · switches on next build</span>' : next ? '<span class="perk-tag">Next</span>' : '') + '</span></li>';
+        '<span class="perk-fx">' + esc(p.fx) + '</span>' + (on ? '<span class="perk-tag">' + (PERK_LATER.has(p.name) ? 'Unlocked · switches on in a later build' : 'Active') + '</span>' : next ? '<span class="perk-tag">Next</span>' : '') + '</span></li>';
     }).join('');
     return '<section class="statc"><div class="statc-top"><div><div class="statc-name">' + esc(s) + '</div><div class="statc-feed">' + esc(feeds(s)) + '</div></div>' +
       '<div class="statc-lv"><span class="k">Level</span><b>' + st.level + '</b></div></div>' +
@@ -1456,7 +1671,7 @@ function renderChar(D, now){
       '<dl class="char-nums"><div><dt>Starts this Act</dt><dd>' + starts + '</dd></div><div><dt>Good Days</dt><dd>' + D.good + '</dd></div></dl></div>' +
       '<p class="fine">Every start feeds one stat. Each stat levels about once a week at Good-Day pace, so Money keeps up with Body. Your level goes up by one with every stat level gained.</p></div>' +
     '<div class="sec"><div class="statgrid">' + STATS.map(card).join('') + '</div>' +
-      '<p class="fine">Perks never touch the Good Day count or the Act conditions. Unlocked perks start working in the next build.</p></div>';
+      '<p class="fine">Perks never touch the Good Day count or the Act conditions. They work as soon as they unlock, except Debt Relief, Interest and Compound, which switch on in a later build.</p></div>';
 }
 function showStatUp(ups, level){
   sfx('level');
@@ -1508,27 +1723,41 @@ function renderLog(D, now){
   const rowL = (name, meta) => '<div class="wk-l"><div class="wk-name">' + esc(name) + '</div>' + (meta ? '<div class="wk-floor">' + esc(meta) + '</div>' : '') + '</div>';
 
   /* Daily */
-  const dHead = '<div class="wk-row wk-head"><div class="legend"><span><i class="on"></i>Did</span><span><i></i>Didn’t</span></div><div class="cells">' +
+  const dHead = '<div class="wk-row wk-head"><div class="legend"><span><i class="on"></i>Did</span><span><i></i>Didn’t</span><span><i class="vgood"></i>Good</span><span><i class="vfloor"></i>Floor</span></div><div class="cells">' +
     days.map(d => { const x = parseDay(d); return '<span class="dl' + (d === today ? ' today' : '') + '">' + DOW[x.getDay()].slice(0, 2) + '<br>' + pad(x.getDate()) + '</span>'; }).join('') +
     '</div><div class="wk-cnt"></div></div>';
   const dRows = roster('daily').map(t => {
     let n = 0, past = 0;
+    const win = backWindow(D, t);
     const cells = days.map(d => {
       const tc = d === today ? ' today' : '';
       if (d < D.act0) return '<span class="cell pre" title="Trial run"></span>';
-      if (dayList(d).indexOf(t.id) < 0) return '<span class="cell rest" title="Rest">–</span>';
-      const e = gotE(D, 'daily', d, t.id);
-      if (d <= today) past++;
+      const e = gotE(D, 'daily', d, t.id), inList = dayList(d).indexOf(t.id) >= 0;
+      const bonus = !inList && t.id === 'growth' && parseDay(d).getDay() === 0 && perkOn(D, 'Quick Study');
+      if (!inList && !e && !bonus) return '<span class="cell rest" title="Rest">–</span>';
+      if (d <= today && (inList || e)) past++;
       if (e){ n++; return '<span class="cell on' + tc + '" title="Did' + (e.variant ? ' · ' + esc(e.variant) : '') + '">✓</span>'; }
       if (d > today) return '<span class="cell fut"></span>';
       const tonight = d === today && t.slot === 'night' && ph === 'day';
-      if ((d === today || d === yest) && !tonight && ready())
+      if (diffDays(today, d) <= win && !tonight && ready())
         return '<button class="cell' + tc + '" type="button" data-action="log" data-cat="daily" data-id="' + esc(t.id) + '" data-day="' + d + '" aria-label="Log ' + esc(t.name) + ', ' + fmtDay(d) + '">+</button>';
       return '<span class="cell' + tc + (tonight ? ' fut' : '') + '"></span>';
     }).join('');
     return '<div class="wk-row">' + rowL(t.name, t.stat || 'No stat') + '<div class="cells">' + cells + '</div><div class="wk-cnt">' + n + '<small>/' + past + '</small></div></div>';
   }).join('');
 
+  /* Day verdicts across the same 7 days */
+  let goodN = 0, pastN = 0;
+  const dayCells = days.map(d => {
+    if (d < D.act0) return '<span class="cell pre"></span>';
+    if (d > today) return '<span class="cell fut"></span>';
+    pastN++;
+    const v = verdictFor(D, d);
+    if (v.state === 'good'){ goodN++; return '<span class="cell vgood" title="Good Day">✓</span>'; }
+    if (v.state === 'floor') return '<span class="cell vfloor" title="Floor Day">F</span>';
+    return '<span class="cell' + (d === today ? ' today' : '') + '"></span>';
+  }).join('');
+  const dayRow = '<div class="wk-row wk-day"><div class="wk-l"><div class="wk-name">Day</div><div class="wk-floor">Good · Floor</div></div><div class="cells">' + dayCells + '</div><div class="wk-cnt">' + goodN + '<small>/' + pastN + '</small></div></div>';
   /* Weekly: this week plus the 3 before it */
   const weeks = [-3, -2, -1, 0].map(o => addDays(wk0, 7 * o));
   const wHead = '<div class="rows3 wk-head"><div class="legend">Last 4 weeks</div><div class="cells c4">' +
@@ -1574,7 +1803,7 @@ function renderLog(D, now){
   const P = PAY();
   return '' +
     '<div class="sec"><div class="sec-h"><span>Daily · did / didn’t</span><i class="rule"></i><span>' + esc(S.wkOff === 0 ? 'Last 7 days' : fmtDay(start) + ' – ' + fmtDay(end)) + '</span>' + nav + '</div>' +
-      '<div class="frameset">' + dHead + dRows + '</div>' +
+      '<div class="frameset">' + dHead + dayRow + dRows + '</div>' +
       '<p class="fine">Tap today or yesterday to log. 5 of 9 is a Good Day; on Sunday, 2 of 3. Dotted cells are the trial run, dashes are Sunday rest. A blank costs nothing.</p></div>' +
     '<div class="sec"><div class="sec-h"><span>Weekly</span><i class="rule"></i><span>Week of ' + esc(fmtDay(wk0)) + '</span></div>' +
       '<div class="frameset">' + wHead + wRows + '</div>' +
@@ -1591,15 +1820,16 @@ function renderFirewall(D){
   const fw = S.firewall;
   if (!fw){
     const linking = !S.firewallReady;
-    return '<div class="sec"><div class="sec-h"><span>Bridge</span><i class="rule"></i><span>Boss 01</span></div><h1 class="h2">The Firewall</h1><p class="instr">' +
-      (linking ? 'Linking to ship systems…' : 'No nodes loaded yet. The Operator uploads them at debrief.') + '</p></div>';
+    return '<div class="sec"><div class="sec-h"><span>Bridge</span><i class="rule"></i><span>Act 01</span></div><h1 class="h2">Gigs</h1><p class="instr">' +
+      (linking ? 'Linking to ship systems…' : 'No gigs loaded yet. The Operator uploads them at debrief.') + '</p></div>';
   }
   const nodes = Array.isArray(fw.nodes) ? fw.nodes : [];
   const real = nodes.filter(n => !n.locked);
   const cleared = real.filter(n => D.map.has(nodeId(fw, n))).length;
   const cur = currentNode(D, null);
   const dis = ready() ? '' : ' disabled';
-  const pay = PAY().oneoff, rules = RULES();
+  const rules = RULES();
+  const num = id => { const k = real.findIndex(x => x.id === id); return k >= 0 ? pad(k + 1) : '??'; };
   let i = 0;
   const rm = n => S.confirmRm === n.id
     ? '<button class="link" type="button" data-action="node-rm-yes" data-id="' + esc(n.id) + '"' + dis + '>Confirm remove</button><button class="link" type="button" data-action="node-rm-no">Keep it</button>'
@@ -1607,66 +1837,93 @@ function renderFirewall(D){
   const queued = openNodes(fw, D);
   const canAdd = queued < rules.maxQueue && ready();
   const addForm = '<form class="addnode" id="addnode-form">' +
-    '<label for="newnode">Add a one-off</label>' +
+    '<label for="newnode">Add a gig</label>' +
     '<div class="addrow"><input id="newnode" maxlength="140" autocomplete="off" enterkeyhint="done" placeholder="One step that ends where you’d ask “what now?”" value="' + esc(S.nodeDraft) + '"' + (canAdd ? '' : ' disabled') + '>' +
     '<button class="btn primary sm" type="submit"' + (canAdd ? '' : ' disabled') + '>Add</button></div>' +
-    '<p class="fine">' + (queued < rules.maxQueue ? queued + ' of ' + rules.maxQueue + ' open slots used.' : 'All ' + rules.maxQueue + ' slots are full. Clear a node first, or put the idea in Cold Storage.') + '</p></form>';
+    '<p class="fine">' + (queued < rules.maxQueue ? queued + ' of ' + rules.maxQueue + ' open slots used.' : 'All ' + rules.maxQueue + ' slots are full. Clear a gig first, or put the idea in Cold Storage.') + '</p></form>';
   const lis = nodes.map(n => {
     if (n.locked){
       return '<li class="node locked"><span class="nid">??</span><div class="nb"><div class="node-k">Locked</div><p>' + esc(n.text) + '</p><div class="node-tools">' + rm(n) + '</div></div></li>';
     }
     i++;
     const e = D.map.get(nodeId(fw, n));
+    const waits = !e && gigLocked(D, n);
     const isCur = !!(cur && cur.node.id === n.id);
-    const cls = e ? 'done' : isCur ? 'current' : 'next';
-    const k = e ? 'Cleared · ' + fmtDay(e.day) : isCur ? 'Suggested next' : 'Open';
-    return '<li class="node ' + cls + '"><span class="nid">' + pad(i) + '</span><div class="nb"><div class="node-k">' + k + '</div><p>' + esc(n.text) + '</p>' +
+    const cls = e ? 'done' : waits ? 'waits' : isCur ? 'current' : 'next';
+    const k = e ? 'Cleared · ' + fmtDay(e.day) + (e.double ? ' · ×2 XP' : '')
+      : waits ? '🔒 Unlocks after gig ' + num(n.requires)
+      : isCur ? 'Suggested next' : 'Open';
+    return '<li class="node ' + cls + '"><span class="nid">' + pad(i) + '</span><div class="nb"><div class="node-k">' + k + (n.stat ? ' · ' + esc(n.stat) : '') + '</div><p>' + esc(n.text) + '</p>' +
       (!e && n.assist ? assistLine(n.assist) : '') +
-      (e ? '' : '<div class="node-tools"><button class="btn sm' + (isCur ? ' primary' : '') + '" type="button" data-action="node" data-id="' + esc(n.id) + '"' + dis + '>Cleared</button>' + rm(n) + '</div>') +
+      (e ? '' : '<div class="node-tools">' + (waits ? '' : '<button class="btn sm' + (isCur ? ' primary' : '') + '" type="button" data-action="node" data-id="' + esc(n.id) + '"' + dis + '>Cleared</button>') + rm(n) + '</div>') +
       '</div></li>';
   }).join('');
-  return '<div class="sec"><div class="sec-h"><span>Bridge · Act ' + pad(S.ship.act) + ' · one-offs</span><i class="rule"></i><span>' + openNodes(fw, D) + ' open</span></div>' +
-      '<div class="fw-top"><div><h1 class="h2">' + esc(fw.title || 'The Firewall') + '</h1>' +
-      (fw.condition ? '<p class="fw-cond">Breach condition: ' + esc(fw.condition) + '</p>' : '<p class="fw-cond">One-off tasks for this Act, in any order.</p>') + '</div>' +
+  return '<div class="sec"><div class="sec-h"><span>Bridge · Act ' + pad(S.ship.act) + ' · one-offs</span><i class="rule"></i><span>' + queued + ' open</span></div>' +
+      '<div class="fw-top"><div><h1 class="h2">' + esc(fw.title || 'Gigs') + '</h1>' +
+      (fw.condition ? '<p class="fw-cond">Breach condition: ' + esc(fw.condition) + '</p>' : '<p class="fw-cond">One-off tasks for this Act. Each one cleared feeds a stat and rolls a cache.</p>') + '</div>' +
       '<div class="fw-prog"><div class="n">' + cleared + '<small>/' + real.length + '</small></div><div class="k" style="color:var(--muted);margin-top:8px">Gigs cleared</div></div></div>' +
-      
     '</div>' +
     '<ol class="nodes" style="margin-top:18px">' + lis + '</ol>' + addForm +
-    '<p class="fine" style="margin-top:14px">One-offs for this Act, in any order. A gig ends where you’d have to stop and ask “what now?”. Stuck on one? Paste it to the Operator in chat and get the next two-minute step.</p>';
+    '<p class="fine" style="margin-top:14px">A gig ends where you’d have to stop and ask “what now?”. Locked gigs open once the one before them is cleared. Stuck on one? Paste it to the Operator in chat and get the next two-minute step.</p>';
 }
 
-function renderMarket(D){
+function renderMarket(D, now){
+  now = now || new Date();
+  const today = dayKey(now), dis = ready() ? '' : ' disabled';
   const items = S.market.items || [];
-  const dis = ready() ? '' : ' disabled';
-  const tierName = {small:'Small', medium:'Medium', large:'Large'};
-  const itemHtml = it => {
-    let act;
-    if (S.confirmBuy === it.id){
-      act = '<button class="btn primary sm" type="button" data-action="buy-yes" data-id="' + esc(it.id) + '"' + dis + '>Confirm · ' + it.price + ' cred</button>' +
-        (it.tier === 'small' && D.vouchers > 0 ? '<button class="btn sm" type="button" data-action="buy-voucher" data-id="' + esc(it.id) + '"' + dis + '>Use voucher</button>' : '') +
+  const tierName = {small:'Small', medium:'Medium', large:'Large', gear:'Gear', booster:'Booster'};
+  const tl = S.market.treatLine;
+  const card = it => {
+    const open = laneOpen(it), o = open ? offerFor(D, it, today) : {price: it.price, perk: null, note: ''}, left = capLeft(D, it, today);
+    const canBuy = open && left > 0 && D.cred >= o.price;
+    const canVoucher = open && it.tier === 'small' && D.vouchers > 0;
+    const idA = ' data-id="' + esc(it.id) + '"';
+    let act = '';
+    if (S.confirmBuy === it.id && it.tier === 'booster'){
+      act = (it.passes || []).map(x => '<button class="btn sm primary" type="button" data-action="buy-yes"' + idA + ' data-pass="' + esc(x.id) + '"' + dis + '>' + esc(x.name) + '</button>').join('') +
         '<button class="link" type="button" data-action="buy-no">Cancel</button>';
-    } else if (D.cred >= it.price || (it.tier === 'small' && D.vouchers > 0)){
-      act = '<button class="btn sm sage" type="button" data-action="buy" data-id="' + esc(it.id) + '"' + dis + '>Buy</button>';
+    } else if (S.confirmBuy === it.id){
+      act = (canBuy ? '<button class="btn primary sm" type="button" data-action="buy-yes"' + idA + dis + '>Confirm · ' + (o.price ? o.price + ' cred' : 'free') + '</button>' : '') +
+        (canVoucher ? '<button class="btn sm" type="button" data-action="buy-voucher"' + idA + dis + '>Use voucher</button>' : '') +
+        '<button class="link" type="button" data-action="buy-no">Cancel</button>';
+    } else if (S.confirmLog === it.id){
+      act = '<button class="btn sm" type="button" data-action="log-yes"' + idA + dis + '>Log it · ' + it.price + ' cred</button>' +
+        '<button class="link" type="button" data-action="log-no">Cancel</button>';
     } else {
-      act = '<span class="later-tag">' + (it.price - D.cred) + ' cred to go</span>';
+      if (canBuy || canVoucher) act += '<button class="btn sm sage" type="button" data-action="buy"' + idA + dis + '>' + (it.tier === 'booster' ? 'Pick a pass' : 'Buy') + '</button>';
+      else if (!open) act += '<span class="later-tag">Opens with the treat line</span>';
+      else if (left < 1) act += '<span class="later-tag">Weekly max reached</span>';
+      else act += '<span class="later-tag">' + (o.price - Math.max(0, D.cred)) + ' cred to go</span>';
+      if (it.gated) act += '<button class="link" type="button" data-action="log-it"' + idA + '>Did it without buying</button>';
     }
-    const pct = Math.max(0, Math.min(100, Math.round(D.cred / it.price * 100)));
-    return '<div class="item"><div class="item-top"><div><div class="k" style="color:var(--muted)">' + esc(tierName[it.tier] || it.tier) + '</div><div class="item-name">' + esc(it.name) + '</div></div>' +
-      '<div class="price">' + it.price + '<small>cred</small></div></div>' +
-      '<p class="item-desc">' + esc(it.desc) + '</p>' +
+    const pct = o.price ? Math.max(0, Math.min(100, Math.round(Math.max(0, D.cred) / o.price * 100))) : 100;
+    const priceHtml = o.price < it.price ? '<s>' + it.price + '</s>' + (o.price || 'Free') : it.price;
+    const notes = [];
+    if (it.gated) notes.push('Gated: doing it without buying still costs ' + it.price + '.');
+    if (it.cap) notes.push('Max ' + it.cap + ' a week.');
+    if (o.note) notes.push(o.note + ' applied.');
+    const passes = it.tier === 'booster' ? '<ul class="passes">' + (it.passes || []).map(x => '<li><b>' + esc(x.name) + '</b>' + esc(x.desc) + '</li>').join('') + '</ul>' : '';
+    return '<div class="item' + (open ? '' : ' shut') + '"><div class="item-top"><div><div class="k" style="color:var(--muted)">' + esc(tierName[it.tier] || it.tier) + '</div><div class="item-name">' + esc(it.name) + '</div></div>' +
+      '<div class="price">' + priceHtml + '<small>cred</small></div></div>' +
+      '<p class="item-desc">' + esc(it.desc) + '</p>' + passes +
+      (notes.length ? '<p class="fine">' + esc(notes.join(' ')) + '</p>' : '') +
       '<div class="meter-row"><div class="meter" role="img" aria-label="' + pct + '% of the price"><i style="width:' + pct + '%"></i></div><span class="k">' + pct + '%</span></div>' +
       '<div class="item-act">' + act + '</div></div>';
   };
-  const spends = D.list.filter(e => e.kind === 'spend').sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 8);
+  const lane = l => items.filter(it => (it.lane || 'free') === l && it.tier !== 'booster');
+  const boosters = items.filter(it => it.tier === 'booster');
+  const spends = D.list.filter(e => e.kind === 'spend' && !e.archived && e.day >= D.act0).sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 8);
   const hist = spends.length ? '<ul class="history">' + spends.map(s =>
-      '<li><span class="h-day">' + fmtDay(s.day) + '</span><span>' + esc(s.item && s.item.name) + (s.ref === 'implant' ? ' · installs at debrief' : '') + '</span><span class="h-amt">' + (s.voucher ? 'voucher' : (s.amount || 0)) + '</span></li>'
-    ).join('') + '</ul>' : '<p class="fine">Nothing bought yet.</p>';
-  return '<div class="sec"><div class="sec-h"><span>Black Market</span><i class="rule"></i><span>₡0 while Life Support is red</span></div>' +
-      '<div class="wallet"><div class="n">' + D.cred + '</div><div class="u"><b>◆ cred</b><span class="k" style="color:var(--muted)">available' + (D.vouchers > 0 ? ' · ' + D.vouchers + ' Small voucher' : '') + '</span></div></div>' +
-      '<p class="fine">' + esc(S.market.note || DEFAULT_MARKET.note) + ' Cred buys the guilt-free version of things you’d do anyway.</p></div>' +
-    '<div class="sec"><div class="items">' + items.map(itemHtml).join('') + '</div></div>' +
-    '<div class="sec"><div class="sec-h"><span>Bought</span><i class="rule"></i><span>Last 8</span></div>' + hist +
-    '</div>';
+      '<li><span class="h-day">' + fmtDay(s.day) + '</span><span>' + esc(s.item && s.item.name) + (s.item && s.item.pass ? ' · ' + esc(s.item.pass) : '') + (s.logged ? ' · logged after' : '') + (s.ref === 'implant' ? ' · installs at debrief' : '') + '</span><span class="h-amt">' + (s.voucher ? 'voucher' : (s.amount || 'free')) + '</span></li>'
+    ).join('') + '</ul>' : '<p class="fine">Nothing bought yet this Act.</p>';
+  const owed = D.cred < 0;
+  return '<div class="sec"><div class="sec-h"><span>Black Market</span><i class="rule"></i><span>Act ' + pad(S.ship.act) + '</span></div>' +
+      '<div class="wallet"><div class="n' + (owed ? ' owed' : '') + '">' + Math.abs(D.cred) + '</div><div class="u"><b>' + (owed ? '◆ owed' : '◆ cred') + '</b><span class="k" style="color:var(--muted)">' + (owed ? 'earned back by Good and Floor Days' : 'available') + (D.vouchers > 0 ? ' · ' + D.vouchers + ' Small voucher' + (D.vouchers > 1 ? 's' : '') : '') + '</span></div></div>' +
+      '<p class="fine">Cred comes from days: Good Day 5, Floor Day 1. Gated items cost cred whether you buy them first or log them after.</p></div>' +
+    '<div class="sec"><div class="sec-h"><span>Free lane</span><i class="rule"></i><span>No ₡</span></div><div class="items">' + lane('free').map(card).join('') + '</div></div>' +
+    '<div class="sec"><div class="sec-h"><span>₡ lane</span><i class="rule"></i><span>' + (tl ? 'Treat line ' + esc(crc(tl)) + ' a month' : 'Locked until the budget sets a treat line') + '</span></div><div class="items">' + lane('crc').map(card).join('') + '</div></div>' +
+    (boosters.length ? '<div class="sec"><div class="sec-h"><span>Booster</span><i class="rule"></i><span>One free pass</span></div><div class="items">' + boosters.map(card).join('') + '</div></div>' : '') +
+    '<div class="sec"><div class="sec-h"><span>Bought</span><i class="rule"></i><span>Last 8</span></div>' + hist + '</div>';
 }
 
 function weekStats(D, now){
@@ -1710,7 +1967,7 @@ function reportText(D){
     'Monthly (' + monthName(mo) + ' so far): ' + roster('monthly').map(t => t.name + ' ' + (got(D, 'monthly', mo, t.id) ? 'done' : '—')).join(' · '),
     'As needed: ' + roster('asneeded').map(t => t.name + ' ' + W.asn[t.id]).join(' · '),
     'Gigs cleared: ' + W.nodes.length + (W.nodes.length ? ' (' + W.nodes.map(nodeName).join('; ') + ')' : '') + ' · open ' + openList(D).length,
-    'Cred: +' + W.earned + ' earned, −' + W.spent + ' spent · balance ' + D.cred,
+    'Cred: +' + W.earned + ' earned, −' + W.spent + ' spent · balance ' + (D.cred < 0 ? 'Owed ' + (-D.cred) : D.cred),
     'Bought: ' + (W.bought.length ? W.bought.map(b => (b.item && b.item.name) + (b.voucher ? ' (voucher)' : ' (' + (-b.amount) + ')')).join(', ') : 'nothing'),
     'Money number: ' + (money != null && isFinite(money) ? crc(money) : 'not entered'),
     'Food out (delivery + eating out): ' + (food != null && isFinite(food) ? crc(food) : 'not entered')
@@ -1736,8 +1993,9 @@ function renderDebrief(D, now){
   const debriefPay = payOf('weekly', task('weekly', 'debrief'));
   return (comms ? '<div class="sec">' + comms + '</div>' : '') +
     '<div class="sec"><div class="sec-h"><span>Last 7 days · daily</span><i class="rule"></i><span>' + fmtDay(W.start) + ' – ' + fmtDay(W.end) + '</span></div>' +
-      '<div class="bars">' + roster('daily').map(barRow).join('') + '</div>' +
+      '<div class="bars">' + '<div class="bar-row"><span class="bar-label">Day</span><div class="days">' + W.days.map(d => { const v = D.verdict[d]; const c = v ? (v.state === 'good' ? ' vgood' : v.state === 'floor' ? ' vfloor' : '') : ''; return '<span class="day' + c + '"><i></i>' + DOW[parseDay(d).getDay()].slice(0, 2) + '</span>'; }).join('') + '</div><span class="bar-val">' + W.good + '<span style="color:var(--muted);font-size:.6em">/7</span></span></div>' + roster('daily').map(barRow).join('') + '</div>' +
       '<dl class="nums"><div><dt>Good Days</dt><dd>' + W.good + '<small>/7</small></dd></div><div><dt>Weekly done</dt><dd>' + wDone + '<small>/' + W.weekly.length + '</small></dd></div><div><dt>Gigs cleared</dt><dd>' + W.nodes.length + '</dd></div><div><dt>Cred earned</dt><dd>+' + W.earned + '</dd></div><div><dt>Cred spent</dt><dd>' + W.spent + '</dd></div><div><dt>Balance</dt><dd>' + D.cred + '</dd></div></dl></div>' +
+    trendsHtml(D, today) +
     '<div class="sec"><div class="sec-h"><span>Copy to the posters</span><i class="rule"></i><span>Highlighters</span></div><ul class="posters">' +
       '<li><b>Quarters</b>Lights out ' + L + ' of 7 nights. Color that many cells. ' + (L >= 5 ? 'That’s a gate week for the Crew meter.' : 'Gate weeks need 5.') + '</li>' +
       '<li><b>Airlock</b>Workout ' + cnt('move') + ' of 7 days, Loadout ' + cnt('loadout') + ' of 7. Color the EVA log.</li>' +
@@ -1791,7 +2049,7 @@ function render(){
   else if (S.tab === 'log') html = renderLog(D, now);
   else if (S.tab === 'char') html = renderChar(D, now);
   else if (S.tab === 'firewall') html = renderFirewall(D);
-  else if (S.tab === 'market') html = renderMarket(D);
+  else if (S.tab === 'market') html = renderMarket(D, now);
   else html = renderDebrief(D, now);
   $('#main').innerHTML = html;
 
@@ -1834,10 +2092,14 @@ const handlers = {
   safe(){ openSafe(); },
   'safe-done'(){ const used = allEntries().has('safe-' + dayKey(new Date())); closeModal(); if (!used) logSafe(); else { sfx('soft'); toast('Logged. Good restart.'); } },
   'close-modal'(){ closeModal(); },
-  buy(b){ S.confirmBuy = b.dataset.id; render(); },
-  'buy-yes'(b){ buy(b.dataset.id, false); },
-  'buy-voucher'(b){ buy(b.dataset.id, true); },
+  buy(b){ S.confirmBuy = b.dataset.id; S.confirmLog = null; render(); },
+  'buy-yes'(b){ buy(b.dataset.id, 'buy', b.dataset.pass || null); },
+  'buy-voucher'(b){ buy(b.dataset.id, 'voucher'); },
   'buy-no'(){ S.confirmBuy = null; render(); },
+  'log-it'(b){ S.confirmLog = b.dataset.id; S.confirmBuy = null; render(); },
+  'log-yes'(b){ buy(b.dataset.id, 'log'); },
+  'log-no'(){ S.confirmLog = null; render(); },
+  'timer-long'(){ extendTimer(); },
   debrief(){ completeDebrief(); },
   copy(){ copyReport(); },
   sound(){ ls.set('sound', ls.get('sound') === 'off' ? 'on' : 'off'); render(); sfx('tap'); },
